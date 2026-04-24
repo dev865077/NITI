@@ -9,5 +9,6 @@ testnet/ada/bin/
 testnet/ada/obj/
 
 spark/obj/
+spark/obj_lightning/
 spark/obj_integer/
 spark/obj_residue/

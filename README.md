@@ -140,18 +140,24 @@ Broadcast is deliberately blocked unless the CLI receives `--allow-broadcast`.
 
 See [`spark/README.md`](spark/README.md).
 
-Three proof targets currently pass with no unproved checks and no
+Four proof targets currently pass with no unproved checks and no
 `pragma Assume` statements:
 
 - mathematical integer model with `SPARK.Big_Integers`;
 - finite modular residue model over `Z/97Z` with explicit modular reduction.
 - Ada built-in modular type model over `type mod 97`.
+- Lightning cDLC model over `type mod 97`.
 
 The proof covers the core cDLC algebra: oracle attestation, adaptor
 verification, signature completion, extraction of the hidden scalar, and
-rejection of a wrong hidden scalar. Lightning channel mechanics, HTLC hash
-security, routing, force-close behavior, and wallet integration are described in
-the whitepaper but are not separate SPARK proof targets yet.
+rejection of a wrong hidden scalar. The Lightning proof target covers the
+finite model of HTLC/PTLC redemption, oracle witness compatibility, routed HTLC
+hash reuse, routed PTLC point tweaks, child activation, timeout/refund behavior,
+and abstract channel-balance conservation.
+
+The Lightning model does not prove a production Lightning implementation,
+real hash security, route liquidity, force-close behavior, watchtower behavior,
+or wallet integration.
 
 ## Security Boundary
 

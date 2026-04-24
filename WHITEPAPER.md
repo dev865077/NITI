@@ -330,6 +330,9 @@ Bitcoin transaction serialization, sighash behavior, mempool policy, or
 Lightning state-machine behavior. Those remain implementation and protocol
 assumptions outside the machine-checked core.
 
+The Lightning extension has a separate machine-checked model described in
+Section 11.7.
+
 ## 8. Refunds and Failure Modes
 
 Each edge output `O_e` should include a timelocked refund path. If the parent
@@ -746,6 +749,58 @@ The HTLC version inherits a privacy cost: every hop sees the same payment hash
 `h_x`. The point-locked version can avoid this by using per-hop point tweaks,
 but it requires point-lock support rather than ordinary current HTLC behavior.
 
+### 11.7 Machine-Checked Lightning Model
+
+The Lightning extension is also modeled in Ada/SPARK and checked with
+GNATprove. The proof target is:
+
+```text
+spark/lightning_cdlc_proofs.gpr
+```
+
+This target is separate from the base cDLC proof targets because it proves
+channel-condition behavior rather than bridge-signature algebra. It uses Ada's
+built-in `type mod 97` model for finite scalar, point, and digest values.
+
+The model proves the following Lightning companion claims:
+
+```text
+1. The oracle scalar redeems an HTLC when the oracle precommits to its hash.
+2. A wrong scalar does not redeem that HTLC in the ideal digest model.
+3. The oracle scalar redeems a point-locked PTLC whose lock is S_x.
+4. A wrong scalar does not redeem that PTLC.
+5. The same HTLC witness redeems every hop whose lock is h_x.
+6. PTLC route tweaks preserve one-hop and two-hop route atomicity.
+7. Correct witnesses activate prepared child states.
+8. Wrong witnesses do not activate prepared child states.
+9. Wrong witnesses flow to timeout/refund behavior.
+10. Correct redemption prevents timeout/refund behavior.
+11. Correct settlement moves channel balance from Alice to Bob.
+12. Wrong-witness settlement leaves the abstract channel state unchanged.
+13. Channel balance is conserved by the abstract payment transition.
+```
+
+The synchronization claim is also checked: the same oracle attestation scalar
+that redeems the HTLC lock also matches the point lock used by the adaptor/PTLC
+side of the construction.
+
+For this repository revision, the Lightning target was checked with GNATprove
+using the CVC5, Z3, and Alt-Ergo provers and completed with no unproved checks
+and no `pragma Assume` statements. The checked run analyzed 51 SPARK
+subprograms and discharged 118 total obligations.
+
+The model's hash function is intentionally an ideal injective digest model:
+
+```text
+Hash_Of(s) = s.
+```
+
+This is not a claim that real HTLC hashes are algebraic identities. It is the
+finite SPARK representation of the preimage/collision-resistance assumption
+used by the paper. Real SHA-256 security, BOLT state machines, channel
+revocation, force-close behavior, watchtowers, routing policy, and liquidity
+remain outside the machine-checked Lightning model.
+
 ## 12. Limitations
 
 The construction in this paper is an activation primitive, not a complete
@@ -762,10 +817,11 @@ these primitives. If an oracle reuses a nonce across incompatible
 announcements, leaks its nonce secret, signs equivocating outcomes, or uses a
 weak implementation, the security argument fails at the oracle layer.
 
-The Ada/SPARK and GNATprove artifacts described in Section 7 prove finite
-algebraic properties of the cDLC equations. They do not prove secp256k1 itself,
-BIP340's implementation, SHA-256, transaction serialization, signature hashing,
-wallet key management, or the full DLC negotiation protocol.
+The Ada/SPARK and GNATprove artifacts described in Sections 7 and 11.7 prove
+finite algebraic properties of the cDLC and Lightning-extension equations. They
+do not prove secp256k1 itself, BIP340's implementation, SHA-256, transaction
+serialization, signature hashing, wallet key management, or the full DLC
+negotiation protocol.
 
 ### 12.2 Oracle and Liveness Risk
 
@@ -827,6 +883,11 @@ The Lightning section is a mathematical extension of the cDLC activation
 scalar into channel conditions. It is not a claim that today's Lightning
 Network already supports cDLCs end-to-end without protocol and implementation
 work.
+
+The SPARK Lightning target proves the finite HTLC/PTLC witness model in
+Section 11.7. It does not prove the BOLT protocol state machine, production
+HTLC scripts, PTLC deployment, route discovery, liquidity availability, channel
+revocation, force-close behavior, or watchtower behavior.
 
 The HTLC version requires hold-invoice or deferred-settlement behavior and
 correct oracle hash commitments. The point-locked version requires PTLC-like
