@@ -13,8 +13,6 @@ not production software and must not be used with mainnet funds.
 The cDLC whitepaper is the primary document of this repository:
 
 - [`WHITEPAPER.md`](WHITEPAPER.md) - primary cDLC whitepaper.
-- [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md) - complementary
-  whitepaper for Lightning cDLCs over HTLCs and PTLCs, with SPARK proof model.
 - [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md) - legacy NITI draft kept for
   historical reference.
 - [`docs/legacy-whitepaper/index.html`](docs/legacy-whitepaper/index.html) -
@@ -27,8 +25,6 @@ proof work.
 ## What Exists Today
 
 - The primary cDLC whitepaper in [`WHITEPAPER.md`](WHITEPAPER.md).
-- The Lightning cDLC companion whitepaper in
-  [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md).
 - The legacy NITI draft in [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md).
 - A cDLC source technical note in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md).
 - SPARK/Ada proof models for the core algebra in [`spark/`](spark/).
@@ -81,7 +77,6 @@ testnet/
   src/                     TypeScript testnet harness
   README.md                Operational testnet flow
 WHITEPAPER.md              Primary cDLC whitepaper
-LIGHTNING-WHITEPAPER.md    Lightning cDLC companion whitepaper
 LEGACY-WHITEPAPER.md       Legacy NITI draft
 ```
 
@@ -141,20 +136,16 @@ Broadcast is deliberately blocked unless the CLI receives `--allow-broadcast`.
 
 See [`spark/README.md`](spark/README.md).
 
-Four proof targets currently pass with no unproved checks and no
+Three proof targets currently pass with no unproved checks and no
 `pragma Assume` statements:
 
 - mathematical integer model with `SPARK.Big_Integers`;
 - finite modular residue model over `Z/97Z` with explicit modular reduction.
 - Ada built-in modular type model over `type mod 97`.
-- Lightning cDLC model over `type mod 97`, covering HTLC compatibility,
-  PTLC point locks, route tweaks, child activation, timeout/refund abstraction,
-  and channel balance conservation.
 
 The proof covers the core algebra: oracle attestation, adaptor verification,
-signature completion, extraction of the hidden scalar, rejection of a wrong
-hidden scalar, and the Lightning conditional-settlement identities described in
-the companion paper.
+signature completion, extraction of the hidden scalar, and rejection of a wrong
+hidden scalar.
 
 ## Security Boundary
 
@@ -164,7 +155,6 @@ or implement a complete production DLC stack.
 Not yet covered:
 
 - full bilateral DLC negotiation;
-- production Lightning node integration;
 - complete parent CET -> bridge -> child funding graphs;
 - mainnet-safe fee bumping and mempool policy;
 - production key management;
