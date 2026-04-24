@@ -31,9 +31,13 @@ Status: ready for final RPC and faucet configuration.
 ## Phase 2A: Lightning Channel Edge Prototype
 
 - Extend oracle announcements with `H_pay(enc(s_x))` for HTLC-compatible edges.
-- Add hold-invoice or deferred-fulfillment test flow.
+  Initial TypeScript support exists through `lightning:oracle-lock`.
+- Add hold-invoice or deferred-fulfillment test flow. Initial LND REST support
+  exists through `lightning:lnd:create-hold-invoice`,
+  `lightning:lnd:pay-invoice`, and `lightning:lnd:settle-invoice`.
 - Add a two-party channel simulation where `enc(s_x)` settles the HTLC and
-  `s_x` completes the cDLC adaptor signature.
+  `s_x` completes the cDLC adaptor signature. Initial offline simulation exists
+  in `npm run test:lightning`.
 - Track point-lock/PTLC support as a separate future channel upgrade path.
 
 ## Phase 3: Child DLC Funding

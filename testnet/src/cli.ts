@@ -19,6 +19,22 @@ import {
 import { readJsonFile, writeJsonFile, writeTextFile } from './io.js';
 import { deterministicJson, sampleManifest, writeSampleManifest } from './manifest.js';
 import {
+  LndRestClient,
+  attestLightningOracle,
+  createHoldInvoiceArtifact,
+  parseHoldInvoiceArtifact,
+  parseLightningAttestation,
+  parseLightningOracleLock,
+  prepareLightningOracleLock,
+  readLndConfig,
+  redactLndConfig,
+  runMockLightningFlow,
+  sampleLightningManifest,
+  validateLightningManifest,
+  type LightningNetworkName,
+  type LndRole,
+} from './lightning.js';
+import {
   broadcastRawTransaction,
   getBlockchainInfo,
   readRpcConfig,
@@ -71,6 +87,39 @@ function bigintArg(args: Args, key: string): bigint {
   return BigInt(stringArg(args, key));
 }
 
+function numberArg(args: Args, key: string, fallback?: number): number {
+  const value = fallback === undefined
+    ? stringArg(args, key)
+    : stringArg(args, key, String(fallback));
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 0) {
+    throw new Error(`--${key} must be a non-negative integer`);
+  }
+  return parsed;
+}
+
+function lndRoleArg(args: Args, fallback: LndRole): LndRole {
+  const role = stringArg(args, 'role', fallback);
+  if (role !== 'receiver' && role !== 'payer') {
+    throw new Error('--role must be receiver or payer');
+  }
+  return role;
+}
+
+function lightningNetworkArg(args: Args, fallback: LightningNetworkName): LightningNetworkName {
+  const network = stringArg(args, 'network', fallback);
+  if (!['testnet', 'testnet4', 'signet', 'regtest'].includes(network)) {
+    throw new Error('--network must be testnet, testnet4, signet, or regtest');
+  }
+  return network as LightningNetworkName;
+}
+
+function requireLiveLndAllowed(args: Args): void {
+  if (args['allow-live-lnd'] !== true) {
+    throw new Error('refusing to call mutating LND endpoint without --allow-live-lnd');
+  }
+}
+
 function writeOrPrint(args: Args, value: unknown): void {
   const out = optionalStringArg(args, 'out');
   if (out) {
@@ -93,6 +142,17 @@ Commands:
   taproot:complete --pending pending.json --attestation-secret-hex <hex> [--out completed.json] [--raw-out tx.hex]
   manifest:sample --network testnet4 --out manifest.json
   manifest:validate --file manifest.json
+  lightning:manifest:sample --network regtest --out manifest.json
+  lightning:manifest:validate --file manifest.json
+  lightning:oracle-lock --event-id <id> --outcome <text> [--oracle-secret-hex <hex>] [--nonce-secret-hex <hex>] [--include-test-secrets] [--out file.json]
+  lightning:oracle-attest --event-id <id> --outcome <text> --oracle-secret-hex <hex> --nonce-secret-hex <hex> [--expected-payment-hash-hex <hex>] [--out file.json]
+  lightning:mock-run [--out file.json]
+  lightning:lnd:doctor --role receiver|payer [--connect]
+  lightning:lnd:create-hold-invoice --role receiver --lock lock.json --amount-msat <msat> [--memo text] [--expiry-seconds n] --allow-live-lnd [--out invoice.json]
+  lightning:lnd:pay-invoice --role payer --invoice invoice.json [--fee-limit-sat sat] --allow-live-lnd [--out result.json]
+  lightning:lnd:settle-invoice --role receiver --attestation attestation.json --allow-live-lnd [--out result.json]
+  lightning:lnd:cancel-invoice --role receiver --payment-hash-hex <hex> --allow-live-lnd [--out result.json]
+  lightning:lnd:lookup-invoice --role receiver --payment-hash-hex <hex> [--out result.json]
   rpc:info
   rpc:scan-address --address <addr>
   rpc:broadcast --raw-tx-hex <hex> --allow-broadcast
@@ -218,6 +278,147 @@ async function main(): Promise<void> {
     process.stdout.write(result.stdout);
     process.stderr.write(result.stderr);
     process.exit(result.status ?? 1);
+  }
+
+  if (command === 'lightning:manifest:sample') {
+    writeOrPrint(args, sampleLightningManifest(lightningNetworkArg(args, 'regtest')));
+    return;
+  }
+
+  if (command === 'lightning:manifest:validate') {
+    const result = validateLightningManifest(readJsonFile<unknown>(stringArg(args, 'file')));
+    if (!result.ok) {
+      console.log(JSON.stringify(result, null, 2));
+      process.exit(1);
+    }
+    console.log(JSON.stringify(result, null, 2));
+    return;
+  }
+
+  if (command === 'lightning:oracle-lock') {
+    const oracleSecret = optionalStringArg(args, 'oracle-secret-hex');
+    const nonceSecret = optionalStringArg(args, 'nonce-secret-hex');
+    writeOrPrint(args, prepareLightningOracleLock({
+      eventId: stringArg(args, 'event-id'),
+      outcome: stringArg(args, 'outcome'),
+      ...(oracleSecret ? { oracleSecret: scalarFromHex(oracleSecret, 'oracle-secret-hex') } : {}),
+      ...(nonceSecret ? { nonceSecret: scalarFromHex(nonceSecret, 'nonce-secret-hex') } : {}),
+      includeTestSecrets: args['include-test-secrets'] === true,
+    }));
+    return;
+  }
+
+  if (command === 'lightning:oracle-attest') {
+    writeOrPrint(args, attestLightningOracle({
+      eventId: stringArg(args, 'event-id'),
+      outcome: stringArg(args, 'outcome'),
+      oracleSecret: scalarFromHex(stringArg(args, 'oracle-secret-hex'), 'oracle-secret-hex'),
+      nonceSecret: scalarFromHex(stringArg(args, 'nonce-secret-hex'), 'nonce-secret-hex'),
+      ...(optionalStringArg(args, 'expected-payment-hash-hex')
+        ? { expectedPaymentHashHex: stringArg(args, 'expected-payment-hash-hex') }
+        : {}),
+    }));
+    return;
+  }
+
+  if (command === 'lightning:mock-run') {
+    writeOrPrint(args, runMockLightningFlow());
+    return;
+  }
+
+  if (command === 'lightning:lnd:doctor') {
+    const role = lndRoleArg(args, 'receiver');
+    const config = readLndConfig(role);
+    const output: Record<string, unknown> = {
+      config: redactLndConfig(config),
+      mutatingCommandsRequireAllowLiveLnd: true,
+    };
+    if (args.connect === true) {
+      output.getInfo = await new LndRestClient(config).getInfo();
+    }
+    console.log(JSON.stringify(output, null, 2));
+    return;
+  }
+
+  if (command === 'lightning:lnd:create-hold-invoice') {
+    requireLiveLndAllowed(args);
+    const role = lndRoleArg(args, 'receiver');
+    const lock = parseLightningOracleLock(readJsonFile<unknown>(stringArg(args, 'lock')));
+    const expirySeconds = numberArg(args, 'expiry-seconds', 900);
+    if (expirySeconds <= 0) {
+      throw new Error('--expiry-seconds must be positive');
+    }
+    const artifact = await createHoldInvoiceArtifact({
+      client: new LndRestClient(readLndConfig(role)),
+      role,
+      lock,
+      amountMsat: stringArg(args, 'amount-msat'),
+      memo: stringArg(args, 'memo', `NITI cDLC ${lock.eventId}:${lock.outcome}`),
+      expirySeconds,
+    });
+    writeOrPrint(args, artifact);
+    return;
+  }
+
+  if (command === 'lightning:lnd:pay-invoice') {
+    requireLiveLndAllowed(args);
+    const role = lndRoleArg(args, 'payer');
+    const invoice = parseHoldInvoiceArtifact(readJsonFile<unknown>(stringArg(args, 'invoice')));
+    const result = await new LndRestClient(readLndConfig(role)).sendPaymentSync({
+      paymentRequest: invoice.paymentRequest,
+      feeLimitSat: stringArg(args, 'fee-limit-sat', '10'),
+      allowSelfPayment: args['allow-self-payment'] === true,
+    });
+    writeOrPrint(args, {
+      kind: 'niti.lightning_payment_attempt.v1',
+      role,
+      paymentHashHex: invoice.paymentHashHex,
+      result,
+    });
+    return;
+  }
+
+  if (command === 'lightning:lnd:settle-invoice') {
+    requireLiveLndAllowed(args);
+    const role = lndRoleArg(args, 'receiver');
+    const attestation = parseLightningAttestation(
+      readJsonFile<unknown>(stringArg(args, 'attestation')),
+    );
+    const result = await new LndRestClient(readLndConfig(role)).settleInvoice(attestation);
+    writeOrPrint(args, {
+      kind: 'niti.lightning_invoice_settlement.v1',
+      role,
+      paymentHashHex: attestation.paymentHashHex,
+      result,
+    });
+    return;
+  }
+
+  if (command === 'lightning:lnd:cancel-invoice') {
+    requireLiveLndAllowed(args);
+    const role = lndRoleArg(args, 'receiver');
+    const paymentHashHex = stringArg(args, 'payment-hash-hex');
+    const result = await new LndRestClient(readLndConfig(role)).cancelInvoice(paymentHashHex);
+    writeOrPrint(args, {
+      kind: 'niti.lightning_invoice_cancel.v1',
+      role,
+      paymentHashHex,
+      result,
+    });
+    return;
+  }
+
+  if (command === 'lightning:lnd:lookup-invoice') {
+    const role = lndRoleArg(args, 'receiver');
+    const paymentHashHex = stringArg(args, 'payment-hash-hex');
+    const result = await new LndRestClient(readLndConfig(role)).lookupInvoice(paymentHashHex);
+    writeOrPrint(args, {
+      kind: 'niti.lightning_invoice_lookup.v1',
+      role,
+      paymentHashHex,
+      result,
+    });
+    return;
   }
 
   if (command === 'rpc:info') {

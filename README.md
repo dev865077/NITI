@@ -33,10 +33,13 @@ proof work.
 - A testnet harness in [`testnet/`](testnet/) that builds a Taproot key-path
   spend whose BIP340 witness is completed by a DLC-style oracle attestation
   scalar.
+- A Lightning hold-invoice harness in [`testnet/LIGHTNING.md`](testnet/LIGHTNING.md)
+  that prepares an LND test where the oracle attestation scalar is the HTLC
+  preimage.
 - An Ada validator for finite cDLC graph manifests.
 - A TypeScript CLI for testnet wallet generation, oracle preparation,
-  attestation, adaptor spend preparation, transaction completion, RPC scanning,
-  and opt-in broadcast.
+  attestation, adaptor spend preparation, transaction completion, Lightning
+  hold-invoice testing, RPC scanning, and opt-in broadcast.
 
 ## Core Idea
 
@@ -132,6 +135,7 @@ The harness supports:
 - oracle outcome preparation and attestation;
 - Taproot key-path adaptor spend generation;
 - transaction completion after attestation;
+- Lightning HTLC hold-invoice preparation and settlement hooks for LND REST;
 - Bitcoin Core RPC scan and broadcast.
 
 Broadcast is deliberately blocked unless the CLI receives `--allow-broadcast`.

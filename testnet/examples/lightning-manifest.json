@@ -1,0 +1,21 @@
+{
+  "backend": "lnd-rest",
+  "channel": {
+    "amountMsat": "1000",
+    "expirySeconds": 900,
+    "payerRole": "payer",
+    "receiverRole": "receiver"
+  },
+  "event": {
+    "id": "niti-lightning-regtest-1",
+    "outcome": "BTCUSD_ABOVE_STRIKE"
+  },
+  "kind": "niti.lightning_cdlc_manifest.v1",
+  "mode": "htlc-hold-invoice",
+  "network": "regtest",
+  "safety": {
+    "liveLndRequiresAllowFlag": true,
+    "testnetOnly": true
+  },
+  "version": 1
+}

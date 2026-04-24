@@ -10,8 +10,9 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run test:offline",
+    "test": "npm run test:offline && npm run test:lightning",
     "test:offline": "TMPDIR=/tmp tsx testnet/src/offline-test.ts",
+    "test:lightning": "TMPDIR=/tmp tsx testnet/src/lightning-offline-test.ts",
     "testnet": "TMPDIR=/tmp tsx testnet/src/cli.ts",
     "ada:build": "PATH=/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH gprbuild -P testnet/ada/niti_cdlc_testnet.gpr",
     "ada:validate": "PATH=/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH ./testnet/ada/bin/niti_manifest_validate"

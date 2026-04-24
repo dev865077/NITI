@@ -7,9 +7,15 @@ NITI is research software. It is not mainnet-ready.
 The testnet harness prints and stores testnet secrets when requested. Never reuse
 generated testnet keys on mainnet.
 
+The Lightning harness can call live LND REST endpoints. Commands that create,
+pay, settle, or cancel invoices require `--allow-live-lnd`. Use it only with
+regtest, signet, or testnet nodes.
+
 ## Broadcast Safety
 
 The CLI refuses to broadcast unless `--allow-broadcast` is explicitly provided.
+Mutating Lightning commands refuse to call LND unless `--allow-live-lnd` is
+explicitly provided.
 
 ## What The Current Code Tests
 
@@ -19,7 +25,9 @@ The current harness tests:
 - adaptor signature verification;
 - completion of a Taproot key-path witness after attestation;
 - extraction of the hidden scalar from a completed signature;
-- finite graph manifest validation in Ada.
+- finite graph manifest validation in Ada;
+- LND hold-invoice artifacts for the Lightning HTLC extension;
+- offline Lightning mock settlement using the oracle attestation scalar.
 
 ## What It Does Not Yet Secure
 
@@ -27,6 +35,8 @@ The current harness tests:
 - multi-party negotiation;
 - full DLC state machines;
 - full parent CET -> bridge -> child funding graph construction;
+- production Lightning channel state-machine safety;
+- route liquidity, force-close, and watchtower behavior;
 - CPFP/anchor fee strategy;
 - mempool pinning resistance;
 - oracle equivocation handling beyond cryptographic evidence;

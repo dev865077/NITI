@@ -21,12 +21,16 @@ Taproot witness.
 The Ada validator checks a canonical cDLC graph manifest: node ids, dust floors,
 edge references, bridge values, timelock ordering, and acyclicity.
 
+The Lightning harness prepares an LND hold-invoice test where the oracle
+attestation scalar is the invoice preimage. See [`LIGHTNING.md`](LIGHTNING.md).
+
 ## Build And Offline Test
 
 ```sh
 npm run build
 npm run ada:build
 npm run test:offline
+npm run test:lightning
 npm run testnet -- manifest:sample --network testnet4 --out testnet/examples/sample-manifest.json
 npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.json
 ```
@@ -135,11 +139,16 @@ Implemented:
 - Bitcoin Core JSON-RPC client for info, scan, and broadcast.
 - Ada manifest validator for finite cDLC graphs.
 - Offline test proving that completed adaptor witness verifies.
+- LND REST hold-invoice preparation for the Lightning HTLC extension.
+- Offline Lightning mock proving that the oracle scalar matches the payment
+  hash and settles the prepared condition.
 
 Not implemented yet:
 
 - Full bilateral DLC negotiation.
 - Full parent CET -> bridge -> child funding transaction graph.
 - Fee bump/anchor policy.
+- Production Lightning channel state machines, force-close behavior, watchtowers,
+  route liquidity, or PTLC deployment.
 - Multi-oracle threshold attestations.
 - Production key storage.
