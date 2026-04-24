@@ -12,5 +12,6 @@ spark/obj/
 spark/obj_lightning/
 spark/obj_integer/
 spark/obj_residue/
+spark/obj_btc_loan/
 
 site/
