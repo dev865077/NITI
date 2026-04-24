@@ -691,7 +691,121 @@ The HTLC version inherits a privacy cost: every hop sees the same payment hash
 `h_x`. The point-locked version can avoid this by using per-hop point tweaks,
 but it requires point-lock support rather than ordinary current HTLC behavior.
 
-## 11. Conclusion
+## 11. Limitations
+
+The construction in this paper is an activation primitive, not a complete
+production protocol. It shows that an oracle attestation scalar can settle a
+parent DLC and simultaneously complete prepared child signatures. The following
+limitations are part of the claim.
+
+### 11.1 Cryptographic Assumptions
+
+The construction assumes the hardness of the discrete logarithm problem in the
+secp256k1 group, secure Schnorr signatures, collision-resistant and
+second-preimage-resistant hashes, and unique oracle nonces. It does not prove
+these primitives. If an oracle reuses a nonce across incompatible
+announcements, leaks its nonce secret, signs equivocating outcomes, or uses a
+weak implementation, the security argument fails at the oracle layer.
+
+The SPARK models prove finite algebraic properties of the cDLC equations. They
+do not prove secp256k1 itself, BIP340's implementation, SHA-256, transaction
+serialization, signature hashing, wallet key management, or the full DLC
+negotiation protocol.
+
+### 11.2 Oracle and Liveness Risk
+
+cDLCs depend on oracle publication. If the oracle never publishes the outcome
+scalar, the child graph is not activated and funds must follow the prepared
+timeout or refund paths.
+
+The HTLC-compatible Lightning form adds a further requirement: the oracle must
+precommit to the exact payment hash derived from the encrypted attestation,
+
+```text
+h_x = H_pay(enc(s_x)).
+```
+
+If `h_x` is wrong, publication of `s_x` still settles the DLC algebra but does
+not redeem the HTLC. This is detectable after publication, but it remains a
+liveness failure.
+
+### 11.3 State, Storage, and Graph Size
+
+Every spendable child edge must be prepared before the parent outcome is known.
+Parties must retain the relevant transaction states, adaptor signatures,
+refunds, timeouts, and routing data. If this state is lost, the oracle scalar
+may become public while the child activation data is unavailable.
+
+The paper does not solve state explosion. A large outcome tree can require many
+prepared signatures and transactions. Practical deployments need payout
+compression, state pruning, oracle decomposition, channel aggregation, or other
+engineering techniques that are outside this proof.
+
+### 11.4 Bitcoin Policy, Fees, and Timelocks
+
+The equations prove that the right scalar completes the right signature. They
+do not guarantee that a transaction confirms. Production systems must handle
+feerates, mempool policy, package relay availability, transaction pinning,
+anchor outputs, CPFP/RBF strategy, dust limits, and timeout margins.
+
+Timeout order is a safety condition. Child refunds, parent refunds, channel
+expiries, and routed claims must be ordered so that an honest party has time to
+learn the witness and claim upstream. The paper specifies this requirement but
+does not give a universal parameter schedule for all fee markets and channel
+topologies.
+
+### 11.5 Privacy Limits
+
+On-chain cDLCs are discreet at the script level because settlement can appear
+as ordinary signature spending. This does not imply perfect privacy. Amounts,
+timing, transaction graph structure, fee patterns, address reuse, and oracle
+metadata can still reveal relationships between contracts.
+
+The HTLC-compatible Lightning construction has an explicit privacy limitation:
+all hops can observe the same payment hash `h_x`. The point-locked construction
+can use per-hop point tweaks, but point-locked channel support is not generally
+available in today's Lightning implementations.
+
+### 11.6 Lightning Deployment Limits
+
+The Lightning section is a mathematical extension of the cDLC activation
+scalar into channel conditions. It is not a claim that today's Lightning
+Network already supports cDLCs end-to-end without protocol and implementation
+work.
+
+The HTLC version requires hold-invoice or deferred-settlement behavior and
+correct oracle hash commitments. The point-locked version requires PTLC-like
+channel support. Routed use also depends on liquidity, route availability,
+watchtower behavior, force-close policy, channel reserve rules, and timeout
+coordination across hops.
+
+### 11.7 Economic and Regulatory Limits
+
+cDLCs can express conditional financial graphs, including oracle-settled
+contracts that reference prices. That does not by itself create a stablecoin,
+guarantee convertibility, guarantee liquidity, eliminate basis risk, or solve
+collateral management. Any gold, dollar, or real-denominated product built with
+cDLCs still needs an economic design, collateral policy, oracle policy,
+liquidation policy, legal analysis, and user-risk disclosure.
+
+### 11.8 Scope of the Formal Claim
+
+The conservative target is a finite, acyclic graph of pre-negotiated cDLC
+states. Cyclic or indefinitely updating graphs require an additional state
+update, revocation, or channel protocol. That protocol may be possible, but it
+is not proven here.
+
+Therefore the precise claim is narrower than "a complete decentralized
+financial system exists." The claim is:
+
+```text
+Under the stated cryptographic assumptions, if the parties pre-negotiate a
+valid finite cDLC graph and the oracle publishes exactly one valid outcome
+scalar, then that scalar can activate the corresponding child edge and cannot
+activate non-corresponding edges except through the stated failure assumptions.
+```
+
+## 12. Conclusion
 
 A DLC already contains a hidden scalar that becomes public only when a specific
 real-world outcome is attested. A cDLC uses that scalar twice: first to settle
@@ -718,6 +832,14 @@ In HTLC-compatible channels, the oracle additionally commits to
 already the payment point. These channel forms improve the possible execution
 surface of cDLCs, but they remain extensions of the cDLC construction rather
 than a replacement for it.
+
+The result is real but bounded. The paper supports the mathematical existence
+of composable DLC activation under explicit assumptions. It does not remove the
+need for robust oracle operations, careful fee and timeout engineering,
+Lightning implementation work, liquidity design, collateral design, or legal
+analysis. cDLCs are therefore best understood as a new Bitcoin-native
+composition primitive: strong enough to justify implementation and testing, but
+not by itself a finished financial system.
 
 ## References
 
