@@ -13,6 +13,8 @@ not production software and must not be used with mainnet funds.
 The complete NITI whitepaper is the primary document of this repository:
 
 - [`WHITEPAPER.md`](WHITEPAPER.md) - GitHub-readable complete whitepaper.
+- [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md) - mathematical
+  construction for cDLC edges inside Lightning-style channel conditions.
 - [`docs/whitepaper/index.html`](docs/whitepaper/index.html) - original HTML version with images.
 
 The shorter cDLC document in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md)
@@ -22,6 +24,7 @@ work. It is not the main NITI whitepaper.
 ## What Exists Today
 
 - The complete NITI whitepaper in [`WHITEPAPER.md`](WHITEPAPER.md).
+- A Lightning cDLC whitepaper in [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md).
 - A cDLC technical note in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md).
 - SPARK/Ada proof models for the core algebra in [`spark/`](spark/).
 - A testnet harness in [`testnet/`](testnet/) that builds a Taproot key-path
@@ -73,6 +76,7 @@ testnet/
   src/                     TypeScript testnet harness
   README.md                Operational testnet flow
 WHITEPAPER.md              Complete NITI whitepaper rendered as Markdown
+LIGHTNING-WHITEPAPER.md    Lightning cDLC whitepaper
 ```
 
 ## Quick Start
