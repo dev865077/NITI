@@ -57,36 +57,3 @@ revocation logic and are outside the current scope.
 Each edge should have a refund or timeout path in the full production protocol.
 The current testnet harness validates graph discipline but does not yet build a
 complete multi-transaction DLC graph.
-
-## Lightning cDLC Encoding
-
-A cDLC edge can also be carried by a Lightning channel condition. The parent
-outcome scalar remains the witness:
-
-```text
-witness = s_x
-```
-
-For current HTLC Lightning, the oracle announcement must additionally commit to
-the payment hash:
-
-```text
-h_x = H_pay(s_x)
-```
-
-The channel condition is redeemed when the oracle publishes `s_x`:
-
-```text
-H_pay(s_x) = h_x
-```
-
-For PTLC Lightning, the normal DLC point is already the lock:
-
-```text
-T_x = S_x = s_xG
-```
-
-The same oracle scalar can then settle the Lightning condition and complete the
-cDLC adaptor signature that activates the child edge. See
-[`LIGHTNING-WHITEPAPER.md`](../LIGHTNING-WHITEPAPER.md) and the SPARK model in
-[`spark/src/lightning_cdlc_algebra.ads`](../spark/src/lightning_cdlc_algebra.ads).
