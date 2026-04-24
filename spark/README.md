@@ -1,7 +1,7 @@
 # cDLC SPARK Proofs
 
-This directory contains SPARK models of the algebra used in the cDLC technical
-note and in the primary cDLC whitepaper.
+This directory contains SPARK models of the core adaptor algebra used in the
+cDLC technical note and in the primary cDLC whitepaper.
 
 There are three models:
 
@@ -31,6 +31,8 @@ There are three models:
 - Collision resistance or domain separation of real hash functions.
 - Bitcoin transaction serialization, sighash, fee policy, mempool policy, or
   timelock ordering.
+- Lightning channel state machines, HTLC preimage security, routing, force-close
+  behavior, or point-lock/PTLC deployment.
 - Economic claims about stablecoins, collateral, liquidity, or oracle markets.
 
 ## Commands

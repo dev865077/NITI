@@ -20,6 +20,10 @@ s_xG = S_x
 s_a = ŝ_a + s_x
 ```
 
+The base cDLC edge is a Bitcoin bridge transaction. The whitepaper later
+describes how the same scalar can witness a Lightning-style channel condition
+without changing the core adaptor algebra.
+
 ## 2. Proof Layer
 
 The proof layer is in [`spark/`](../spark/). It contains SPARK/Ada models for
@@ -70,3 +74,5 @@ funded Taproot UTXO
 ```
 
 This is the smallest Bitcoin-facing validation of the cDLC activation primitive.
+The Lightning channel mode is specified in the primary whitepaper but is not yet
+implemented in the testnet harness.

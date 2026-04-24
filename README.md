@@ -10,11 +10,11 @@ not production software and must not be used with mainnet funds.
 
 ## Whitepaper
 
-The cDLC whitepaper is the primary document of this repository:
+The cDLC whitepaper is the primary document of this repository. It defines the
+Bitcoin cDLC construction first and includes Lightning as a later execution
+extension:
 
 - [`WHITEPAPER.md`](WHITEPAPER.md) - primary cDLC whitepaper.
-- [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md) - mathematical
-  construction for cDLC edges inside Lightning-style channel conditions.
 - [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md) - legacy NITI draft kept for
   historical reference.
 - [`docs/legacy-whitepaper/index.html`](docs/legacy-whitepaper/index.html) -
@@ -27,7 +27,6 @@ proof work.
 ## What Exists Today
 
 - The primary cDLC whitepaper in [`WHITEPAPER.md`](WHITEPAPER.md).
-- A Lightning cDLC whitepaper in [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md).
 - The legacy NITI draft in [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md).
 - A cDLC source technical note in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md).
 - SPARK/Ada proof models for the core algebra in [`spark/`](spark/).
@@ -58,7 +57,9 @@ publishes `s_x`, the bridge signatures can be completed:
 s_a = ŝ_a + s_x mod n
 ```
 
-That bridge can fund the next DLC in a finite pre-negotiated graph.
+That bridge can fund the next DLC in a finite pre-negotiated graph. The
+whitepaper also describes how the same activation scalar can be used later as a
+Lightning channel witness.
 
 ## Repository Layout
 
@@ -79,8 +80,7 @@ testnet/
   ada/                     Ada manifest validator
   src/                     TypeScript testnet harness
   README.md                Operational testnet flow
-WHITEPAPER.md              Primary cDLC whitepaper
-LIGHTNING-WHITEPAPER.md    Lightning cDLC whitepaper
+WHITEPAPER.md              Primary cDLC whitepaper with Lightning extension
 LEGACY-WHITEPAPER.md       Legacy NITI draft
 ```
 
@@ -147,9 +147,11 @@ Three proof targets currently pass with no unproved checks and no
 - finite modular residue model over `Z/97Z` with explicit modular reduction.
 - Ada built-in modular type model over `type mod 97`.
 
-The proof covers the core algebra: oracle attestation, adaptor verification,
-signature completion, extraction of the hidden scalar, and rejection of a wrong
-hidden scalar.
+The proof covers the core cDLC algebra: oracle attestation, adaptor
+verification, signature completion, extraction of the hidden scalar, and
+rejection of a wrong hidden scalar. Lightning channel mechanics, HTLC hash
+security, routing, force-close behavior, and wallet integration are described in
+the whitepaper but are not separate SPARK proof targets yet.
 
 ## Security Boundary
 
@@ -160,6 +162,7 @@ Not yet covered:
 
 - full bilateral DLC negotiation;
 - complete parent CET -> bridge -> child funding graphs;
+- production Lightning channel integration;
 - mainnet-safe fee bumping and mempool policy;
 - production key management;
 - multi-oracle threshold attestations;

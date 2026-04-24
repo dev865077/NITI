@@ -49,6 +49,36 @@ s_a = ŝ_a + s_x mod n
 
 Then `(R*_a, s_a)` is a valid Schnorr signature for the bridge transaction.
 
+## Lightning Extension
+
+After the cDLC bridge construction is defined, the same parent outcome scalar
+can also be used as a channel witness in a Lightning-style extension.
+
+For HTLC-compatible channels, the oracle announcement must also commit to:
+
+```text
+h_x = H_pay(enc(s_x))
+```
+
+The Lightning witness is `enc(s_x)`, while the cDLC adaptor-completion scalar
+remains `s_x`.
+
+For point-locked channels, the ordinary DLC point is directly the lock:
+
+```text
+lock_x = S_x
+witness = s_x
+```
+
+Point-locked routing can tweak each hop:
+
+```text
+T_{i-1} = T_i + d_iG
+t_{i-1} = t_i + d_i mod n
+```
+
+so each upstream witness redeems its own upstream point.
+
 ## Graph Discipline
 
 The first safe target is a finite acyclic graph. Cycles require update and

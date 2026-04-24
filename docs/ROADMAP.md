@@ -2,7 +2,7 @@
 
 ## Phase 0: Algebra And Harness
 
-- Primary cDLC whitepaper.
+- Primary cDLC whitepaper with Lightning extension.
 - cDLC technical note.
 - SPARK/Ada proof models.
 - Taproot adaptor spend test harness.
@@ -27,6 +27,14 @@ Status: ready for final RPC and faucet configuration.
 - Build bridge transaction spending that output.
 - Complete bridge witness from parent oracle attestation.
 - Broadcast parent and bridge on testnet.
+
+## Phase 2A: Lightning Channel Edge Prototype
+
+- Extend oracle announcements with `H_pay(enc(s_x))` for HTLC-compatible edges.
+- Add hold-invoice or deferred-fulfillment test flow.
+- Add a two-party channel simulation where `enc(s_x)` settles the HTLC and
+  `s_x` completes the cDLC adaptor signature.
+- Track point-lock/PTLC support as a separate future channel upgrade path.
 
 ## Phase 3: Child DLC Funding
 
