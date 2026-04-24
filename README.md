@@ -29,6 +29,8 @@ proof work.
 - The primary cDLC whitepaper in [`WHITEPAPER.md`](WHITEPAPER.md).
 - The legacy NITI draft in [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md).
 - A cDLC source technical note in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md).
+- A covered-call/yield-note math specification in
+  [`research/covered-call-yield-note-math.md`](research/covered-call-yield-note-math.md).
 - SPARK/Ada proof models for the core algebra in [`spark/`](spark/).
 - A testnet harness in [`testnet/`](testnet/) that builds a Taproot key-path
   spend whose BIP340 witness is completed by a DLC-style oracle attestation
@@ -76,6 +78,7 @@ docs/
   ROADMAP.md               Engineering roadmap
   SECURITY.md              Threat model and safety boundaries
 research/
+  covered-call-yield-note-math.md
   cdlc-technical-note.md
   cdlc-algebra-check.ts
 spark/
