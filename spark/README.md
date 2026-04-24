@@ -1,7 +1,7 @@
 # cDLC SPARK Proofs
 
 This directory contains SPARK models of the algebra used in the cDLC technical
-note and in the cDLC sections of the complete NITI whitepaper.
+note and in the primary cDLC whitepaper.
 
 There are three models:
 
