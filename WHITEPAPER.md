@@ -275,7 +275,62 @@ This equals `R*_a + e_aP_a` only if `S_{i,y} = S_{i,x}`. With unique oracle
 nonces and collision-resistant tagged hashes, this does not occur except with
 negligible probability or oracle equivocation.
 
-## 7. Refunds and Failure Modes
+## 7. Machine-Checked Algebra
+
+The algebra above is also modeled in Ada/SPARK and checked with GNATprove. The
+proof artifacts are in the repository's `spark/` directory. They are not a
+replacement for cryptographic assumptions, but they are machine-checked
+evidence that the core cDLC equations used by this paper are internally
+consistent.
+
+The checked proof targets are:
+
+```text
+spark/cdlc_integer_proofs.gpr
+spark/cdlc_residue_proofs.gpr
+spark/cdlc_proofs.gpr
+```
+
+The integer target uses `SPARK.Big_Integers` to prove the symbolic polynomial
+identities without machine-integer overflow. The residue target proves the same
+bridge/adaptor identities over `Z/97Z` with explicit modular reduction. The Ada
+built-in modular target proves the same identities with `type mod 97`, using
+ghost lemmas for modular rotation and cancellation so that GNATprove can close
+the bit-vector modular obligations.
+
+The SPARK models prove the following finite algebraic claims:
+
+```text
+1. The oracle scalar maps to the advertised attestation point.
+2. A bridge adaptor signature verifies before completion.
+3. Adding the oracle scalar completes the bridge signature.
+4. A completed signature reveals the hidden oracle scalar by subtraction.
+5. A different oracle scalar does not complete the same bridge signature.
+```
+
+These are exactly the equations used by Claims 1, 2, and 3. In proof terms,
+the models check the algebraic heart of the cDLC construction:
+
+```text
+S_x = s_xG
+s_hat G = R* - S_x + eP
+s = s_hat + s_x mod n
+sG = R* + eP
+s - s_hat = s_x mod n.
+```
+
+For this repository revision, all three targets were checked with GNATprove
+using the CVC5, Z3, and Alt-Ergo provers and completed with no unproved checks
+and no `pragma Assume` statements. This matters because the proof evidence does
+not rely on an assumed lemma inside the Ada/SPARK model.
+
+The proof boundary is narrow. The SPARK code models scalar and group equations;
+it does not prove secp256k1, BIP340 implementation correctness, SHA-256,
+Bitcoin transaction serialization, sighash behavior, mempool policy, or
+Lightning state-machine behavior. Those remain implementation and protocol
+assumptions outside the machine-checked core.
+
+## 8. Refunds and Failure Modes
 
 Each edge output `O_e` should include a timelocked refund path. If the parent
 outcome occurs but the bridge transaction is not broadcast before a deadline,
@@ -295,7 +350,7 @@ If the oracle signs multiple outcomes, multiple branches can become executable.
 This is not unique to cDLCs; it is the standard oracle equivocation failure of
 DLCs. The oracle's conflicting signatures are cryptographic evidence of fault.
 
-## 8. Graph Discipline
+## 9. Graph Discipline
 
 The simplest safe cDLC graph is acyclic. Cycles require state updates and
 revocation logic and should be treated as a separate protocol.
@@ -310,7 +365,7 @@ The construction does not remove the known DLC state-size problem. Numeric
 outcome compression, payout interpolation, and multi-oracle threshold
 attestations remain applicable to each node.
 
-## 9. Applications
+## 10. Applications
 
 A cDLC can express rolling contracts, automatic re-hedging, periodic synthetic
 exposure, and conditional refinancing. A synthetic asset can be represented as
@@ -322,7 +377,7 @@ also does not create a global account-based token inside Bitcoin. It creates
 native Bitcoin UTXO contracts whose continuation is controlled by
 oracle-revealed scalars.
 
-## 10. Lightning Network Extension
+## 11. Lightning Network Extension
 
 The previous sections define the cDLC construction. This section describes how
 the same activation scalar can be used inside Lightning-style payment channels.
@@ -337,7 +392,7 @@ channel condition `L_e` whose child state was already prepared.
 The child state still must be negotiated in advance. Lightning only carries the
 conditional value transfer.
 
-### 10.1 Channel Condition Model
+### 11.1 Channel Condition Model
 
 A Lightning channel can be viewed abstractly as a state machine:
 
@@ -381,7 +436,7 @@ The channel conserves capacity in both cases:
 A + B = A' + B'.
 ```
 
-### 10.2 HTLC Encoding
+### 11.2 HTLC Encoding
 
 Current Lightning payment invoices and HTLC updates are hash-locked. A payment
 hash is a 256-bit hash of a payment preimage. In HTLC mode, the cDLC witness is
@@ -500,7 +555,7 @@ the adaptor equation:
 
 Both effects use the same scalar `s_x`.
 
-### 10.3 Routed HTLC cDLCs
+### 11.3 Routed HTLC cDLCs
 
 Consider a route of channel peers:
 
@@ -551,7 +606,7 @@ This is why HTLC cDLCs require careful timeout selection. The algebra gives the
 same witness to every hop; the channel protocol must give every hop time to use
 it.
 
-### 10.4 Point-Locked Encoding
+### 11.4 Point-Locked Encoding
 
 The HTLC construction needs the extra oracle hash commitment `h_x`. A
 point-locked channel does not.
@@ -610,7 +665,7 @@ This contradicts the premise. In the prime-order group, equality
 cannot redeem the edge except by oracle equivocation or a collision in the
 oracle outcome construction.
 
-### 10.5 Routed Point-Locked cDLCs
+### 11.5 Routed Point-Locked cDLCs
 
 Point locks allow each hop to see a different point while preserving the same
 final oracle witness.
@@ -656,7 +711,7 @@ t_{i-1}G
 Thus each hop can use the scalar learned downstream to derive the scalar needed
 upstream, while each channel sees a distinct point lock.
 
-### 10.6 Channel Failure Modes
+### 11.6 Channel Failure Modes
 
 Lightning cDLCs inherit Lightning's channel safety requirements. The extension
 assumes:
@@ -691,14 +746,14 @@ The HTLC version inherits a privacy cost: every hop sees the same payment hash
 `h_x`. The point-locked version can avoid this by using per-hop point tweaks,
 but it requires point-lock support rather than ordinary current HTLC behavior.
 
-## 11. Limitations
+## 12. Limitations
 
 The construction in this paper is an activation primitive, not a complete
 production protocol. It shows that an oracle attestation scalar can settle a
 parent DLC and simultaneously complete prepared child signatures. The following
 limitations are part of the claim.
 
-### 11.1 Cryptographic Assumptions
+### 12.1 Cryptographic Assumptions
 
 The construction assumes the hardness of the discrete logarithm problem in the
 secp256k1 group, secure Schnorr signatures, collision-resistant and
@@ -707,12 +762,12 @@ these primitives. If an oracle reuses a nonce across incompatible
 announcements, leaks its nonce secret, signs equivocating outcomes, or uses a
 weak implementation, the security argument fails at the oracle layer.
 
-The SPARK models prove finite algebraic properties of the cDLC equations. They
-do not prove secp256k1 itself, BIP340's implementation, SHA-256, transaction
-serialization, signature hashing, wallet key management, or the full DLC
-negotiation protocol.
+The Ada/SPARK and GNATprove artifacts described in Section 7 prove finite
+algebraic properties of the cDLC equations. They do not prove secp256k1 itself,
+BIP340's implementation, SHA-256, transaction serialization, signature hashing,
+wallet key management, or the full DLC negotiation protocol.
 
-### 11.2 Oracle and Liveness Risk
+### 12.2 Oracle and Liveness Risk
 
 cDLCs depend on oracle publication. If the oracle never publishes the outcome
 scalar, the child graph is not activated and funds must follow the prepared
@@ -729,7 +784,7 @@ If `h_x` is wrong, publication of `s_x` still settles the DLC algebra but does
 not redeem the HTLC. This is detectable after publication, but it remains a
 liveness failure.
 
-### 11.3 State, Storage, and Graph Size
+### 12.3 State, Storage, and Graph Size
 
 Every spendable child edge must be prepared before the parent outcome is known.
 Parties must retain the relevant transaction states, adaptor signatures,
@@ -741,7 +796,7 @@ prepared signatures and transactions. Practical deployments need payout
 compression, state pruning, oracle decomposition, channel aggregation, or other
 engineering techniques that are outside this proof.
 
-### 11.4 Bitcoin Policy, Fees, and Timelocks
+### 12.4 Bitcoin Policy, Fees, and Timelocks
 
 The equations prove that the right scalar completes the right signature. They
 do not guarantee that a transaction confirms. Production systems must handle
@@ -754,7 +809,7 @@ learn the witness and claim upstream. The paper specifies this requirement but
 does not give a universal parameter schedule for all fee markets and channel
 topologies.
 
-### 11.5 Privacy Limits
+### 12.5 Privacy Limits
 
 On-chain cDLCs are discreet at the script level because settlement can appear
 as ordinary signature spending. This does not imply perfect privacy. Amounts,
@@ -766,7 +821,7 @@ all hops can observe the same payment hash `h_x`. The point-locked construction
 can use per-hop point tweaks, but point-locked channel support is not generally
 available in today's Lightning implementations.
 
-### 11.6 Lightning Deployment Limits
+### 12.6 Lightning Deployment Limits
 
 The Lightning section is a mathematical extension of the cDLC activation
 scalar into channel conditions. It is not a claim that today's Lightning
@@ -779,7 +834,7 @@ channel support. Routed use also depends on liquidity, route availability,
 watchtower behavior, force-close policy, channel reserve rules, and timeout
 coordination across hops.
 
-### 11.7 Economic and Regulatory Limits
+### 12.7 Economic and Regulatory Limits
 
 cDLCs can express conditional financial graphs, including oracle-settled
 contracts that reference prices. That does not by itself create a stablecoin,
@@ -788,7 +843,7 @@ collateral management. Any gold, dollar, or real-denominated product built with
 cDLCs still needs an economic design, collateral policy, oracle policy,
 liquidation policy, legal analysis, and user-risk disclosure.
 
-### 11.8 Scope of the Formal Claim
+### 12.8 Scope of the Formal Claim
 
 The conservative target is a finite, acyclic graph of pre-negotiated cDLC
 states. Cyclic or indefinitely updating graphs require an additional state
@@ -805,7 +860,7 @@ scalar, then that scalar can activate the corresponding child edge and cannot
 activate non-corresponding edges except through the stated failure assumptions.
 ```
 
-## 12. Conclusion
+## 13. Conclusion
 
 A DLC already contains a hidden scalar that becomes public only when a specific
 real-world outcome is attested. A cDLC uses that scalar twice: first to settle
