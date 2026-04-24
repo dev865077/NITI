@@ -2,7 +2,8 @@
 
 ## Phase 0: Algebra And Harness
 
-- cDLC whitepaper.
+- Complete NITI whitepaper.
+- cDLC technical note.
 - SPARK/Ada proof models.
 - Taproot adaptor spend test harness.
 - Ada manifest validator.

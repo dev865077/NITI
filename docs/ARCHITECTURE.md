@@ -4,9 +4,11 @@ NITI is split into three layers.
 
 ## 1. Research Layer
 
-The research layer contains the human-readable cDLC construction:
+The research layer contains the full NITI whitepaper and the focused cDLC
+technical note:
 
-- [`research/composable-dlc-whitepaper.md`](../research/composable-dlc-whitepaper.md)
+- [`WHITEPAPER.md`](../WHITEPAPER.md)
+- [`research/cdlc-technical-note.md`](../research/cdlc-technical-note.md)
 - [`research/cdlc-algebra-check.ts`](../research/cdlc-algebra-check.ts)
 
 It defines the core equation:

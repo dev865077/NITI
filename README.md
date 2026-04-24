@@ -8,9 +8,21 @@ activate the next contract.
 The project is intentionally open-source and research-first. The current code is
 not production software and must not be used with mainnet funds.
 
+## Whitepaper
+
+The complete NITI whitepaper is the primary document of this repository:
+
+- [`WHITEPAPER.md`](WHITEPAPER.md) - GitHub-readable complete whitepaper.
+- [`docs/whitepaper/index.html`](docs/whitepaper/index.html) - original HTML version with images.
+
+The shorter cDLC document in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md)
+is a technical note for the adaptor-signature construction and formal proof
+work. It is not the main NITI whitepaper.
+
 ## What Exists Today
 
-- A concise cDLC whitepaper in [`research/composable-dlc-whitepaper.md`](research/composable-dlc-whitepaper.md).
+- The complete NITI whitepaper in [`WHITEPAPER.md`](WHITEPAPER.md).
+- A cDLC technical note in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md).
 - SPARK/Ada proof models for the core algebra in [`spark/`](spark/).
 - A testnet harness in [`testnet/`](testnet/) that builds a Taproot key-path
   spend whose BIP340 witness is completed by a DLC-style oracle attestation
@@ -45,13 +57,13 @@ That bridge can fund the next DLC in a finite pre-negotiated graph.
 
 ```text
 docs/
-  legacy/                 Original local whitepaper/assets kept for reference
+  whitepaper/              Original HTML whitepaper and assets
   ARCHITECTURE.md          Implementation architecture
   PROTOCOL.md              cDLC protocol summary
   ROADMAP.md               Engineering roadmap
   SECURITY.md              Threat model and safety boundaries
 research/
-  composable-dlc-whitepaper.md
+  cdlc-technical-note.md
   cdlc-algebra-check.ts
 spark/
   src/                     SPARK/Ada proof models
@@ -60,6 +72,7 @@ testnet/
   ada/                     Ada manifest validator
   src/                     TypeScript testnet harness
   README.md                Operational testnet flow
+WHITEPAPER.md              Complete NITI whitepaper rendered as Markdown
 ```
 
 ## Quick Start
