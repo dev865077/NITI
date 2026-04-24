@@ -12,3 +12,7 @@ spark/obj/
 spark/obj_lightning/
 spark/obj_integer/
 spark/obj_residue/
+
+site/dist-server/
+!site/dist/
+!site/dist/app.js

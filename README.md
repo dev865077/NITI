@@ -36,6 +36,8 @@ proof work.
 - A Lightning hold-invoice harness in [`testnet/LIGHTNING.md`](testnet/LIGHTNING.md)
   that prepares an LND test where the oracle attestation scalar is the HTLC
   preimage.
+- A static research site in [`site/`](site/) with interactive protocol,
+  Lightning, proof, and testnet explainers.
 - An Ada validator for finite cDLC graph manifests.
 - A TypeScript CLI for testnet wallet generation, oracle preparation,
   attestation, adaptor spend preparation, transaction completion, Lightning
@@ -83,6 +85,10 @@ testnet/
   ada/                     Ada manifest validator
   src/                     TypeScript testnet harness
   README.md                Operational testnet flow
+site/
+  index.html               Static research site
+  src/                     TypeScript interactions
+  styles.css               Site visual system
 WHITEPAPER.md              Primary cDLC whitepaper with Lightning extension
 LEGACY-WHITEPAPER.md       Legacy NITI draft
 ```
@@ -100,6 +106,13 @@ Build and test the TypeScript harness:
 ```sh
 npm run build
 npm run test:offline
+```
+
+Build and serve the site locally:
+
+```sh
+npm run site:build
+npm run site:serve
 ```
 
 Build the Ada validator:
