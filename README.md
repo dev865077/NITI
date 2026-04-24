@@ -118,11 +118,12 @@ Broadcast is deliberately blocked unless the CLI receives `--allow-broadcast`.
 
 See [`spark/README.md`](spark/README.md).
 
-Two accepted proof targets currently pass with no unproved checks and no
+Three proof targets currently pass with no unproved checks and no
 `pragma Assume` statements:
 
 - mathematical integer model with `SPARK.Big_Integers`;
 - finite modular residue model over `Z/97Z` with explicit modular reduction.
+- Ada built-in modular type model over `type mod 97`.
 
 The proof covers the core algebra: oracle attestation, adaptor verification,
 signature completion, extraction of the hidden scalar, and rejection of a wrong

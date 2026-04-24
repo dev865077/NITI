@@ -26,8 +26,11 @@ Accepted proof targets:
 
 - `cdlc_integer_proofs.gpr`
 - `cdlc_residue_proofs.gpr`
+- `cdlc_proofs.gpr`
 
-The built-in Ada `type mod` model is retained as a diagnostic target only.
+The built-in Ada `type mod 97` model now includes explicit ghost lemmas for the
+modular sum rotation and cancellation properties that GNATprove does not infer
+automatically in the relevant bit-vector VCs.
 
 ## 3. Testnet Layer
 

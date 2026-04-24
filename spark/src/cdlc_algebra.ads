@@ -70,6 +70,19 @@ package Cdlc_Algebra is
      (Point_Of (Completed) =
         Adapted_Nonce + Signature_Challenge_Point (Challenge, Signer_Public));
 
+   procedure Prove_Sum3_Rotates (A, B, C : Element)
+   with
+     Ghost,
+     Global => null,
+     Post => (A + B) + C = (A + C) + B;
+
+   procedure Prove_Add_Cancel_Left (A, B, C : Element)
+   with
+     Ghost,
+     Global => null,
+     Pre  => B /= C,
+     Post => A + B /= A + C;
+
    procedure Prove_Oracle_Attestation
      (Oracle_Nonce  : Scalar;
       Oracle_Secret : Scalar;
