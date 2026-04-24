@@ -3,6 +3,7 @@
 ## Phase 0: Algebra And Harness
 
 - Complete NITI whitepaper.
+- Lightning cDLC companion whitepaper.
 - cDLC technical note.
 - SPARK/Ada proof models.
 - Taproot adaptor spend test harness.
@@ -19,6 +20,17 @@ Status: done.
 - Record txid and raw transaction artifacts.
 
 Status: ready for final RPC and faucet configuration.
+
+## Phase 1A: Lightning cDLC Prototype
+
+- Extend oracle announcements with `H_pay(s_x)` commitments for finite outcomes.
+- Add hold-invoice test flow for HTLC cDLC settlement.
+- Model a two-party channel peer prototype where `s_x` settles the Lightning
+  condition and completes the cDLC adaptor signature.
+- Record test vectors for HTLC mode.
+- Track PTLC support separately as a future channel upgrade path.
+
+Status: proof model and whitepaper complete; implementation pending.
 
 ## Phase 2: Parent CET To Bridge
 

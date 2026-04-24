@@ -13,6 +13,8 @@ not production software and must not be used with mainnet funds.
 The complete NITI whitepaper is the primary document of this repository:
 
 - [`WHITEPAPER.md`](WHITEPAPER.md) - GitHub-readable complete whitepaper.
+- [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md) - complementary
+  whitepaper for Lightning cDLCs over HTLCs and PTLCs, with SPARK proof model.
 - [`docs/whitepaper/index.html`](docs/whitepaper/index.html) - original HTML version with images.
 
 The shorter cDLC document in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md)
@@ -22,6 +24,8 @@ work. It is not the main NITI whitepaper.
 ## What Exists Today
 
 - The complete NITI whitepaper in [`WHITEPAPER.md`](WHITEPAPER.md).
+- The Lightning cDLC companion whitepaper in
+  [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md).
 - A cDLC technical note in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md).
 - SPARK/Ada proof models for the core algebra in [`spark/`](spark/).
 - A testnet harness in [`testnet/`](testnet/) that builds a Taproot key-path
@@ -73,6 +77,7 @@ testnet/
   src/                     TypeScript testnet harness
   README.md                Operational testnet flow
 WHITEPAPER.md              Complete NITI whitepaper rendered as Markdown
+LIGHTNING-WHITEPAPER.md    Lightning cDLC companion whitepaper
 ```
 
 ## Quick Start
@@ -131,16 +136,20 @@ Broadcast is deliberately blocked unless the CLI receives `--allow-broadcast`.
 
 See [`spark/README.md`](spark/README.md).
 
-Three proof targets currently pass with no unproved checks and no
+Four proof targets currently pass with no unproved checks and no
 `pragma Assume` statements:
 
 - mathematical integer model with `SPARK.Big_Integers`;
 - finite modular residue model over `Z/97Z` with explicit modular reduction.
 - Ada built-in modular type model over `type mod 97`.
+- Lightning cDLC model over `type mod 97`, covering HTLC compatibility,
+  PTLC point locks, route tweaks, child activation, timeout/refund abstraction,
+  and channel balance conservation.
 
 The proof covers the core algebra: oracle attestation, adaptor verification,
-signature completion, extraction of the hidden scalar, and rejection of a wrong
-hidden scalar.
+signature completion, extraction of the hidden scalar, rejection of a wrong
+hidden scalar, and the Lightning conditional-settlement identities described in
+the companion paper.
 
 ## Security Boundary
 
@@ -150,6 +159,7 @@ or implement a complete production DLC stack.
 Not yet covered:
 
 - full bilateral DLC negotiation;
+- production Lightning node integration;
 - complete parent CET -> bridge -> child funding graphs;
 - mainnet-safe fee bumping and mempool policy;
 - production key management;
