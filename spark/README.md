@@ -2,9 +2,10 @@
 
 This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus a finite
-Lightning-extension model for HTLC/PTLC witness behavior.
+Lightning-extension model for HTLC/PTLC witness behavior and an integer model
+for BTC-collateralized loan waterfalls.
 
-There are four models:
+There are five models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -21,6 +22,10 @@ There are four models:
   hash model, PTLC point locks, HTLC route witness reuse, PTLC route tweaks,
   child activation, timeout/refund abstraction, and channel balance
   conservation.
+- `btc_collateral_loan_algebra`: proves the algebraic finance identities for a
+  BTC-collateralized loan model over mathematical integers: cross-multiplied
+  LTV checks, debt accrual, terminal collateral waterfall, partial liquidation,
+  and exact target-LTV restoration under the stated liquidation-size equation.
 
 ## Proven
 
@@ -39,6 +44,15 @@ There are four models:
   the abstract channel state unchanged.
 - Timeout/refund predicates activate for wrong witnesses and not after correct
   redemption.
+- BTC loan LTV checks are represented by the division-free cross product
+  `Debt * LTV_Den <= LTV_Num * Collateral_BTC * Price_USD`.
+- A roll preserves BTC collateral and updates debt by
+  `Debt + Interest - Repayment`.
+- A terminal default waterfall conserves BTC between lender claim and borrower
+  residual.
+- Partial liquidation weakly reduces both remaining collateral and scaled debt.
+- If the exact liquidation-sizing equation holds, the post-liquidation state
+  reaches the target LTV in cross-multiplied form.
 
 ## Not Proven Here
 
@@ -50,7 +64,9 @@ There are four models:
 - Production Lightning channel state machines, real HTLC preimage security,
   routing policy, liquidity, force-close behavior, watchtowers, or
   point-lock/PTLC deployment.
-- Economic claims about stablecoins, collateral, liquidity, or oracle markets.
+- Economic claims about stablecoins, collateral, liquidity, oracle markets,
+  borrower behavior, lender solvency, real execution price, slippage beyond the
+  modeled recovery ratio, or legal enforceability.
 
 ## Commands
 
@@ -80,6 +96,13 @@ Lightning cDLC model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/lightning_cdlc_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+BTC-collateralized loan model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/btc_collateral_loan_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
