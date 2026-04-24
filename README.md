@@ -13,6 +13,8 @@ not production software and must not be used with mainnet funds.
 The cDLC whitepaper is the primary document of this repository:
 
 - [`WHITEPAPER.md`](WHITEPAPER.md) - primary cDLC whitepaper.
+- [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md) - mathematical
+  construction for cDLC edges inside Lightning-style channel conditions.
 - [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md) - legacy NITI draft kept for
   historical reference.
 - [`docs/legacy-whitepaper/index.html`](docs/legacy-whitepaper/index.html) -
@@ -25,6 +27,7 @@ proof work.
 ## What Exists Today
 
 - The primary cDLC whitepaper in [`WHITEPAPER.md`](WHITEPAPER.md).
+- A Lightning cDLC whitepaper in [`LIGHTNING-WHITEPAPER.md`](LIGHTNING-WHITEPAPER.md).
 - The legacy NITI draft in [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md).
 - A cDLC source technical note in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md).
 - SPARK/Ada proof models for the core algebra in [`spark/`](spark/).
@@ -77,6 +80,7 @@ testnet/
   src/                     TypeScript testnet harness
   README.md                Operational testnet flow
 WHITEPAPER.md              Primary cDLC whitepaper
+LIGHTNING-WHITEPAPER.md    Lightning cDLC whitepaper
 LEGACY-WHITEPAPER.md       Legacy NITI draft
 ```
 
