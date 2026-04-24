@@ -1,0 +1,66 @@
+# Architecture
+
+NITI is split into three layers.
+
+## 1. Research Layer
+
+The research layer contains the human-readable cDLC construction:
+
+- [`research/composable-dlc-whitepaper.md`](../research/composable-dlc-whitepaper.md)
+- [`research/cdlc-algebra-check.ts`](../research/cdlc-algebra-check.ts)
+
+It defines the core equation:
+
+```text
+S_x = R_o + H(R_o || V || x)V
+s_xG = S_x
+s_a = ŝ_a + s_x
+```
+
+## 2. Proof Layer
+
+The proof layer is in [`spark/`](../spark/). It contains SPARK/Ada models for
+the algebra used by the protocol.
+
+Accepted proof targets:
+
+- `cdlc_integer_proofs.gpr`
+- `cdlc_residue_proofs.gpr`
+
+The built-in Ada `type mod` model is retained as a diagnostic target only.
+
+## 3. Testnet Layer
+
+The testnet layer is in [`testnet/`](../testnet/).
+
+Ada is used for finite cDLC graph validation:
+
+- node limits;
+- dust floors;
+- edge references;
+- bridge value constraints;
+- timelock ordering;
+- acyclicity.
+
+TypeScript is used where the Bitcoin ecosystem has mature libraries:
+
+- secp256k1/BIP340 math;
+- Taproot address and sighash construction;
+- raw transaction creation;
+- Bitcoin Core JSON-RPC.
+
+## Current End-To-End Primitive
+
+The current end-to-end test builds a Taproot key-path spend and makes its
+signature conditional on an oracle attestation scalar.
+
+```text
+funded Taproot UTXO
+  -> unsigned spend
+  -> adaptor signature under S_x
+  -> oracle publishes s_x
+  -> completed Schnorr witness
+  -> raw transaction ready for broadcast
+```
+
+This is the smallest Bitcoin-facing validation of the cDLC activation primitive.

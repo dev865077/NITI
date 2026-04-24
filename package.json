@@ -1,0 +1,42 @@
+{
+  "name": "niti-cdlc-testnet",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "main": "dist/testnet/cli.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dev865077/NITI.git"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run test:offline",
+    "test:offline": "TMPDIR=/tmp tsx testnet/src/offline-test.ts",
+    "testnet": "TMPDIR=/tmp tsx testnet/src/cli.ts",
+    "ada:build": "PATH=/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH gprbuild -P testnet/ada/niti_cdlc_testnet.gpr",
+    "ada:validate": "PATH=/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH ./testnet/ada/bin/niti_manifest_validate"
+  },
+  "keywords": [
+    "bitcoin",
+    "dlc",
+    "cdlc",
+    "taproot",
+    "adaptor-signatures",
+    "spark-ada"
+  ],
+  "author": "NITI contributors",
+  "license": "ISC",
+  "description": "NITI cDLC testnet harness",
+  "dependencies": {
+    "@noble/hashes": "^2.0.1",
+    "@noble/secp256k1": "^3.1.0",
+    "bitcoinjs-lib": "^7.0.1",
+    "dotenv": "^16.4.7",
+    "tiny-secp256k1": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

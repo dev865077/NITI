@@ -1,0 +1,37 @@
+{
+  "edges": [
+    {
+      "bridge_value_sat": 90000,
+      "from": "root",
+      "outcome": "BTCUSD_ABOVE_STRIKE",
+      "timeout_height": 3000100,
+      "to": "usd_roll_1"
+    },
+    {
+      "bridge_value_sat": 80000,
+      "from": "usd_roll_1",
+      "outcome": "BTCUSD_BELOW_STRIKE",
+      "timeout_height": 3000350,
+      "to": "refund_leaf"
+    }
+  ],
+  "network": "testnet4",
+  "nodes": [
+    {
+      "collateral_sat": 100000,
+      "id": "root",
+      "refund_height": 3000000
+    },
+    {
+      "collateral_sat": 90000,
+      "id": "usd_roll_1",
+      "refund_height": 3000300
+    },
+    {
+      "collateral_sat": 90000,
+      "id": "refund_leaf",
+      "refund_height": 3000400
+    }
+  ],
+  "version": 1
+}

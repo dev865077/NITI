@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+
+testnet/artifacts/*
+!testnet/artifacts/.gitkeep
+
+testnet/ada/bin/
+testnet/ada/obj/
+
+spark/obj/
+spark/obj_integer/
+spark/obj_residue/
