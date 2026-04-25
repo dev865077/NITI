@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,14 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `cppi_algebra`: proves the integer allocation and state-transition
+  identities for CPPI and portfolio-insurance vaults: cushion bounds, risky and
+  safe exposure bounds, allocation conservation, zero risky exposure at or
+  below the floor, cross-multiplied account update, floor preservation under
+  up moves or explicit bounded down-move assumptions, floor-safe/breached
+  branch coverage, defensive zero-risk state, next cushion non-negativity, BTC
+  funding split conservation, two-step collateral conservation, and an explicit
+  finite counterexample documenting gap risk.
 
 ## Proven
 
@@ -69,6 +77,22 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- CPPI cushion is non-negative and bounded by account value.
+- Risky exposure and safe exposure are non-negative, bounded by
+  `A_i * M_den`, and conserve scaled account value.
+- At or below the floor, risky exposure is zero and safe exposure equals
+  scaled account value.
+- The next-account numerator equals the cross-multiplied CPPI update.
+- Up moves preserve the floor when the starting account is at or above floor.
+- Down moves preserve the floor only under the explicit bounded-loss
+  inequality.
+- Floor-safe and floor-breached branches are disjoint and exhaustive.
+- Defensive branch sets risky exposure to zero, while floor-safe continuation
+  has a non-negative next cushion numerator.
+- BTC funding split conserves posted collateral, and two fee-free continuation
+  steps preserve posted collateral.
+- A concrete gap-risk counterexample proves that discrete CPPI does not imply
+  unconditional floor preservation.
 
 ## Not Proven Here
 
@@ -83,7 +107,8 @@ There are six models:
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
-  conventions, or legal enforceability.
+  conventions, continuous-time floor guarantees, slippage-free rebalancing,
+  safe-asset credit quality, investor suitability, or legal enforceability.
 
 ## Commands
 
@@ -127,6 +152,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+CPPI and portfolio-insurance vault model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/cppi_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
