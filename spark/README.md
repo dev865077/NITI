@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,13 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `autocallables_algebra`: proves the integer observation, coupon, redemption,
+  and settlement identities for autocallables and callable yield notes: branch
+  coverage/disjointness, memory and non-memory coupon updates, terminal
+  autocall state separation, continuation collateral preservation, BTC
+  redemption conservation, sufficient-collateral coverage, rounding bounds,
+  finite coupon liability bounds, reverse-convertible principal caps, and
+  principal-protected maturity coverage.
 
 ## Proven
 
@@ -69,6 +76,25 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Autocall, coupon-continuation, and no-coupon-continuation branches are
+  disjoint and cover every observation price when `A_i >= C_i`.
+- Memory coupon updates are monotonic across continuation branches.
+- Non-memory coupon updates prove exact coupon-accrual and missed-coupon reset
+  postconditions.
+- Autocall redemption equals principal plus accrued coupon plus current coupon,
+  and autocall terminal state prevents funding a continuation state.
+- Continuation branches preserve posted BTC collateral exactly.
+- Terminal redemption outputs conserve posted BTC collateral between investor
+  claim and issuer residual.
+- Sufficient collateral covers scaled USD redemption after ceiling conversion
+  to BTC, with positive and zero redemption rounding bounds.
+- One-step and two-step coupon liability are bounded by initial accrued coupon
+  plus the coupon sum.
+- Maximum autocall liability is bounded by principal plus initial accrued coupon
+  plus coupon sum.
+- Reverse-convertible principal is non-negative and capped by principal, and
+  principal-protected maturity is covered under the sufficient-collateral
+  predicate.
 
 ## Not Proven Here
 
@@ -83,7 +109,8 @@ There are six models:
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
-  conventions, or legal enforceability.
+  conventions, fair coupon pricing, investor suitability, issuer solvency
+  beyond posted collateral, secondary-market liquidity, or legal enforceability.
 
 ## Commands
 
@@ -127,6 +154,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Autocallables and callable yield notes model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/autocallables_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume

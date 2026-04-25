@@ -14,5 +14,6 @@ spark/obj_integer/
 spark/obj_residue/
 spark/obj_btc_loan/
 spark/obj_covered_call_yield_note/
+spark/obj_autocallables/
 
 site/
