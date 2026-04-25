@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,14 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `parametric_insurance_algebra`: proves integer accounting for parametric
+  insurance and event-linked notes: binary up/down trigger partitioning,
+  no-trigger payout, collateral-capped payout boundedness, BTC conservation,
+  max-loss cap/collateral behavior, three-region tier partitioning, tiered
+  boundedness and conservation, linear attachment/exhaustion floor witnesses,
+  USD-indexed ceil witnesses, solvent/insolvent USD-indexed branches, note
+  principal waterfalls, escrowed premium/coupon conservation, renewal
+  collateral, and aggregate-limit accounting.
 
 ## Proven
 
@@ -69,6 +77,25 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Binary up-trigger and down-trigger branches are complete and disjoint.
+- No-trigger binary branches pay zero claim and preserve seller collateral.
+- Collateral-capped buyer payouts are non-negative and never exceed posted BTC.
+- Binary settlement conserves posted BTC.
+- Triggered max-loss branches pay the limit when collateral is sufficient and
+  exhaust collateral when undercollateralized.
+- Three-region tier predicates are complete and disjoint under `T1 < T2`.
+- Tiered raw payout is bounded by `Limit` under
+  `0 <= Partial <= Limit`, and tiered settlement conserves BTC.
+- Linear attachment/exhaustion partial payout witnesses are bounded by
+  `Limit`.
+- USD-indexed `NeedBTC` witnesses satisfy the ceil-style coverage and minimal
+  predecessor inequalities.
+- USD-indexed solvent branches cover the target claim; insolvent branches
+  exhaust collateral and leave zero residual.
+- Investor redemption is bounded by principal, and upfront/escrowed
+  event-linked note waterfalls conserve funded BTC.
+- No-loss renewal preserves collateral, loss renewal carries residual
+  collateral, and aggregate paid loss is monotone and capped.
 
 ## Not Proven Here
 
@@ -84,6 +111,10 @@ There are six models:
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
   conventions, or legal enforceability.
+- Event oracle correctness, event-definition ambiguity, actuarial pricing,
+  moral hazard, insurable-interest or insurance-law classification, claims
+  adjustment, seller hedging capacity, multi-oracle committee honesty, and
+  event-linked note market liquidity.
 
 ## Commands
 
@@ -127,6 +158,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Parametric insurance and event-linked note model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/parametric_insurance_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
