@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,13 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `accumulators_decumulators_algebra`: proves the integer period accounting
+  identities for BTC accumulators and decumulators: branch coverage and
+  disjointness, live-state absorption, zero quantity after terminal/knock-out,
+  live quantity bounds, exact cumulative BTC and scaled-cash updates,
+  accumulator BTC conservation, decumulator BTC and cash-escrow conservation,
+  two-period quantity/cash exactness and bounds, and floor/ceiling cash
+  rounding bounds.
 
 ## Proven
 
@@ -69,6 +76,23 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Accumulator/decumulator knock-out, multiplied-quantity, and base-quantity
+  branches are disjoint and cover every observation price.
+- Live state is absorbing false, and continuation requires prior live state
+  plus no knock-out.
+- Period quantity is zero when the schedule is terminal or knocked out.
+- Live settlement quantity is bounded between `BaseQ` and `BaseQ * M`.
+- Cumulative BTC quantity and scaled cash update exactly by `q_i` and
+  `q_i * K_i`.
+- Accumulator BTC settlement conserves posted BTC under `q_i <= Q_i`.
+- Decumulator BTC settlement conserves investor inventory under
+  `q_i <= Inventory_i`.
+- Decumulator cash escrow conserves scaled cash under
+  `q_i * K_i <= CashEscrowScaled_i`.
+- Knock-out terminal state stops future quantity and cash accumulation.
+- Two-period cumulative quantity and scaled cash equal the sum of period
+  settlements and are bounded by maximum scheduled quantities.
+- Final scaled-cash rounding satisfies the documented floor and ceiling bounds.
 
 ## Not Proven Here
 
@@ -83,7 +107,9 @@ There are six models:
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
-  conventions, or legal enforceability.
+  conventions, external execution availability, market impact, funding beyond
+  posted collateral or cash escrow, tax/accounting/regulatory treatment, or
+  legal enforceability.
 
 ## Commands
 
@@ -127,6 +153,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Accumulators and decumulators model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/accumulators_decumulators_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
