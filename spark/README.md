@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,12 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `perpetuals_rolling_forwards_algebra`: proves the integer state-transition
+  identities for USD-notional rolling forwards: signed mark-to-market and
+  funding zero-sum behavior, scaled equity conservation, floor-quotient BTC
+  transfer bounds, solvent long/short transfer branches, insolvency
+  liquidation caps, maintenance-margin predicates, same-notional rolls,
+  reduced-notional rolls, and two-step roll conservation.
 
 ## Proven
 
@@ -69,6 +75,22 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Rolling-forward long and short deltas sum to zero, including signed funding.
+- Long and short scaled equities conserve total posted BTC value:
+  `LongEquityScaled + ShortEquityScaled = (LQ + SQ) * P * F`.
+- The transfer quotient witness proves
+  `Transfer * P * F <= abs(DeltaScaled)` and residual `< P * F`.
+- Long-win and short-win solvent branches conserve BTC collateral and prove
+  the winning side's rounded equity residual is less than one satoshi-scaled
+  unit.
+- Short-insolvent and long-insolvent liquidation branches cap the losing
+  side's loss at posted collateral while conserving total BTC.
+- Maintenance margin is represented by the division-free cross product
+  `Q * P * MMR_Den >= N * B * MMR_Num`.
+- Same-notional and reduced-notional roll branches preserve BTC conservation
+  and prove child margin predicates by substitution.
+- Two consecutive valid roll-conservation steps preserve total BTC collateral,
+  giving the induction-compatible finite-roll lemma.
 
 ## Not Proven Here
 
@@ -83,7 +105,9 @@ There are six models:
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
-  conventions, or legal enforceability.
+  conventions, perpetual funding convergence, forward-curve construction,
+  liquidation depth, index quality, price manipulation resistance, or legal
+  enforceability.
 
 ## Commands
 
@@ -127,6 +151,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Perpetuals and rolling forwards model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/perpetuals_rolling_forwards_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
