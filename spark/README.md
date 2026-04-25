@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,13 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `basis_calendar_rolls_algebra`: proves signed spread accounting for
+  spot/forward basis trades, near/far calendar spreads, and finite
+  term-structure rolls: basis/calendar linearity, zero-sum scaled payoffs,
+  payoff branch partitioning, floor-style BTC transfer witnesses, solvent and
+  collateral-capped settlement conservation, margin cross multiplication,
+  reduced-notional margin preservation, exact roll reference updates, and
+  two-step same-notional telescoping.
 
 ## Proven
 
@@ -69,6 +76,28 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Basis changes satisfy
+  `(F1 - S1) - (F0 - S0) = (F1 - F0) - (S1 - S0)`.
+- Calendar-spread changes satisfy
+  `(Far1 - Near1) - (Far0 - Near0) =
+  (Far1 - Far0) - (Near1 - Near0)`.
+- Basis and calendar payoff specializations reduce to their documented
+  relative-move formulas.
+- Long and short spread payoffs are exact negatives before fees, rounding, and
+  caps.
+- Positive, zero, and negative payoff branches are complete and disjoint.
+- A floor-style BTC transfer witness satisfies
+  `Transfer * Price <= AbsPayoff` and leaves residual value below one
+  settlement-price unit.
+- Zero payoff implies zero transfer and zero remainder.
+- Solvent and collateral-capped long-win and short-win settlements conserve
+  posted BTC.
+- The division-free margin predicate is exactly
+  `Q * P >= R * H`.
+- Lowering notional preserves a passing margin predicate when stress move is
+  non-negative.
+- A roll sets the next reference spread to the current observation exactly,
+  and two same-notional periods telescope to the endpoint spread move.
 
 ## Not Proven Here
 
@@ -84,6 +113,10 @@ There are six models:
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
   conventions, or legal enforceability.
+- Forward-curve construction, futures/funding economics, exchange arbitrage,
+  oracle price quality, manipulation resistance, hedge liquidity, margin
+  sufficiency in stressed markets, and legal classification of basis,
+  calendar, or term-structure products.
 
 ## Commands
 
@@ -127,6 +160,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Basis, calendar-spread, and term-structure roll model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/basis_calendar_rolls_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
