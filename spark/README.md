@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,13 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `variance_corridor_swaps_algebra`: proves the integer rational identities
+  for realized variance and corridor variance swaps: non-negative return
+  terms, positive denominators, monotone variance accumulation, corridor
+  include/exclude branch partitioning, excluded observations leaving value
+  unchanged, included observations matching full variance, corridor terms
+  bounded by full one-step variance, zero-sum payoff algebra, strike equality
+  zero payoff, and BTC settlement rounding/conservation bounds.
 
 ## Proven
 
@@ -69,6 +76,22 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Realized variance return terms are non-negative and use positive
+  denominators.
+- Adding one realized variance observation weakly increases the accumulated
+  numerator while preserving a positive denominator.
+- Corridor inclusion and exclusion branches cover all observations and do not
+  overlap.
+- Excluded corridor observations leave the accumulated variance unchanged.
+- Included corridor observations match the corresponding full-variance term.
+- A corridor term is bounded by the full one-step variance term when both use
+  the same denominator.
+- Long and short variance/corridor payoff numerators are exact negatives.
+- Strike equality gives zero payoff.
+- BTC-denominated settlement claims satisfy ceil-style coverage and positive
+  rounding bounds.
+- Long-win, short-win, and zero-payoff settlement branches conserve total BTC
+  and cap losses by posted collateral.
 
 ## Not Proven Here
 
@@ -84,6 +107,11 @@ There are six models:
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
   conventions, or legal enforceability.
+- Equivalence between simple-return variance and log-return variance,
+  square-root volatility approximation, variance fair value, realized-vol fair
+  value, volatility surface calibration, oracle observation quality,
+  observation manipulation, market liquidity, hedging error, or legal
+  enforceability for variance products.
 
 ## Commands
 
@@ -127,6 +155,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Variance and corridor swap model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/variance_corridor_swaps_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
