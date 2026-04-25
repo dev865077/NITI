@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,11 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `collars_protective_notes_algebra`: proves the integer payoff and settlement
+  identities for protective puts, collars, and principal-protected notes:
+  floor/cap bounds, branch coverage, branch continuity, ceiling conversion from
+  scaled payoff to BTC claim, BTC collateral conservation, sufficient-collateral
+  coverage, and zero-cost collar premium equality.
 
 ## Proven
 
@@ -69,6 +74,22 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Protective-put payoff is bounded below by the put strike value and agrees at
+  the strike boundary.
+- Collar branches cover all settlement prices without overlap when
+  `K_put <= K_call`.
+- Collar payoff is bounded below by `K_put` and above by `K_call`, with branch
+  continuity at both strikes.
+- Principal-protected note payoff is bounded below by protected principal and
+  capped by protected principal plus capped participation.
+- Principal-protected note branches cover all settlement prices without overlap
+  and agree at `S0` and `K_call`.
+- Ceiling conversion from scaled fiat payoff to BTC claim covers the scaled
+  payoff with rounding error strictly below one settlement unit.
+- Investor and structurer BTC outputs conserve posted collateral, and
+  sufficient collateral covers the scaled payoff and protected principal.
+- Equal put and call premiums imply zero net premium for the zero-cost collar
+  model.
 
 ## Not Proven Here
 
@@ -127,6 +148,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Collars, protective puts, and principal-protected notes model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/collars_protective_notes_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
