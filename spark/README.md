@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -25,6 +25,10 @@ There are six models:
   BTC-collateralized loan model over mathematical integers: cross-multiplied
   LTV checks, debt accrual, terminal collateral waterfall, partial liquidation,
   and exact target-LTV restoration under the stated liquidation-size equation.
+- `btc_loan_lifecycle_algebra`: proves the lifecycle companion identities for
+  BTC-backed loans over satoshi/cents integer units: explicit `B` scaling,
+  ordered LTV branch selection, auto-refinance accounting, margin top-up,
+  partial liquidation, exact residual roll, and full-liquidation waterfalls.
 - `covered_call_yield_note_algebra`: proves the integer payoff and settlement
   identities for BTC covered calls and BTC yield notes: OTM/ITM branch
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
@@ -57,6 +61,21 @@ There are six models:
 - Partial liquidation weakly reduces both remaining collateral and scaled debt.
 - If the exact liquidation-sizing equation holds, the post-liquidation state
   reaches the target LTV in cross-multiplied form.
+- BTC loan lifecycle debt accrual preserves non-negativity, and accrual without
+  repayment does not decrease debt.
+- Lifecycle LTV threshold predicates are represented by
+  `D * B * Theta_Den <= Theta_Num * Q * S`.
+- Ordered roll/call/liquidation thresholds make Healthy, Watch, MarginCall,
+  and Liquidation branches disjoint, while the branch predicates cover every
+  valid state.
+- Healthy roll/refinance conserves collateral except explicit BTC fees and is
+  valid only when the child LTV predicate holds.
+- Exact margin top-up restores target LTV by cross multiplication.
+- Lifecycle partial liquidation conserves collateral and does not increase
+  scaled debt.
+- Exact lifecycle liquidation sizing reaches target LTV with explicit `B`
+  scaling and carries exact scaled debt into the residual child state.
+- Full liquidation conserves BTC and caps lender receipt by posted collateral.
 - Covered-call and yield-note OTM/ITM branches cover all settlement prices and
   do not overlap.
 - Capped deliverable notional is bounded by covered notional, cap, and posted
@@ -83,7 +102,8 @@ There are six models:
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
-  conventions, or legal enforceability.
+  conventions, borrower willingness to top up, lender refinance liquidity,
+  liquidation market depth, recovery-ratio realism, or legal enforceability.
 
 ## Commands
 
@@ -120,6 +140,13 @@ BTC-collateralized loan model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/btc_collateral_loan_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+BTC-backed loan lifecycle model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/btc_loan_lifecycle_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 Covered-call and BTC yield-note model:

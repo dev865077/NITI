@@ -13,6 +13,7 @@ spark/obj_lightning/
 spark/obj_integer/
 spark/obj_residue/
 spark/obj_btc_loan/
+spark/obj_btc_loan_lifecycle/
 spark/obj_covered_call_yield_note/
 
 site/
