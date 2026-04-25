@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,12 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `barrier_options_algebra`: proves the integer state and settlement
+  identities for discrete barrier products: up/down hit and miss branch
+  coverage, absorbing touch and knock-out states, pure observation collateral
+  preservation, rebate and terminal settlement conservation, vanilla,
+  knock-in, knock-out, one-touch, and no-touch payoff selection, ceiling BTC
+  conversion, and one-step/two-step finite observation characterization.
 
 ## Proven
 
@@ -69,6 +75,25 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Up-barrier and down-barrier hit/miss predicates cover every observed price
+  exactly once, with equality assigned to the hit branch.
+- Touch state is monotone and activates on a hit; if the next touch state is
+  false, the prior state was false and the observation missed.
+- Knock-out live state is absorbing false, and continuation requires prior live
+  state plus a miss.
+- Pure observation transitions preserve posted BTC collateral exactly.
+- Immediate rebate/termination and terminal option settlement conserve posted
+  BTC between option-holder and residual outputs.
+- Vanilla call and put payoffs are non-negative.
+- Knock-in options equal vanilla payoffs after activation and pay zero before
+  activation.
+- Knock-out options equal vanilla payoffs while live and pay zero after
+  knock-out.
+- One-touch pays zero if never touched, and no-touch pays zero after touch.
+- Ceiling conversion from scaled payoff to BTC claim covers the scaled payoff
+  and bounds rounding error below one settlement-price unit.
+- One-step and two-step touch-state lemmas match the finite observation
+  induction formula.
 
 ## Not Proven Here
 
@@ -83,7 +108,9 @@ There are six models:
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
-  conventions, or legal enforceability.
+  conventions, continuous-time barrier monitoring, oracle sampling quality,
+  latency/manipulation resistance around observation times, or legal
+  enforceability.
 
 ## Commands
 
@@ -127,6 +154,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Barrier options and knock-in/knock-out continuations model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/barrier_options_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
