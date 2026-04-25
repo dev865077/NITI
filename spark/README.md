@@ -1,11 +1,10 @@
 # cDLC SPARK Proofs
 
 This directory contains SPARK models of the core adaptor algebra used in the
-cDLC technical note and in the primary cDLC whitepaper, plus a finite
-Lightning-extension model for HTLC/PTLC witness behavior and an integer model
-for BTC-collateralized loan waterfalls.
+cDLC technical note and in the primary cDLC whitepaper, plus finite financial
+product models that prove cDLC settlement accounting over integer units.
 
-There are five models:
+There are six models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -26,6 +25,11 @@ There are five models:
   BTC-collateralized loan model over mathematical integers: cross-multiplied
   LTV checks, debt accrual, terminal collateral waterfall, partial liquidation,
   and exact target-LTV restoration under the stated liquidation-size equation.
+- `covered_call_yield_note_algebra`: proves the integer payoff and settlement
+  identities for BTC covered calls and BTC yield notes: OTM/ITM branch
+  partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
+  escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
+  maximum-delivery vectors.
 
 ## Proven
 
@@ -53,6 +57,18 @@ There are five models:
 - Partial liquidation weakly reduces both remaining collateral and scaled debt.
 - If the exact liquidation-sizing equation holds, the post-liquidation state
   reaches the target LTV in cross-multiplied form.
+- Covered-call and yield-note OTM/ITM branches cover all settlement prices and
+  do not overlap.
+- Capped deliverable notional is bounded by covered notional, cap, and posted
+  collateral.
+- An ITM quotient witness satisfies the floor-style inequalities
+  `Claim * S <= (S - K) * D` and
+  `(Claim + 1) * S > (S - K) * D`.
+- The ITM buyer claim is bounded by deliverable BTC notional.
+- Escrowed premium settlement conserves `Collateral + Premium`; upfront
+  premium settlement conserves posted collateral.
+- Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
+  maximum-delivery cases.
 
 ## Not Proven Here
 
@@ -66,7 +82,8 @@ There are five models:
   point-lock/PTLC deployment.
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
-  modeled recovery ratio, or legal enforceability.
+  modeled recovery ratio, option fair value, implied volatility, assignment
+  conventions, or legal enforceability.
 
 ## Commands
 
@@ -103,6 +120,13 @@ BTC-collateralized loan model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/btc_collateral_loan_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Covered-call and BTC yield-note model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
