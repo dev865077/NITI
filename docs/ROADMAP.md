@@ -26,7 +26,10 @@ Status: ready for final RPC and faucet configuration.
 - Build parent CET output reserved for a bridge.
 - Build bridge transaction spending that output.
 - Complete bridge witness from parent oracle attestation.
-- Broadcast parent and bridge on testnet.
+- Record deterministic parent and bridge confirmation transcripts.
+
+Status: deterministic regtest-equivalent path done; public testnet/signet
+broadcast remains an explicit later artifact.
 
 ## Phase 2A: Lightning Channel Edge Prototype
 
@@ -44,7 +47,10 @@ Status: ready for final RPC and faucet configuration.
 
 - Precompute child funding output from bridge transaction.
 - Build child CET/refund transactions.
-- Validate child funding after bridge broadcast.
+- Validate child funding after deterministic bridge confirmation.
+
+Status: deterministic child funding, prepared child CET/refund, and parent-edge
+timeout refund evidence done.
 
 ## Phase 4: Multi-Party And Multi-Oracle
 
