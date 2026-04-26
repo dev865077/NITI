@@ -120,6 +120,9 @@ output for this scenario.
 The completed parent CET txid is equal to the no-witness txid because the
 witness is excluded from the SegWit/Taproot transaction id.
 
+The serialized parent CET, sighash input map, and edge output map are recorded
+in [`L2_PARENT_CET_HARNESS.md`](L2_PARENT_CET_HARNESS.md).
+
 ### Bridge Transaction
 
 The bridge spends the parent CET edge output and creates the child funding
