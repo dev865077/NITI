@@ -95,6 +95,7 @@ flowchart LR
 | Layer 2 child prepared spends | [`docs/L2_CHILD_PREPARED_SPENDS.md`](docs/L2_CHILD_PREPARED_SPENDS.md) | Prepared child CET and timelocked refund spends consuming the bridge-created child funding output. |
 | Layer 2 edge refund timeout | [`docs/L2_EDGE_REFUND_TIMEOUT.md`](docs/L2_EDGE_REFUND_TIMEOUT.md) | Negative path proving the parent edge refund is rejected before timeout and accepted after maturity. |
 | Layer 2 E2E transcript | [`docs/L2_E2E_TRANSCRIPT.md`](docs/L2_E2E_TRANSCRIPT.md) | Redacted audit transcript with replay commands and deterministic pass/fail checks. |
+| Layer 2 deterministic closeout | [`docs/L2_EPIC_CLOSEOUT.md`](docs/L2_EPIC_CLOSEOUT.md) | Deterministic #56 evidence: child issue status, bounded Layer 2 claim, replay command, and residual risks. |
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Claim-by-claim mapping from formal algebra to transaction operations and smoke transcript fields. |
 | SPARK/Ada models | [`spark/`](spark/) | Formal algebra and finite accounting models. |
 | Testnet harness | [`testnet/`](testnet/) | TypeScript Taproot/adaptor, oracle, manifest, RPC, and Lightning hold-invoice tooling. |
@@ -178,6 +179,7 @@ docs/
   L2_CHILD_PREPARED_SPENDS.md Child CET/refund prepared-spend artifact
   L2_EDGE_REFUND_TIMEOUT.md  Parent edge refund timeout artifact
   L2_E2E_TRANSCRIPT.md       Redacted Layer 2 audit transcript artifact
+  L2_EPIC_CLOSEOUT.md        Layer 2 deterministic closeout and residual risk
   V0_1_ACCEPTANCE_MATRIX.md  Release claim and evidence matrix
   V0_1_CI.md                 CI gate documentation
   V0_1_RUNNER.md             One-command local v0.1 verification
