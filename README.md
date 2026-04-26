@@ -1,5 +1,7 @@
 # NITI
 
+[![v0.1 validation](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml/badge.svg)](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml)
+
 NITI is a research and implementation workspace for composable Discreet Log
 Contracts, or cDLCs: finite graphs of Bitcoin-native DLC transactions where an
 oracle attestation scalar from one contract can complete adaptor signatures that
@@ -77,6 +79,7 @@ docs/
   PROTOCOL.md              cDLC protocol summary
   ROADMAP.md               Engineering roadmap
   SECURITY.md              Threat model and safety boundaries
+  V0_1_CI.md               v0.1 remote validation workflow
   V0_1_ACCEPTANCE_MATRIX.md v0.1 testnet release gate matrix
 research/
   covered-call-yield-note-math.md

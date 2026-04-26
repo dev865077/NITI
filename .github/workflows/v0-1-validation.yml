@@ -1,0 +1,139 @@
+name: v0.1 validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v0-1-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deterministic-harness:
+    name: TypeScript deterministic harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Run deterministic harness tests
+        run: npm test
+
+      - name: Capture v0.1 cDLC smoke transcript
+        run: npm run test:cdlc-smoke > v0-1-cdlc-smoke-transcript.json
+
+      - name: Upload v0.1 smoke transcript
+        uses: actions/upload-artifact@v4
+        with:
+          name: v0-1-cdlc-smoke-transcript
+          path: v0-1-cdlc-smoke-transcript.json
+          if-no-files-found: error
+
+  ada-manifest:
+    name: Ada manifest validator
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install GNAT and GPRbuild
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnat gprbuild
+
+      - name: Build Ada manifest validator
+        run: npm run ada:build
+
+      - name: Validate canonical cDLC manifest fixture
+        run: npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.json
+
+  spark-regression:
+    name: SPARK proof regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Alire
+        uses: alire-project/setup-alire@v5
+
+      - name: Install SPARK toolchain
+        run: |
+          set -euo pipefail
+          alr --version
+          alr toolchain --select gnat_native gprbuild
+          mkdir -p /tmp/niti-spark-tools
+          cd /tmp/niti-spark-tools
+          cat > alire.toml <<'TOML'
+          name = "niti_spark_tools"
+          description = "CI-only SPARK proof tool workspace for NITI"
+          version = "0.1.0-dev"
+          licenses = "ISC"
+          authors = ["NITI contributors"]
+          maintainers = ["NITI contributors <ci@example.invalid>"]
+          maintainers-logins = ["dev865077"]
+
+          [[depends-on]]
+          gnatprove = "^15.1.0"
+          TOML
+          alr update
+          eval "$(alr printenv)"
+          SPARK_INCLUDE_DIR="$(find "$HOME" -path '*/include/spark' -type d | head -n 1)"
+          if [ -z "$SPARK_INCLUDE_DIR" ]; then
+            echo "Could not find SPARK include directory in Alire toolchain."
+            exit 1
+          fi
+          echo "SPARK_INCLUDE_DIR=$SPARK_INCLUDE_DIR" >> "$GITHUB_ENV"
+          echo "SPARK include dir: $SPARK_INCLUDE_DIR"
+          gnatprove --version
+
+      - name: Reject pragma Assume in SPARK sources
+        run: |
+          set -euo pipefail
+          if grep -RIn "pragma[[:space:]]\+Assume" spark/src spark/*.gpr; then
+            echo "SPARK proof sources must not use pragma Assume."
+            exit 1
+          fi
+
+      - name: Run core cDLC SPARK proofs
+        run: |
+          set -euo pipefail
+          cd /tmp/niti-spark-tools
+          eval "$(alr printenv)"
+          cd "$GITHUB_WORKSPACE"
+          gnatprove -P spark/cdlc_integer_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=fail
+          gnatprove -P spark/cdlc_residue_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=fail
+          gnatprove -P spark/cdlc_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=fail
+          gnatprove -P spark/lightning_cdlc_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=fail
