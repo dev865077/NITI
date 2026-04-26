@@ -17,6 +17,7 @@ import {
   resolveNetwork,
 } from './taproot.js';
 import { readJsonFile, writeJsonFile, writeTextFile } from './io.js';
+import { buildCanonicalParentFundingFixture } from './cdlc-scenario.js';
 import { deterministicJson, sampleManifest, writeSampleManifest } from './manifest.js';
 import {
   LndRestClient,
@@ -138,6 +139,7 @@ Commands:
   wallet:new --network testnet4 [--secret-hex <32-byte-hex>] [--out file.json]
   oracle:prepare --event-id <id> --outcome <text> [--oracle-secret-hex <hex>] [--nonce-secret-hex <hex>] [--out file.json]
   oracle:attest --event-id <id> --outcome <text> --oracle-secret-hex <hex> --nonce-secret-hex <hex> [--out file.json]
+  cdlc:parent-funding --network testnet4 [--out funding.json] [--raw-out funding.hex]
   taproot:prepare --network testnet4 --signer-output-secret-hex <hex> --signer-script-pubkey-hex <hex> --utxo-txid <txid> --utxo-vout <n> --utxo-value-sat <sat> --destination <addr> --fee-sat <sat> --adaptor-point-hex <compressed> [--out pending.json]
   taproot:complete --pending pending.json --attestation-secret-hex <hex> [--out completed.json] [--raw-out tx.hex]
   manifest:sample --network testnet4 --out manifest.json
@@ -216,6 +218,17 @@ async function main(): Promise<void> {
       oracleSecret: scalarFromHex(stringArg(args, 'oracle-secret-hex'), 'oracle-secret-hex'),
       nonceSecret: scalarFromHex(stringArg(args, 'nonce-secret-hex'), 'nonce-secret-hex'),
     }));
+    return;
+  }
+
+  if (command === 'cdlc:parent-funding') {
+    const network = resolveNetwork(stringArg(args, 'network', 'testnet4')).name;
+    const funding = buildCanonicalParentFundingFixture(network);
+    const rawOut = optionalStringArg(args, 'raw-out');
+    if (rawOut) {
+      writeTextFile(rawOut, `${funding.parentFunding.rawTxHex}\n`);
+    }
+    writeOrPrint(args, funding);
     return;
   }
 

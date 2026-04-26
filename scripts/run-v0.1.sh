@@ -154,6 +154,10 @@ if [ "$RUN_NODE" -eq 1 ]; then
   require_tool npm
   run_step node-build npm run build
   run_step node-tests npm test
+  run_step parent-funding \
+    npm run testnet -- cdlc:parent-funding --network testnet4 \
+      --out "${ARTIFACTS_DIR}/parent-funding.json" \
+      --raw-out "${ARTIFACTS_DIR}/parent-funding.hex"
   run_shell_step cdlc-smoke-transcript "npm run --silent test:cdlc-smoke > '${ARTIFACTS_DIR}/cdlc-smoke-transcript.json'"
 fi
 

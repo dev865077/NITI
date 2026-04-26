@@ -191,6 +191,46 @@ export interface AdaptorSignature {
   verifiesAdaptor: boolean;
 }
 
+export interface Bip340Signature {
+  signerPublicXOnlyHex: string;
+  signerPublicCompressedHex: string;
+  nonceXOnlyHex: string;
+  nonceCompressedHex: string;
+  signatureScalarHex: string;
+  signatureHex: string;
+  messageHashHex: string;
+  verifies: boolean;
+}
+
+export function createBip340Signature(input: {
+  signerSecret: bigint;
+  message32: Uint8Array;
+  nonceSecret?: bigint;
+}): Bip340Signature {
+  if (input.message32.length !== 32) {
+    throw new Error('BIP340 signature message must be 32 bytes');
+  }
+  const signer = normalizeBip340Secret(input.signerSecret);
+  const nonce = normalizeBip340Secret(input.nonceSecret ?? randomScalar());
+  const publicX = pointToXOnly(signer.point);
+  const nonceX = pointToXOnly(nonce.point);
+  const challenge = bip340Challenge(nonceX, publicX, input.message32);
+  const signatureScalar = modN(nonce.secret + challenge * signer.secret);
+  const signature = concatBytes(nonceX, numberToBytes32(signatureScalar));
+  const verifies = schnorr.verify(signature, input.message32, publicX);
+
+  return {
+    signerPublicXOnlyHex: bytesToHex(publicX),
+    signerPublicCompressedHex: pointToCompressed(signer.point),
+    nonceXOnlyHex: bytesToHex(nonceX),
+    nonceCompressedHex: pointToCompressed(nonce.point),
+    signatureScalarHex: scalarToHex(signatureScalar),
+    signatureHex: bytesToHex(signature),
+    messageHashHex: bytesToHex(input.message32),
+    verifies,
+  };
+}
+
 export function createBip340AdaptorSignature(input: {
   signerSecret: bigint;
   adaptorPoint: Point;
