@@ -1,56 +1,53 @@
 # NITI
 
 [![v0.1 validation](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml/badge.svg)](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml)
+![Status](https://img.shields.io/badge/status-research%20prototype-orange)
+![License](https://img.shields.io/badge/license-ISC-blue)
+![Network](https://img.shields.io/badge/network-testnet%2Fsignet%2Fregtest-lightgrey)
 
 NITI is a research and implementation workspace for composable Discreet Log
-Contracts, or cDLCs: finite graphs of Bitcoin-native DLC transactions where an
-oracle attestation scalar from one contract can complete adaptor signatures that
-activate the next contract.
+Contracts, or cDLCs. The core idea is narrow but powerful: a DLC oracle
+attestation scalar revealed by a parent contract can also complete adaptor
+signatures on a bridge transaction that funds the next contract.
 
-The project is intentionally open-source and research-first. The current code is
-not production software and must not be used with mainnet funds.
+The project is not production software. Do not use it with mainnet funds.
 
-## Whitepaper
+## Contents
 
-The cDLC whitepaper is the primary document of this repository. It defines the
-Bitcoin cDLC construction first and includes Lightning as a later execution
-extension:
+- [What NITI Claims](#what-niti-claims)
+- [How cDLC Composition Works](#how-cdlc-composition-works)
+- [Current Evidence](#current-evidence)
+- [Quick Start](#quick-start)
+- [Repository Map](#repository-map)
+- [Formal Models](#formal-models)
+- [Testnet Harness](#testnet-harness)
+- [Financial Product Models](#financial-product-models)
+- [Security Boundary](#security-boundary)
+- [Roadmap](#roadmap)
+- [License](#license)
 
-- [`WHITEPAPER.md`](WHITEPAPER.md) - primary cDLC whitepaper.
-- [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md) - legacy NITI draft kept for
-  historical reference.
-- [`docs/legacy-whitepaper/index.html`](docs/legacy-whitepaper/index.html) -
-  legacy HTML version with images.
+## What NITI Claims
 
-The shorter cDLC document in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md)
-is the source technical note for the adaptor-signature construction and formal
-proof work.
+The conservative v0.1 claim is:
 
-## What Exists Today
+> Under the documented assumptions, NITI demonstrates a reproducible
+> testnet/regtest-equivalent cDLC activation path: a parent outcome reveals an
+> oracle scalar, that scalar completes the bridge adaptor signature, the bridge
+> funds the child path, and a non-corresponding outcome does not activate that
+> child path.
 
-- The primary cDLC whitepaper in [`WHITEPAPER.md`](WHITEPAPER.md).
-- The legacy NITI draft in [`LEGACY-WHITEPAPER.md`](LEGACY-WHITEPAPER.md).
-- A cDLC source technical note in [`research/cdlc-technical-note.md`](research/cdlc-technical-note.md).
-- A covered-call/yield-note math specification in
-  [`research/covered-call-yield-note-math.md`](research/covered-call-yield-note-math.md).
-- SPARK/Ada proof models for the core algebra in [`spark/`](spark/).
-- A testnet harness in [`testnet/`](testnet/) that builds a Taproot key-path
-  spend whose BIP340 witness is completed by a DLC-style oracle attestation
-  scalar.
-- A Lightning hold-invoice harness in [`testnet/LIGHTNING.md`](testnet/LIGHTNING.md)
-  that prepares an LND test where the oracle attestation scalar is the HTLC
-  preimage.
-- A static research site in [`site/`](site/) with interactive protocol,
-  Lightning, proof, and testnet explainers.
-- An Ada validator for finite cDLC graph manifests.
-- A TypeScript CLI for testnet wallet generation, oracle preparation,
-  attestation, adaptor spend preparation, transaction completion, Lightning
-  hold-invoice testing, RPC scanning, and opt-in broadcast.
+NITI does not claim mainnet readiness, safe custody, regulatory readiness,
+production Lightning support, guaranteed solvency, or a complete financial
+product stack.
 
-## Core Idea
+The release scope is tracked in
+[`docs/V0_1_ACCEPTANCE_MATRIX.md`](docs/V0_1_ACCEPTANCE_MATRIX.md). The remote
+gate is [`v0.1 validation`](.github/workflows/v0-1-validation.yml).
 
-For a Schnorr oracle with public key `V = vG` and event nonce `R_o = r_oG`, an
-outcome `x` has:
+## How cDLC Composition Works
+
+A Schnorr oracle commits to a nonce point `R_o` and later attests an outcome
+`x` by revealing:
 
 ```text
 e_x = H(R_o || V || x)
@@ -58,159 +55,255 @@ s_x = r_o + e_x v mod n
 S_x = s_xG = R_o + e_xV
 ```
 
-Before attestation, everyone can compute `S_x`, but not `s_x`. A cDLC uses
-`S_x` as the adaptor point for a bridge transaction. When the oracle later
-publishes `s_x`, the bridge signatures can be completed:
+Before the event, `S_x` is public but `s_x` is unknown. A cDLC uses `S_x` as
+the adaptor point for a bridge transaction. When the oracle publishes `s_x`,
+the bridge signature is completed:
 
 ```text
-s_a = ŝ_a + s_x mod n
+s = s_hat + s_x mod n
 ```
 
-That bridge can fund the next DLC in a finite pre-negotiated graph. The
-whitepaper also describes how the same activation scalar can be used later as a
-Lightning channel witness.
+That bridge spends a parent outcome output and creates the funding output for a
+child DLC. Bitcoin validates ordinary Taproot/Schnorr spends; the contract graph
+and financial semantics remain off-chain.
 
-## Repository Layout
-
-```text
-docs/
-  legacy-whitepaper/       Legacy HTML whitepaper and assets
-  ARCHITECTURE.md          Implementation architecture
-  PROTOCOL.md              cDLC protocol summary
-  ROADMAP.md               Engineering roadmap
-  SECURITY.md              Threat model and safety boundaries
-  V0_1_CI.md               v0.1 remote validation workflow
-  V0_1_ACCEPTANCE_MATRIX.md v0.1 testnet release gate matrix
-research/
-  covered-call-yield-note-math.md
-  cdlc-technical-note.md
-  cdlc-algebra-check.ts
-spark/
-  src/                     SPARK/Ada proof models
-  README.md                Proof commands and scope
-testnet/
-  ada/                     Ada manifest validator
-  src/                     TypeScript testnet harness
-  README.md                Operational testnet flow
-site/
-  index.html               Static research site
-  src/                     TypeScript interactions
-  styles.css               Site visual system
-WHITEPAPER.md              Primary cDLC whitepaper with Lightning extension
-LEGACY-WHITEPAPER.md       Legacy NITI draft
+```mermaid
+flowchart LR
+  A["Parent DLC funding"] --> B["Parent CET for outcome x"]
+  B --> C["Bridge transaction B_e"]
+  C --> D["Child DLC funding"]
+  O["Oracle reveals s_x"] --> B
+  O --> C
+  Y["Oracle reveals s_y"] -. "wrong outcome rejected" .-> C
 ```
+
+## Current Evidence
+
+| Evidence | Where | What it supports |
+| --- | --- | --- |
+| Primary whitepaper | [`WHITEPAPER.md`](WHITEPAPER.md) | cDLC construction, security claims, Lightning extension, limitations. |
+| Protocol summary | [`docs/PROTOCOL.md`](docs/PROTOCOL.md) | Compact description of oracle, adaptor, bridge, Lightning, and graph discipline. |
+| Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet layers. |
+| SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Claim-by-claim mapping from formal algebra to transaction operations and smoke transcript fields. |
+| SPARK/Ada models | [`spark/`](spark/) | Formal algebra and finite accounting models. |
+| Testnet harness | [`testnet/`](testnet/) | TypeScript Taproot/adaptor, oracle, manifest, RPC, and Lightning hold-invoice tooling. |
+| Deterministic smoke test | `npm run test:cdlc-smoke` | Parent CET -> bridge -> child funding transcript, including wrong-outcome rejection. |
+| CI gate | [GitHub Actions](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) | Build, deterministic tests, Ada validator, and core SPARK proof regression. |
+| Security notes | [`docs/SECURITY.md`](docs/SECURITY.md) | Operational boundaries and explicit non-goals. |
 
 ## Quick Start
 
-Install Node dependencies:
+Prerequisites:
+
+- Node.js 20 or newer.
+- `npm`.
+- Optional: GNAT/GPRbuild for the Ada manifest validator.
+- Optional: SPARK/GNATprove for formal proof runs.
+- Optional: Bitcoin Core and LND for live testnet, signet, or regtest work.
+
+Install dependencies and run the local deterministic harness:
 
 ```sh
-npm install
-```
-
-Build and test the TypeScript harness:
-
-```sh
+npm ci
 npm run build
 npm test
 ```
 
-Build and serve the site locally:
-
-```sh
-npm run site:build
-npm run site:serve
-```
-
-Build the Ada validator:
-
-```sh
-npm run ada:build
-```
-
-Generate and validate a sample cDLC manifest:
-
-```sh
-npm run testnet -- manifest:sample --network testnet4 --out testnet/examples/sample-manifest.json
-npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.json
-```
-
-Expected offline test result:
-
-```json
-{
-  "oracleSignatureVerifies": true,
-  "adaptorVerifies": true,
-  "completedSignatureVerifies": true
-}
-```
-
-## Testnet Harness
-
-See [`testnet/README.md`](testnet/README.md).
-
-The harness supports:
-
-- testnet/signet/regtest-style Taproot addresses;
-- oracle outcome preparation and attestation;
-- Taproot key-path adaptor spend generation;
-- deterministic v0.1 parent-CET -> bridge -> child-funding smoke test;
-- transaction completion after attestation;
-- Lightning HTLC hold-invoice preparation and settlement hooks for LND REST;
-- Bitcoin Core RPC scan and broadcast.
-
-Broadcast is deliberately blocked unless the CLI receives `--allow-broadcast`.
-
-The v0.1 release gate is tracked in
-[`docs/V0_1_ACCEPTANCE_MATRIX.md`](docs/V0_1_ACCEPTANCE_MATRIX.md). The minimum
-single-path cDLC smoke command is:
+Run the v0.1 cDLC smoke path directly:
 
 ```sh
 npm run test:cdlc-smoke
 ```
 
-## Formal Proofs
+Build and run the Ada manifest validator:
 
-See [`spark/README.md`](spark/README.md).
+```sh
+npm run ada:build
+npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.json
+```
 
-Four proof targets currently pass with no unproved checks and no
-`pragma Assume` statements:
+The full GitHub Actions gate is documented in
+[`docs/V0_1_CI.md`](docs/V0_1_CI.md).
 
-- mathematical integer model with `SPARK.Big_Integers`;
-- finite modular residue model over `Z/97Z` with explicit modular reduction.
-- Ada built-in modular type model over `type mod 97`.
-- Lightning cDLC model over `type mod 97`.
+## Repository Map
 
-The proof covers the core cDLC algebra: oracle attestation, adaptor
-verification, signature completion, extraction of the hidden scalar, and
-rejection of a wrong hidden scalar. The Lightning proof target covers the
-finite model of HTLC/PTLC redemption, oracle witness compatibility, routed HTLC
-hash reuse, routed PTLC point tweaks, child activation, timeout/refund behavior,
-and abstract channel-balance conservation.
+```text
+.github/workflows/
+  v0-1-validation.yml        Remote v0.1 validation gate
+docs/
+  ARCHITECTURE.md            Research/proof/testnet architecture
+  PROTOCOL.md                cDLC protocol summary
+  ROADMAP.md                 Engineering roadmap
+  SECURITY.md                Safety boundary and non-goals
+  V0_1_ACCEPTANCE_MATRIX.md  Release claim and evidence matrix
+  V0_1_CI.md                 CI gate documentation
+research/
+  cdlc-technical-note.md     Focused cDLC algebra note
+  cdlc-algebra-check.ts      TypeScript algebra sanity check
+  *-math.md                  Financial product math specifications
+spark/
+  src/                       SPARK/Ada proof models
+  *.gpr                      GNATprove project files
+  README.md                  Proof scope and commands
+testnet/
+  src/                       TypeScript harness and CLI
+  ada/                       Ada cDLC manifest validator
+  examples/                  Canonical manifests
+  README.md                  Operational testnet flow
+  LIGHTNING.md               Lightning hold-invoice harness
+WHITEPAPER.md                Primary cDLC whitepaper
+LEGACY-WHITEPAPER.md         Historical NITI draft
+```
 
-The Lightning model does not prove a production Lightning implementation,
-real hash security, route liquidity, force-close behavior, watchtower behavior,
-or wallet integration.
+The local `site/` directory is ignored by Git, so it is not part of the GitHub
+evidence package.
+
+## Formal Models
+
+The proof layer contains SPARK/Ada models for the cDLC algebra, the Lightning
+extension, and finite financial-product accounting models. The core proof
+targets are:
+
+| Target | Scope |
+| --- | --- |
+| `spark/cdlc_integer_proofs.gpr` | Symbolic integer identities using `SPARK.Big_Integers`. |
+| `spark/cdlc_residue_proofs.gpr` | Explicit arithmetic over `Z/97Z`. |
+| `spark/cdlc_proofs.gpr` | Ada built-in modular model over `type mod 97`. |
+| `spark/lightning_cdlc_proofs.gpr` | HTLC/PTLC witness behavior, route tweaks, child activation, and channel-balance conservation in a finite model. |
+
+The key cDLC properties modeled are:
+
+- the oracle attestation scalar maps to the public attestation point;
+- a bridge adaptor signature verifies before completion;
+- adding the correct oracle scalar completes the bridge signature;
+- a completed signature reveals the hidden scalar by subtraction;
+- a different oracle scalar does not complete the same bridge signature.
+
+The CI gate runs the four core targets above and rejects `pragma Assume` in the
+proof sources. The broader product proof suite is documented in
+[`spark/README.md`](spark/README.md).
+
+Example core proof command:
+
+```sh
+gnatprove -P spark/cdlc_proofs.gpr \
+  --level=4 \
+  --prover=cvc5,z3,altergo \
+  --timeout=20 \
+  --report=all
+```
+
+## Testnet Harness
+
+The TypeScript harness validates the Bitcoin-facing activation primitive:
+
+```text
+funded Taproot UTXO
+  -> unsigned spend
+  -> adaptor signature under S_x
+  -> oracle publishes s_x
+  -> completed Schnorr witness
+  -> raw transaction ready for opt-in broadcast
+```
+
+Implemented today:
+
+- BIP340-style oracle preparation and attestation.
+- Taproot key-path adaptor spend generation.
+- Signature completion from the oracle attestation scalar.
+- Hidden-scalar extraction from a completed signature.
+- Deterministic cDLC parent-CET -> bridge -> child-funding smoke transcript.
+- Wrong-outcome negative checks.
+- Bitcoin Core RPC scan and broadcast commands.
+- Broadcast refusal unless `--allow-broadcast` is provided.
+- LND hold-invoice artifacts for the HTLC-compatible Lightning extension.
+- Live LND mutation refusal unless `--allow-live-lnd` is provided.
+- Ada validation of finite cDLC graph manifests.
+
+The operational guide is [`testnet/README.md`](testnet/README.md). The Lightning
+hold-invoice guide is [`testnet/LIGHTNING.md`](testnet/LIGHTNING.md).
+
+Generate and validate a sample manifest:
+
+```sh
+npm run testnet -- manifest:sample \
+  --network testnet4 \
+  --out testnet/examples/sample-manifest.json
+
+npm run testnet -- manifest:validate \
+  --file testnet/examples/sample-manifest.json
+```
+
+Run the offline Lightning mock:
+
+```sh
+npm run test:lightning
+npm run testnet -- lightning:mock-run
+```
+
+## Financial Product Models
+
+NITI also contains research specifications and SPARK models for financial
+products that could be expressed as finite cDLC state transitions. These are
+accounting and payoff models, not production products.
+
+| Product family | Research spec | SPARK target |
+| --- | --- | --- |
+| BTC-backed loans and collateral lifecycle | [`research/btc-backed-loan-lifecycle-math.md`](research/btc-backed-loan-lifecycle-math.md) | `spark/btc_collateral_loan_proofs.gpr`, `spark/btc_loan_lifecycle_proofs.gpr` |
+| Covered calls and yield notes | [`research/covered-call-yield-note-math.md`](research/covered-call-yield-note-math.md) | `spark/covered_call_yield_note_proofs.gpr` |
+| Synthetic dollar and stable exposure | [`research/synthetic-dollar-stable-exposure-math.md`](research/synthetic-dollar-stable-exposure-math.md) | `spark/synthetic_dollar_stable_exposure_proofs.gpr` |
+| Perpetuals and rolling forwards | [`research/perpetuals-rolling-forwards-math.md`](research/perpetuals-rolling-forwards-math.md) | `spark/perpetuals_rolling_forwards_proofs.gpr` |
+| Collars, puts, protected notes | [`research/collars-protective-puts-principal-protected-notes-math.md`](research/collars-protective-puts-principal-protected-notes-math.md) | `spark/collars_protective_notes_proofs.gpr` |
+| Barrier options | [`research/barrier-options-knock-continuations-math.md`](research/barrier-options-knock-continuations-math.md) | `spark/barrier_options_proofs.gpr` |
+| Autocallables and callable notes | [`research/autocallables-callable-yield-notes-math.md`](research/autocallables-callable-yield-notes-math.md) | `spark/autocallables_proofs.gpr` |
+| Accumulators and decumulators | [`research/accumulators-decumulators-math.md`](research/accumulators-decumulators-math.md) | `spark/accumulators_decumulators_proofs.gpr` |
+| CPPI and portfolio insurance | [`research/cppi-portfolio-insurance-math.md`](research/cppi-portfolio-insurance-math.md) | `spark/cppi_proofs.gpr` |
+| Variance and corridor swaps | [`research/volatility-variance-corridor-swaps-math.md`](research/volatility-variance-corridor-swaps-math.md) | `spark/variance_corridor_swaps_proofs.gpr` |
+| Basis and calendar rolls | [`research/basis-calendar-term-structure-rolls-math.md`](research/basis-calendar-term-structure-rolls-math.md) | `spark/basis_calendar_rolls_proofs.gpr` |
+| Parametric insurance and event-linked notes | [`research/parametric-insurance-event-linked-notes-math.md`](research/parametric-insurance-event-linked-notes-math.md) | `spark/parametric_insurance_proofs.gpr` |
+
+The important boundary: these models prove internal accounting identities under
+their stated assumptions. They do not prove market liquidity, fair pricing,
+oracle quality, collateral availability, legal enforceability, or user safety.
 
 ## Security Boundary
 
-NITI currently proves and tests the activation primitive. It does not yet prove
-or implement a complete production DLC stack.
+Do not use this repository with mainnet funds.
 
-Not yet covered:
+The current code and proofs do not cover:
 
+- production key storage;
+- production wallet integration;
 - full bilateral DLC negotiation;
-- complete parent CET -> bridge -> child funding graphs;
-- production Lightning channel integration;
-- mainnet-safe fee bumping and mempool policy;
-- production key management;
+- complete mainnet fee-bump, CPFP, anchor, or pinning policy;
 - multi-oracle threshold attestations;
-- economic safety of synthetic assets or stable exposure;
-- regulatory suitability.
+- production Lightning channel state machines;
+- route liquidity, force-close, watchtower, and PTLC deployment behavior;
+- oracle operational security and source integrity;
+- economic solvency of any real financial product;
+- legal or regulatory suitability.
 
-## Status
+Before publishing artifacts, check for local secrets:
 
-Research prototype. Testnet only.
+```sh
+find testnet/artifacts -maxdepth 1 -type f -not -name .gitkeep -print
+test ! -f .env && echo ".env absent"
+```
+
+## Roadmap
+
+The roadmap is maintained in [`docs/ROADMAP.md`](docs/ROADMAP.md). The current
+sequence is:
+
+1. Keep the algebra and deterministic harness reproducible.
+2. Complete public testnet/signet evidence for a single cDLC path.
+3. Add a bilateral protocol transcript with two independent participants.
+4. Build an auditable oracle layer with announcement, nonce commitment,
+   attestation verification, and history.
+5. Add economic stress simulations for collateral, liquidation, timelocks, and
+   recovery behavior.
+6. Move only after review toward broader wallet, Lightning, oracle, and
+   product integrations.
 
 ## License
 
