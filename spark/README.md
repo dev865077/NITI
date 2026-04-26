@@ -4,7 +4,7 @@ This directory contains SPARK models of the core adaptor algebra used in the
 cDLC technical note and in the primary cDLC whitepaper, plus finite financial
 product models that prove cDLC settlement accounting over integer units.
 
-There are six models:
+There are seven models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -30,6 +30,12 @@ There are six models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
+- `synthetic_dollar_stable_exposure_algebra`: proves the integer payoff and
+  continuation identities for BTC-funded stable exposure: ceil-quotient stable
+  claim coverage, stable claim boundedness, BTC conservation, par-solvent and
+  insolvent branch partitioning, rounding error bounds, reserve-preserving
+  healthy rolls, valid de-risk transitions, liquidation-warning predicates, and
+  restriction of full-collateral terminal settlement to insolvency.
 
 ## Proven
 
@@ -69,6 +75,21 @@ There are six models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
+- Synthetic-dollar ceil witnesses prove `Need * P >= D * SAT` and
+  `Need = 0 or (Need - 1) * P < D * SAT`.
+- Stable claims are bounded by posted BTC collateral, and claim plus residual
+  conserves collateral.
+- In the par-solvent branch, the stable claim covers the scaled target and the
+  rounding error is less than one settlement-price unit.
+- In the insolvent branch, the stable-side holder receives all posted
+  collateral and residual is zero.
+- Healthy synthetic-dollar rolls preserve the reserve invariant
+  `Q * P * H_Den >= D * SAT * H_Num`.
+- Valid de-risk transitions conserve BTC, reduce the stable target exactly,
+  and prove the child reserve invariant.
+- Full-collateral terminal settlement is modeled as allowed only in the
+  insolvent branch; above-par liquidation warnings are separate policy
+  predicates.
 
 ## Not Proven Here
 
@@ -83,7 +104,8 @@ There are six models:
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
-  conventions, or legal enforceability.
+  conventions, peg stability, liquidation availability, or legal
+  enforceability.
 
 ## Commands
 
@@ -127,6 +149,13 @@ Covered-call and BTC yield-note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+Synthetic-dollar and stable exposure model:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+gnatprove -P spark/synthetic_dollar_stable_exposure_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
