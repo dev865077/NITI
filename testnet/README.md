@@ -24,6 +24,9 @@ edge references, bridge values, timelock ordering, and acyclicity.
 The Lightning harness prepares an LND hold-invoice test where the oracle
 attestation scalar is the invoice preimage. See [`LIGHTNING.md`](LIGHTNING.md).
 
+For controlled Bitcoin Core execution that avoids faucet and public mempool
+variance, use the deterministic regtest guide in [`REGTEST.md`](REGTEST.md).
+
 ## Build And Offline Test
 
 ```sh
@@ -32,6 +35,7 @@ npm run ada:build
 npm run test:offline
 npm run test:lightning
 npm run test:cdlc-smoke
+npm run v0.1:verify -- --skip-spark
 npm run testnet -- manifest:sample --network testnet4 --out testnet/examples/sample-manifest.json
 npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.json
 ```
@@ -83,6 +87,13 @@ Use the RPC URL that matches your node. Common defaults are:
 - signet: `http://127.0.0.1:38332`
 - regtest: `http://127.0.0.1:18443`
 - testnet4: set the RPC port used by your Bitcoin Core build/config
+
+For deterministic regtest, the helper can generate the `.env` values:
+
+```sh
+scripts/regtest-env.sh start
+scripts/regtest-env.sh env > .env
+```
 
 ## Testnet Flow
 

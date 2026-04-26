@@ -18,6 +18,7 @@ The project is not production software. Do not use it with mainnet funds.
 - [How cDLC Composition Works](#how-cdlc-composition-works)
 - [Current Evidence](#current-evidence)
 - [Quick Start](#quick-start)
+- [v0.1 Reproducibility](#v01-reproducibility)
 - [Repository Map](#repository-map)
 - [Formal Models](#formal-models)
 - [Testnet Harness](#testnet-harness)
@@ -125,6 +126,28 @@ npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.jso
 The full GitHub Actions gate is documented in
 [`docs/V0_1_CI.md`](docs/V0_1_CI.md).
 
+## v0.1 Reproducibility
+
+The strict local entry point for the v0.1 claim is:
+
+```sh
+npm run v0.1:verify
+```
+
+It runs the deterministic TypeScript harness, the Ada manifest validator, the
+core SPARK proof targets, and writes logs/transcripts under `testnet/artifacts/`.
+The runner is documented in [`docs/V0_1_RUNNER.md`](docs/V0_1_RUNNER.md).
+
+For controlled Bitcoin Core execution before public testnet/signet broadcast,
+use the regtest guide:
+
+```sh
+scripts/regtest-env.sh start
+scripts/regtest-env.sh env > .env
+```
+
+See [`testnet/REGTEST.md`](testnet/REGTEST.md).
+
 ## Repository Map
 
 ```text
@@ -137,6 +160,7 @@ docs/
   SECURITY.md                Safety boundary and non-goals
   V0_1_ACCEPTANCE_MATRIX.md  Release claim and evidence matrix
   V0_1_CI.md                 CI gate documentation
+  V0_1_RUNNER.md             One-command local v0.1 verification
 research/
   cdlc-technical-note.md     Focused cDLC algebra note
   cdlc-algebra-check.ts      TypeScript algebra sanity check
@@ -151,6 +175,7 @@ testnet/
   examples/                  Canonical manifests
   README.md                  Operational testnet flow
   LIGHTNING.md               Lightning hold-invoice harness
+  REGTEST.md                 Deterministic Bitcoin Core regtest guide
 WHITEPAPER.md                Primary cDLC whitepaper
 LEGACY-WHITEPAPER.md         Historical NITI draft
 ```

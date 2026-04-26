@@ -9,13 +9,13 @@ It runs on every pull request and on pushes to `main`.
 
 | Job | Purpose | Commands |
 | --- | --- | --- |
-| TypeScript deterministic harness | Build and run the deterministic protocol harnesses, including the cDLC smoke path. | `npm ci`, `npm run build`, `npm test`, `npm run test:cdlc-smoke` |
-| Ada manifest validator | Build the finite cDLC graph manifest validator and validate the canonical fixture. | `npm run ada:build`, `npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.json` |
-| SPARK proof regression | Run the core cDLC and Lightning SPARK proof targets and reject `pragma Assume` in proof sources. | `gnatprove -P spark/cdlc_integer_proofs.gpr`, `gnatprove -P spark/cdlc_residue_proofs.gpr`, `gnatprove -P spark/cdlc_proofs.gpr`, `gnatprove -P spark/lightning_cdlc_proofs.gpr` |
+| TypeScript deterministic harness | Build and run the deterministic protocol harnesses, including the cDLC smoke path. | `npm run v0.1:verify -- --skip-ada --skip-spark` |
+| Ada manifest validator | Build the finite cDLC graph manifest validator and validate the canonical fixture. | `npm run v0.1:verify -- --skip-node --skip-spark` |
+| SPARK proof regression | Run the core cDLC and Lightning SPARK proof targets and reject `pragma Assume` in proof sources. | `scripts/run-v0.1.sh --skip-node --skip-ada` |
 
-The TypeScript job uploads `v0-1-cdlc-smoke-transcript.json` as a workflow
-artifact. That transcript is the reproducible remote evidence for the minimum
-parent-CET -> bridge -> child-funding smoke path.
+The TypeScript job uploads `cdlc-smoke-transcript.json` from the v0.1 runner
+artifact directory. That transcript is the reproducible remote evidence for the
+minimum parent-CET -> bridge -> child-funding smoke path.
 
 ## Manual Or External Steps
 
@@ -28,6 +28,8 @@ The workflow deliberately does not do the following:
 - production wallet key storage;
 - live Lightning channel force-close or watchtower behavior;
 - full product-model SPARK proof sweep across every financial product target.
+  That sweep can be run locally with
+  `npm run v0.1:verify -- --all-spark-products`.
 
 Those are separate release gates. The v0.1 CI gate proves that regressions in
 the core proof targets and deterministic harnesses are caught remotely before a
