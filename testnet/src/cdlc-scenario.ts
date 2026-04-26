@@ -16,12 +16,17 @@ export const canonicalSecrets = {
   childFunding: '3333333333333333333333333333333333333333333333333333333333333333',
   oracle: '4444444444444444444444444444444444444444444444444444444444444444',
   oracleNonce: '5555555555555555555555555555555555555555555555555555555555555555',
+  childOracle: '8888888888888888888888888888888888888888888888888888888888888888',
+  childOracleNonce: '9999999999999999999999999999999999999999999999999999999999999999',
+  childRefundNonce: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
 } as const;
 
 export const canonicalOutcomes = {
   eventId: 'niti-v0.1-parent-cdlc-smoke',
   activating: 'BTCUSD_ABOVE_STRIKE',
   wrong: 'BTCUSD_BELOW_STRIKE',
+  childEventId: 'niti-v0.1-child-cdlc-smoke',
+  childActivating: 'CHILD_SETTLEMENT_READY',
 } as const;
 
 export const canonicalAmounts = {
@@ -29,6 +34,8 @@ export const canonicalAmounts = {
   parentFundingValueSat: 100_000n,
   parentCetFeeSat: 1_000n,
   bridgeFeeSat: 500n,
+  childCetFeeSat: 500n,
+  childRefundFeeSat: 500n,
 } as const;
 
 export const canonicalSourcePrevout = {

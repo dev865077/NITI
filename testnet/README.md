@@ -70,6 +70,8 @@ The parent CET confirmation simulation is specified in
 [`docs/L2_PARENT_CET_CONFIRMATION.md`](../docs/L2_PARENT_CET_CONFIRMATION.md).
 The bridge confirmation simulation is specified in
 [`docs/L2_BRIDGE_CONFIRMATION.md`](../docs/L2_BRIDGE_CONFIRMATION.md).
+The child prepared-spend evidence is specified in
+[`docs/L2_CHILD_PREPARED_SPENDS.md`](../docs/L2_CHILD_PREPARED_SPENDS.md).
 
 It produces a deterministic regtest-equivalent transcript with:
 
@@ -83,6 +85,7 @@ It produces a deterministic regtest-equivalent transcript with:
 - a visible child funding output in the completed bridge transaction;
 - deterministic parent CET and bridge confirmation records;
 - an unspent child funding outpoint in the deterministic chain simulation;
+- prepared child CET and refund spends that consume the child funding outpoint;
 - a paired wrong-outcome negative check that must fail before the test passes.
 
 This command does not claim public testnet confirmation. Public broadcast is a
@@ -214,6 +217,8 @@ Implemented:
   output is spendable by the bridge.
 - Deterministic bridge confirmation transcript showing the bridge spends the
   parent edge output and leaves the child funding outpoint unspent.
+- Prepared child CET and timelocked refund transcript fields consuming the
+  bridge-created child funding outpoint.
 - Offline test proving that completed adaptor witness verifies.
 - Deterministic v0.1 smoke test for one parent CET edge, one bridge transaction,
   one child funding output, and wrong-outcome non-activation.
