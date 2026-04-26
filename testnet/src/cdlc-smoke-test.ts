@@ -198,6 +198,8 @@ const {
 });
 assert.equal(pendingBridge.input.txid, completedParentCet.txid);
 assert.equal(pendingBridge.input.vout, 0);
+assert.equal(pendingBridge.input.valueSat, parentEdgeOutput.value.toString());
+assert.equal(pendingBridge.input.scriptPubKeyHex, bridgeSignerWallet.scriptPubKeyHex);
 assert.equal(pendingBridge.adaptor.verifiesAdaptor, true);
 assert.equal(pendingBridge.adaptor.adaptorPointCompressedHex, activatingPrepared.attestationPointCompressedHex);
 assert.throws(
@@ -282,14 +284,34 @@ console.log(JSON.stringify({
   bridge: {
     spendsParentCetTxid: completedParentCet.txid,
     spendsParentCetVout: 0,
+    unsignedTxHex: pendingBridge.unsignedTxHex,
     unsignedTxid: pendingBridge.txidNoWitness,
+    completedRawTxHex: completedBridge.rawTxHex,
     completedTxid: completedBridge.txid,
+    sighashHex: pendingBridge.sighashHex,
+    sighashInputs: [
+      {
+        txid: pendingBridge.input.txid,
+        vout: pendingBridge.input.vout,
+        valueSat: pendingBridge.input.valueSat,
+        scriptPubKeyHex: pendingBridge.input.scriptPubKeyHex,
+      },
+    ],
     selectedAdaptorNonceSecretHex: bridgeAdaptorNonceSecretHex,
     adaptorVerifies: pendingBridge.adaptor.verifiesAdaptor,
     completedSignatureVerifies: completedBridge.verifies,
     extractedSecretMatchesOracleScalar:
       completedBridge.extractedSecretHex === activatingAttestation.attestationSecretHex,
     wrongOutcomeRejected: true,
+    outputMap: [
+      {
+        name: 'child_funding',
+        vout: 0,
+        valueSat: childFundingOutput.value.toString(),
+        scriptPubKeyHex: childFundingWallet.scriptPubKeyHex,
+        address: childFundingWallet.address,
+      },
+    ],
   },
   child: {
     fundingAddress: childFundingWallet.address,
