@@ -26,6 +26,13 @@ The transcript is deterministic and regtest-equivalent. It uses a signed
 fixture parent funding transaction, whose source prevout is deterministic test
 data, and does not claim public testnet broadcast or mempool confirmation.
 
+For the redacted Layer 2 audit transcript, run:
+
+```sh
+npm run v0.1:verify -- --artifacts-dir testnet/artifacts/replay-l2-e2e
+jq -e '.checks | all(. == true)' testnet/artifacts/replay-l2-e2e/l2-e2e-transcript.json
+```
+
 The core proof targets are:
 
 ```sh

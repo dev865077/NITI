@@ -74,6 +74,8 @@ The child prepared-spend evidence is specified in
 [`docs/L2_CHILD_PREPARED_SPENDS.md`](../docs/L2_CHILD_PREPARED_SPENDS.md).
 The parent edge refund timeout evidence is specified in
 [`docs/L2_EDGE_REFUND_TIMEOUT.md`](../docs/L2_EDGE_REFUND_TIMEOUT.md).
+The redacted Layer 2 audit transcript is specified in
+[`docs/L2_E2E_TRANSCRIPT.md`](../docs/L2_E2E_TRANSCRIPT.md).
 
 It produces a deterministic regtest-equivalent transcript with:
 
@@ -89,6 +91,7 @@ It produces a deterministic regtest-equivalent transcript with:
 - a parent edge timeout refund that fails before maturity and passes after it;
 - an unspent child funding outpoint in the deterministic chain simulation;
 - prepared child CET and refund spends that consume the child funding outpoint;
+- a redacted E2E audit transcript with replay checks;
 - a paired wrong-outcome negative check that must fail before the test passes.
 
 This command does not claim public testnet confirmation. Public broadcast is a
@@ -224,6 +227,7 @@ Implemented:
   bridge-created child funding outpoint.
 - Parent edge timeout refund transcript fields for the bridge-not-completed
   failure path.
+- Redacted Layer 2 E2E audit transcript generation in the v0.1 runner.
 - Offline test proving that completed adaptor witness verifies.
 - Deterministic v0.1 smoke test for one parent CET edge, one bridge transaction,
   one child funding output, and wrong-outcome non-activation.

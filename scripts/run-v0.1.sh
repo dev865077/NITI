@@ -159,6 +159,10 @@ if [ "$RUN_NODE" -eq 1 ]; then
       --out "${ARTIFACTS_DIR}/parent-funding.json" \
       --raw-out "${ARTIFACTS_DIR}/parent-funding.hex"
   run_shell_step cdlc-smoke-transcript "npm run --silent test:cdlc-smoke > '${ARTIFACTS_DIR}/cdlc-smoke-transcript.json'"
+  run_step l2-e2e-transcript \
+    npm run test:l2-e2e-transcript -- \
+      --input "${ARTIFACTS_DIR}/cdlc-smoke-transcript.json" \
+      --out "${ARTIFACTS_DIR}/l2-e2e-transcript.json"
 fi
 
 if [ "$RUN_ADA" -eq 1 ]; then
