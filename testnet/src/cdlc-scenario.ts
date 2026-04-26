@@ -18,6 +18,7 @@ export const canonicalSecrets = {
   oracleNonce: '5555555555555555555555555555555555555555555555555555555555555555',
   childOracle: '8888888888888888888888888888888888888888888888888888888888888888',
   childOracleNonce: '9999999999999999999999999999999999999999999999999999999999999999',
+  bridgeRefundNonce: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
   childRefundNonce: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
 } as const;
 
@@ -34,6 +35,7 @@ export const canonicalAmounts = {
   parentFundingValueSat: 100_000n,
   parentCetFeeSat: 1_000n,
   bridgeFeeSat: 500n,
+  bridgeRefundFeeSat: 500n,
   childCetFeeSat: 500n,
   childRefundFeeSat: 500n,
 } as const;

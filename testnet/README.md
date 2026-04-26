@@ -72,6 +72,8 @@ The bridge confirmation simulation is specified in
 [`docs/L2_BRIDGE_CONFIRMATION.md`](../docs/L2_BRIDGE_CONFIRMATION.md).
 The child prepared-spend evidence is specified in
 [`docs/L2_CHILD_PREPARED_SPENDS.md`](../docs/L2_CHILD_PREPARED_SPENDS.md).
+The parent edge refund timeout evidence is specified in
+[`docs/L2_EDGE_REFUND_TIMEOUT.md`](../docs/L2_EDGE_REFUND_TIMEOUT.md).
 
 It produces a deterministic regtest-equivalent transcript with:
 
@@ -84,6 +86,7 @@ It produces a deterministic regtest-equivalent transcript with:
   oracle scalar;
 - a visible child funding output in the completed bridge transaction;
 - deterministic parent CET and bridge confirmation records;
+- a parent edge timeout refund that fails before maturity and passes after it;
 - an unspent child funding outpoint in the deterministic chain simulation;
 - prepared child CET and refund spends that consume the child funding outpoint;
 - a paired wrong-outcome negative check that must fail before the test passes.
@@ -219,6 +222,8 @@ Implemented:
   parent edge output and leaves the child funding outpoint unspent.
 - Prepared child CET and timelocked refund transcript fields consuming the
   bridge-created child funding outpoint.
+- Parent edge timeout refund transcript fields for the bridge-not-completed
+  failure path.
 - Offline test proving that completed adaptor witness verifies.
 - Deterministic v0.1 smoke test for one parent CET edge, one bridge transaction,
   one child funding output, and wrong-outcome non-activation.

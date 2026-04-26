@@ -32,6 +32,7 @@ resolveNetwork(network);
 
 const parentCetFeeSat = canonicalAmounts.parentCetFeeSat;
 const bridgeFeeSat = canonicalAmounts.bridgeFeeSat;
+const bridgeRefundFeeSat = canonicalAmounts.bridgeRefundFeeSat;
 const childCetFeeSat = canonicalAmounts.childCetFeeSat;
 const childRefundFeeSat = canonicalAmounts.childRefundFeeSat;
 const wallets = canonicalWallets(network);
@@ -99,6 +100,17 @@ function outputAt(tx: Transaction, index: number): NonNullable<Transaction['outs
 
 function deterministicBlockHash(height: number, txid: string): string {
   return bytesToHex(sha256Text(`niti-regtest-sim:${height}:${txid}`));
+}
+
+function heightLockMature(input: {
+  locktime: number;
+  sequence: number;
+  candidateBlockHeight: number;
+}): boolean {
+  if (input.sequence === 0xffffffff) {
+    return true;
+  }
+  return input.locktime < input.candidateBlockHeight;
 }
 
 const activatingPrepared = prepareOracleOutcome({
@@ -215,6 +227,48 @@ const parentCetConfirmation = {
   confirmations: 1,
   spendableByBridge: true,
 };
+
+const bridgeTimeoutHeight = 3_000_100;
+const bridgeRefundSequence = 0xfffffffe;
+const bridgeTimeoutRefund = buildTaprootKeySpend({
+  network,
+  signerOutputSecret: scalarFromHex(bridgeSignerWallet.outputSecretHex, 'bridge signer output secret'),
+  signerScriptPubKeyHex: bridgeSignerWallet.scriptPubKeyHex,
+  utxo: {
+    txid: completedParentCet.txid,
+    vout: 0,
+    valueSat: parentEdgeOutput.value,
+  },
+  destinationAddress: parentFundingWallet.address,
+  outputValueSat: parentEdgeOutput.value - bridgeRefundFeeSat,
+  locktime: bridgeTimeoutHeight,
+  sequence: bridgeRefundSequence,
+  nonceSecret: scalarFromHex(canonicalSecrets.bridgeRefundNonce, 'bridge refund nonce'),
+});
+const bridgeRefundEarlyHeight = bridgeTimeoutHeight;
+const bridgeRefundMatureHeight = bridgeTimeoutHeight + 1;
+const bridgeRefundEarlySpendAccepted = heightLockMature({
+  locktime: bridgeTimeoutRefund.locktime,
+  sequence: bridgeTimeoutRefund.sequence,
+  candidateBlockHeight: bridgeRefundEarlyHeight,
+}) && bridgeTimeoutRefund.signature.verifies;
+const bridgeRefundMatureSpendAccepted = heightLockMature({
+  locktime: bridgeTimeoutRefund.locktime,
+  sequence: bridgeTimeoutRefund.sequence,
+  candidateBlockHeight: bridgeRefundMatureHeight,
+}) && bridgeTimeoutRefund.signature.verifies;
+assert.equal(bridgeTimeoutRefund.input.txid, completedParentCet.txid);
+assert.equal(bridgeTimeoutRefund.input.vout, 0);
+assert.equal(bridgeTimeoutRefund.input.valueSat, parentEdgeOutput.value.toString());
+assert.equal(bridgeTimeoutRefund.input.scriptPubKeyHex, bridgeSignerWallet.scriptPubKeyHex);
+assert.equal(bridgeTimeoutRefund.output.valueSat, (parentEdgeOutput.value - bridgeRefundFeeSat).toString());
+assert.equal(bridgeTimeoutRefund.output.scriptPubKeyHex, parentFundingWallet.scriptPubKeyHex);
+assert.equal(bridgeTimeoutRefund.locktime, bridgeTimeoutHeight);
+assert.equal(bridgeTimeoutRefund.sequence, bridgeRefundSequence);
+assert.equal(bridgeTimeoutRefund.signature.verifies, true);
+assert.equal(bridgeTimeoutRefund.txid, bridgeTimeoutRefund.txidNoWitness);
+assert.equal(bridgeRefundEarlySpendAccepted, false);
+assert.equal(bridgeRefundMatureSpendAccepted, true);
 
 const {
   pending: pendingBridge,
@@ -411,6 +465,30 @@ console.log(JSON.stringify({
         spendRole: 'bridge signer',
       },
     ],
+    edgeTimeoutRefund: {
+      scenario: 'bridge_not_completed_before_timeout',
+      input: bridgeTimeoutRefund.input,
+      destinationAddress: bridgeTimeoutRefund.destinationAddress,
+      output: bridgeTimeoutRefund.output,
+      feeSat: bridgeTimeoutRefund.feeSat,
+      locktime: bridgeTimeoutRefund.locktime,
+      sequence: bridgeTimeoutRefund.sequence,
+      unsignedTxHex: bridgeTimeoutRefund.unsignedTxHex,
+      txidNoWitness: bridgeTimeoutRefund.txidNoWitness,
+      rawTxHex: bridgeTimeoutRefund.rawTxHex,
+      txid: bridgeTimeoutRefund.txid,
+      sighashHex: bridgeTimeoutRefund.sighashHex,
+      signatureVerifies: bridgeTimeoutRefund.signature.verifies,
+      timelockCheck: {
+        type: 'absolute-block-height',
+        finalityRule: 'non-final-sequence height lock is mature when locktime is below the candidate block height',
+        timeoutHeight: bridgeTimeoutHeight,
+        earlyCandidateHeight: bridgeRefundEarlyHeight,
+        earlySpendAccepted: bridgeRefundEarlySpendAccepted,
+        matureCandidateHeight: bridgeRefundMatureHeight,
+        matureSpendAccepted: bridgeRefundMatureSpendAccepted,
+      },
+    },
   },
   oracle: {
     eventId,
