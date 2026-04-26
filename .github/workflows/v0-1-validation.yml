@@ -35,11 +35,13 @@ jobs:
       - name: Run v0.1 verifier for deterministic harness
         run: npm run v0.1:verify -- --skip-ada --skip-spark --artifacts-dir v0-1-node-artifacts
 
-      - name: Upload v0.1 smoke transcript
+      - name: Upload v0.1 Layer 2 transcripts
         uses: actions/upload-artifact@v4
         with:
-          name: v0-1-cdlc-smoke-transcript
-          path: v0-1-node-artifacts/cdlc-smoke-transcript.json
+          name: v0-1-layer-2-transcripts
+          path: |
+            v0-1-node-artifacts/cdlc-smoke-transcript.json
+            v0-1-node-artifacts/l2-e2e-transcript.json
           if-no-files-found: error
 
   ada-manifest:

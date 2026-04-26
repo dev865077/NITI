@@ -13,9 +13,10 @@ It runs on every pull request and on pushes to `main`.
 | Ada manifest validator | Build the finite cDLC graph manifest validator and validate the canonical fixture. | `npm run v0.1:verify -- --skip-node --skip-spark` |
 | SPARK proof regression | Run the core cDLC and Lightning SPARK proof targets and reject `pragma Assume` in proof sources. | `scripts/run-v0.1.sh --skip-node --skip-ada` |
 
-The TypeScript job uploads `cdlc-smoke-transcript.json` from the v0.1 runner
-artifact directory. That transcript is the reproducible remote evidence for the
-minimum parent-CET -> bridge -> child-funding smoke path.
+The TypeScript job uploads `cdlc-smoke-transcript.json` and
+`l2-e2e-transcript.json` from the v0.1 runner artifact directory. Those
+transcripts are the reproducible remote evidence for the minimum parent-CET ->
+bridge -> child-funding smoke path.
 
 ## Manual Or External Steps
 
