@@ -14,5 +14,16 @@ spark/obj_integer/
 spark/obj_residue/
 spark/obj_btc_loan/
 spark/obj_covered_call_yield_note/
+spark/obj_synthetic_dollar_stable_exposure/
+spark/obj_perpetuals_rolling_forwards/
+spark/obj_btc_loan_lifecycle/
+spark/obj_collars_protective_notes/
+spark/obj_barrier_options/
+spark/obj_autocallables/
+spark/obj_accumulators_decumulators/
+spark/obj_cppi/
+spark/obj_variance_corridor_swaps/
+spark/obj_basis_calendar_rolls/
+spark/obj_parametric_insurance/
 
 site/
