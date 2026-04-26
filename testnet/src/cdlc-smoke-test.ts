@@ -6,6 +6,7 @@ import {
   prepareOracleOutcome,
   pointFromCompressed,
   scalarFromHex,
+  sha256Text,
   verifyBip340Signature,
 } from './secp.js';
 import {
@@ -87,6 +88,10 @@ function outputAt(tx: Transaction, index: number): NonNullable<Transaction['outs
     throw new Error(`missing tx output ${index}`);
   }
   return output;
+}
+
+function deterministicBlockHash(height: number, txid: string): string {
+  return bytesToHex(sha256Text(`niti-regtest-sim:${height}:${txid}`));
 }
 
 const activatingPrepared = prepareOracleOutcome({
@@ -183,6 +188,17 @@ const parentEdgeOutput = outputAt(parentCet, 0);
 assert.equal(bytesToHex(parentEdgeOutput.script), bridgeSignerWallet.scriptPubKeyHex);
 assert.equal(parentEdgeOutput.value, canonicalAmounts.parentFundingValueSat - parentCetFeeSat);
 
+const parentCetConfirmationHeight = 3_000_001;
+const parentCetConfirmation = {
+  mode: 'deterministic-regtest-equivalent',
+  reason: 'CI does not depend on public testnet faucet, mempool, or local bitcoind availability',
+  txid: completedParentCet.txid,
+  blockHeight: parentCetConfirmationHeight,
+  blockHash: deterministicBlockHash(parentCetConfirmationHeight, completedParentCet.txid),
+  confirmations: 1,
+  spendableByBridge: true,
+};
+
 const {
   pending: pendingBridge,
   selectedAdaptorNonceSecretHex: bridgeAdaptorNonceSecretHex,
@@ -201,6 +217,7 @@ assert.equal(pendingBridge.input.txid, completedParentCet.txid);
 assert.equal(pendingBridge.input.vout, 0);
 assert.equal(pendingBridge.input.valueSat, parentEdgeOutput.value.toString());
 assert.equal(pendingBridge.input.scriptPubKeyHex, bridgeSignerWallet.scriptPubKeyHex);
+assert.equal(parentCetConfirmation.spendableByBridge, true);
 assert.equal(pendingBridge.adaptor.verifiesAdaptor, true);
 assert.equal(pendingBridge.adaptor.adaptorPointCompressedHex, activatingPrepared.attestationPointCompressedHex);
 
@@ -258,6 +275,7 @@ console.log(JSON.stringify({
     cetCompletedTxid: completedParentCet.txid,
     cetRawTxHex: completedParentCet.rawTxHex,
     cetSighashHex: pendingParentCet.sighashHex,
+    confirmation: parentCetConfirmation,
     sighashInputs: [
       {
         txid: pendingParentCet.input.txid,
@@ -297,6 +315,22 @@ console.log(JSON.stringify({
     wrongAttestationPointCompressedHex: wrongPrepared.attestationPointCompressedHex,
     activatingSignatureVerifies: activatingAttestation.verifies,
     wrongSignatureVerifies: wrongAttestation.verifies,
+  },
+  chainSimulation: {
+    kind: 'niti.v0_1_chain_simulation.v1',
+    boundary: 'deterministic confirmation transcript; no public broadcast',
+    blocks: [
+      {
+        height: parentCetConfirmation.blockHeight,
+        hash: parentCetConfirmation.blockHash,
+        transactions: [
+          {
+            txid: parentCetConfirmation.txid,
+            role: 'parent_cet',
+          },
+        ],
+      },
+    ],
   },
   bridge: {
     spendsParentCetTxid: completedParentCet.txid,
