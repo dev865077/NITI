@@ -106,6 +106,8 @@ export interface CompletedTaprootKeySpend {
     scriptPubKeyHex: string;
   };
   feeSat: string;
+  locktime: number;
+  sequence: number;
   unsignedTxHex: string;
   rawTxHex: string;
   txidNoWitness: string;
@@ -164,6 +166,8 @@ export function buildTaprootKeySpend(input: {
   utxo: UtxoInput;
   destinationAddress: string;
   outputValueSat: bigint;
+  locktime?: number;
+  sequence?: number;
   nonceSecret?: bigint;
 }): CompletedTaprootKeySpend {
   const network = resolveNetwork(input.network);
@@ -177,11 +181,24 @@ export function buildTaprootKeySpend(input: {
   if (input.utxo.valueSat <= input.outputValueSat) {
     throw new Error('source value must exceed output value');
   }
+  const locktime = input.locktime ?? 0;
+  const sequence = input.sequence ?? 0xffffffff;
+  if (!Number.isInteger(locktime) || locktime < 0 || locktime > 0xffffffff) {
+    throw new Error('locktime must be a uint32');
+  }
+  if (!Number.isInteger(sequence) || sequence < 0 || sequence > 0xffffffff) {
+    throw new Error('sequence must be a uint32');
+  }
   const feeSat = input.utxo.valueSat - input.outputValueSat;
 
   const tx = new Transaction();
   tx.version = 2;
-  tx.addInput(reverseBytes(requireHexBytes(input.utxo.txid, 32, 'utxo.txid')), input.utxo.vout);
+  tx.locktime = locktime;
+  tx.addInput(
+    reverseBytes(requireHexBytes(input.utxo.txid, 32, 'utxo.txid')),
+    input.utxo.vout,
+    sequence,
+  );
   tx.addOutput(address.toOutputScript(input.destinationAddress, network.bitcoinjs), input.outputValueSat);
   const unsignedTxHex = tx.toHex();
   const txidNoWitness = tx.getId();
@@ -221,6 +238,8 @@ export function buildTaprootKeySpend(input: {
       scriptPubKeyHex: bytesToHex(outputScript),
     },
     feeSat: feeSat.toString(),
+    locktime,
+    sequence,
     unsignedTxHex,
     rawTxHex: tx.toHex(),
     txidNoWitness,

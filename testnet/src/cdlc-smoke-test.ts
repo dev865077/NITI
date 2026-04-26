@@ -11,6 +11,7 @@ import {
 } from './secp.js';
 import {
   buildTaprootAdaptorSpend,
+  buildTaprootKeySpend,
   completeTaprootAdaptorSpend,
   resolveNetwork,
   type BitcoinNetworkName,
@@ -31,15 +32,21 @@ resolveNetwork(network);
 
 const parentCetFeeSat = canonicalAmounts.parentCetFeeSat;
 const bridgeFeeSat = canonicalAmounts.bridgeFeeSat;
+const childCetFeeSat = canonicalAmounts.childCetFeeSat;
+const childRefundFeeSat = canonicalAmounts.childRefundFeeSat;
 const wallets = canonicalWallets(network);
 const parentFundingWallet = wallets.parentFunding;
 const bridgeSignerWallet = wallets.bridgeSigner;
 const childFundingWallet = wallets.childFunding;
 const oracleSecret = scalarFromHex(canonicalSecrets.oracle, 'oracle secret');
 const nonceSecret = scalarFromHex(canonicalSecrets.oracleNonce, 'oracle nonce');
+const childOracleSecret = scalarFromHex(canonicalSecrets.childOracle, 'child oracle secret');
+const childNonceSecret = scalarFromHex(canonicalSecrets.childOracleNonce, 'child oracle nonce');
 const eventId = canonicalOutcomes.eventId;
 const activatingOutcome = canonicalOutcomes.activating;
 const wrongOutcome = canonicalOutcomes.wrong;
+const childEventId = canonicalOutcomes.childEventId;
+const childActivatingOutcome = canonicalOutcomes.childActivating;
 
 function buildSpendWithDeterministicNonce(input: {
   signerWallet: TaprootWallet;
@@ -106,8 +113,18 @@ const wrongPrepared = prepareOracleOutcome({
   oracleSecret,
   nonceSecret,
 });
+const childPrepared = prepareOracleOutcome({
+  eventId: childEventId,
+  outcome: childActivatingOutcome,
+  oracleSecret: childOracleSecret,
+  nonceSecret: childNonceSecret,
+});
 assert.notEqual(
   wrongPrepared.attestationPointCompressedHex,
+  activatingPrepared.attestationPointCompressedHex,
+);
+assert.notEqual(
+  childPrepared.attestationPointCompressedHex,
   activatingPrepared.attestationPointCompressedHex,
 );
 
@@ -293,6 +310,65 @@ assert.equal(bridgeConfirmation.createsChildFundingOutput.scriptPubKeyHex, child
 assert.equal(bridgeConfirmation.childFundingOutpointExists, true);
 assert.equal(bridgeConfirmation.childFundingOutpointUnspent, true);
 
+const childFundingUtxo = {
+  txid: completedBridge.txid,
+  vout: 0,
+  valueSat: childFundingOutput.value,
+};
+const {
+  pending: pendingChildCet,
+  selectedAdaptorNonceSecretHex: childCetAdaptorNonceSecretHex,
+} = buildSpendWithDeterministicNonce({
+  signerWallet: childFundingWallet,
+  utxo: childFundingUtxo,
+  destinationAddress: parentFundingWallet.address,
+  feeSat: childCetFeeSat,
+  adaptorPointHex: childPrepared.attestationPointCompressedHex,
+});
+assert.equal(pendingChildCet.input.txid, completedBridge.txid);
+assert.equal(pendingChildCet.input.vout, 0);
+assert.equal(pendingChildCet.input.valueSat, childFundingOutput.value.toString());
+assert.equal(pendingChildCet.input.scriptPubKeyHex, childFundingWallet.scriptPubKeyHex);
+assert.equal(pendingChildCet.adaptor.verifiesAdaptor, true);
+assert.equal(
+  pendingChildCet.adaptor.adaptorPointCompressedHex,
+  childPrepared.attestationPointCompressedHex,
+);
+
+const childCetPreResolutionSignatureHex =
+  `${pendingChildCet.adaptor.adaptedNonceXOnlyHex}${pendingChildCet.adaptor.adaptorSignatureScalarHex}`;
+const childCetPreResolutionSignatureVerifies = verifyBip340Signature({
+  signatureHex: childCetPreResolutionSignatureHex,
+  messageHashHex: pendingChildCet.sighashHex,
+  publicKeyXOnlyHex: pendingChildCet.adaptor.signerPublicXOnlyHex,
+});
+assert.equal(childCetPreResolutionSignatureVerifies, false);
+
+const childRefundHeight = 3_000_300;
+const childRefundSequence = 0xfffffffe;
+const childRefund = buildTaprootKeySpend({
+  network,
+  signerOutputSecret: scalarFromHex(childFundingWallet.outputSecretHex, 'child funding output secret'),
+  signerScriptPubKeyHex: childFundingWallet.scriptPubKeyHex,
+  utxo: childFundingUtxo,
+  destinationAddress: childFundingWallet.address,
+  outputValueSat: childFundingOutput.value - childRefundFeeSat,
+  locktime: childRefundHeight,
+  sequence: childRefundSequence,
+  nonceSecret: scalarFromHex(canonicalSecrets.childRefundNonce, 'child refund nonce'),
+});
+assert.equal(childRefund.input.txid, completedBridge.txid);
+assert.equal(childRefund.input.vout, 0);
+assert.equal(childRefund.input.valueSat, childFundingOutput.value.toString());
+assert.equal(childRefund.input.scriptPubKeyHex, childFundingWallet.scriptPubKeyHex);
+assert.equal(childRefund.output.valueSat, (childFundingOutput.value - childRefundFeeSat).toString());
+assert.equal(childRefund.output.scriptPubKeyHex, childFundingWallet.scriptPubKeyHex);
+assert.equal(childRefund.locktime, childRefundHeight);
+assert.equal(childRefund.sequence, childRefundSequence);
+assert.equal(childRefund.signature.verifies, true);
+assert.equal(childRefund.txid, childRefund.txidNoWitness);
+assert.notEqual(childRefund.txidNoWitness, pendingChildCet.txidNoWitness);
+
 console.log(JSON.stringify({
   kind: 'niti.v0_1_cdlc_smoke_transcript.v1',
   boundary: 'deterministic regtest-equivalent transaction chain with signed fixture funding tx; no public broadcast',
@@ -451,5 +527,67 @@ console.log(JSON.stringify({
     confirmedByBridge: true,
     fundingOutpointExists: bridgeConfirmation.childFundingOutpointExists,
     fundingOutpointUnspent: bridgeConfirmation.childFundingOutpointUnspent,
+    oracle: {
+      eventId: childEventId,
+      activatingOutcome: childActivatingOutcome,
+      noncePointCompressedHex: childPrepared.noncePointCompressedHex,
+      oraclePublicCompressedHex: childPrepared.oraclePublicCompressedHex,
+      activatingAttestationPointCompressedHex: childPrepared.attestationPointCompressedHex,
+    },
+    preparedCet: {
+      input: {
+        txid: pendingChildCet.input.txid,
+        vout: pendingChildCet.input.vout,
+        valueSat: pendingChildCet.input.valueSat,
+        scriptPubKeyHex: pendingChildCet.input.scriptPubKeyHex,
+      },
+      destinationAddress: pendingChildCet.destinationAddress,
+      sendValueSat: pendingChildCet.sendValueSat,
+      feeSat: pendingChildCet.feeSat,
+      unsignedTxHex: pendingChildCet.unsignedTxHex,
+      unsignedTxid: pendingChildCet.txidNoWitness,
+      sighashHex: pendingChildCet.sighashHex,
+      selectedAdaptorNonceSecretHex: childCetAdaptorNonceSecretHex,
+      adaptorVerifies: pendingChildCet.adaptor.verifiesAdaptor,
+      adaptor: {
+        signerPublicXOnlyHex: pendingChildCet.adaptor.signerPublicXOnlyHex,
+        adaptorPointCompressedHex: pendingChildCet.adaptor.adaptorPointCompressedHex,
+        adaptedNonceXOnlyHex: pendingChildCet.adaptor.adaptedNonceXOnlyHex,
+        adaptorSignatureScalarHex: pendingChildCet.adaptor.adaptorSignatureScalarHex,
+        preResolutionHasCompletedWitness: false,
+        preResolutionSignatureHex: childCetPreResolutionSignatureHex,
+        preResolutionSignatureVerifies: childCetPreResolutionSignatureVerifies,
+      },
+    },
+    preparedRefund: {
+      input: childRefund.input,
+      destinationAddress: childRefund.destinationAddress,
+      output: childRefund.output,
+      feeSat: childRefund.feeSat,
+      locktime: childRefund.locktime,
+      sequence: childRefund.sequence,
+      unsignedTxHex: childRefund.unsignedTxHex,
+      txidNoWitness: childRefund.txidNoWitness,
+      rawTxHex: childRefund.rawTxHex,
+      txid: childRefund.txid,
+      sighashHex: childRefund.sighashHex,
+      signatureVerifies: childRefund.signature.verifies,
+      signature: {
+        signerPublicXOnlyHex: childRefund.signature.signerPublicXOnlyHex,
+        nonceXOnlyHex: childRefund.signature.nonceXOnlyHex,
+        signatureHex: childRefund.signature.signatureHex,
+      },
+    },
+    preparedSpendChecks: {
+      cetSpendsChildFunding: pendingChildCet.input.txid === completedBridge.txid
+        && pendingChildCet.input.vout === 0,
+      refundSpendsChildFunding: childRefund.input.txid === completedBridge.txid
+        && childRefund.input.vout === 0,
+      cetAdaptorVerifies: pendingChildCet.adaptor.verifiesAdaptor,
+      cetPreResolutionSignatureVerifies: childCetPreResolutionSignatureVerifies,
+      refundSignatureVerifies: childRefund.signature.verifies,
+      refundIsTimelocked: childRefund.locktime === childRefundHeight
+        && childRefund.sequence < 0xffffffff,
+    },
   },
 }, null, 2));

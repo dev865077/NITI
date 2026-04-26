@@ -67,6 +67,18 @@ Oracle fixture:
 | Activating attestation point `S_x` | `03a9853a7527b53165a23208738656cb6337d734297173e4939e1d6420f31a1124` |
 | Wrong attestation point `S_y` | `036d53cf539f9f0b5480dfa984b6a8c9644dcd86b6deb65911e8b0d1266e554b0b` |
 
+Child oracle fixture:
+
+| Field | Value |
+| --- | --- |
+| Child oracle secret | `0x8888888888888888888888888888888888888888888888888888888888888888` |
+| Child oracle nonce secret | `0x9999999999999999999999999999999999999999999999999999999999999999` |
+| Child event id | `niti-v0.1-child-cdlc-smoke` |
+| Child activating outcome | `CHILD_SETTLEMENT_READY` |
+| Child nonce point | `028985087b1818714f67e494a076ca0284c060fabc5d2ba66885b4ac60f801d3f5` |
+| Child oracle public key | `021617d38ed8d8657da4d4761e8057bc396ea9e4b9d29776d4be096016dbd2509b` |
+| Child attestation point | `03324002d204506cbec89b376a0069e96a6bd3789b56ac3c78ab846b89f7f506f9` |
+
 ## Transaction Graph
 
 ### Parent Funding Output
@@ -153,6 +165,18 @@ The child funding output is the bridge transaction output `0`:
 | Funding value | `98500 sat` |
 | Funding script | `5120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b` |
 
+### Prepared Child Spends
+
+The child funding output is accepted by two prepared child-state transactions:
+
+| Spend | Condition | Destination | Output value | Fee | Evidence |
+| --- | --- | --- | ---: | ---: | --- |
+| Child CET | adaptor point `03324002d204506cbec89b376a0069e96a6bd3789b56ac3c78ab846b89f7f506f9` | parent funding signer | `98000 sat` | `500 sat` | adaptor verifies, pre-resolution signature does not verify |
+| Child refund | `nLockTime = 3000300`, sequence `4294967294` | child funding signer | `98000 sat` | `500 sat` | BIP340 signature verifies |
+
+The child prepared-spend artifact is documented separately in
+[`L2_CHILD_PREPARED_SPENDS.md`](L2_CHILD_PREPARED_SPENDS.md).
+
 ## Accounting
 
 All amounts are in satoshis.
@@ -163,6 +187,8 @@ All amounts are in satoshis.
 | Parent CET | `100000` | `99000` | `1000` | input = output + fee |
 | Bridge | `99000` | `98500` | `500` | input = output + fee |
 | Child funding | `98500` | `98500` | `0` | bridge output becomes child funding |
+| Prepared child CET | `98500` | `98000` | `500` | prepared spend consumes child funding |
+| Prepared child refund | `98500` | `98000` | `500` | alternative prepared spend consumes child funding |
 
 The output values are above the conservative Taproot dust floor used by the
 harness.
@@ -212,6 +238,13 @@ The scenario passes only if all of the following hold:
 11. The scalar extracted from the completed bridge signature equals `s_x`.
 12. The completed bridge contains output `0` to the child funding script for
     `98500 sat`.
+13. The prepared child CET consumes the child funding outpoint and its adaptor
+    verifies before child oracle resolution.
+14. The prepared child CET pre-resolution signature does not verify as a
+    completed Taproot witness.
+15. The prepared child refund consumes the child funding outpoint, has
+    `nLockTime = 3000300`, uses a non-final sequence, and its signature
+    verifies.
 
 ## Expected Fail Events
 
@@ -228,6 +261,9 @@ The scenario fails closed if any of the following happen:
 8. The child funding script is not the child funding signer P2TR script.
 9. The oracle scalar extracted from either completed adaptor signature does not
    equal the activating attestation scalar.
+10. The child CET or child refund consumes any outpoint other than the child
+    funding output.
+11. The child CET adaptor or child refund signature fails verification.
 
 Oracle non-publication is not an activation failure. It is a liveness failure:
 the bridge remains incomplete and funds must follow the relevant timeout or
