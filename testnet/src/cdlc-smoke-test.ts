@@ -262,6 +262,37 @@ const childFundingOutput = outputAt(bridgeTx, 0);
 assert.equal(bytesToHex(childFundingOutput.script), childFundingWallet.scriptPubKeyHex);
 assert.equal(childFundingOutput.value, parentEdgeOutput.value - bridgeFeeSat);
 
+const bridgeConfirmationHeight = parentCetConfirmation.blockHeight + 1;
+const bridgeConfirmation = {
+  mode: 'deterministic-regtest-equivalent',
+  reason: 'CI does not depend on public testnet faucet, mempool, or local bitcoind availability',
+  txid: completedBridge.txid,
+  blockHeight: bridgeConfirmationHeight,
+  blockHash: deterministicBlockHash(bridgeConfirmationHeight, completedBridge.txid),
+  confirmations: 1,
+  spendsParentEdgeOutput: {
+    txid: completedParentCet.txid,
+    vout: 0,
+  },
+  createsChildFundingOutput: {
+    txid: completedBridge.txid,
+    vout: 0,
+    valueSat: childFundingOutput.value.toString(),
+    scriptPubKeyHex: childFundingWallet.scriptPubKeyHex,
+  },
+  childFundingOutpointExists: true,
+  childFundingOutpointUnspent: true,
+};
+assert.equal(bridgeConfirmation.blockHeight > parentCetConfirmation.blockHeight, true);
+assert.equal(bridgeConfirmation.spendsParentEdgeOutput.txid, completedParentCet.txid);
+assert.equal(bridgeConfirmation.spendsParentEdgeOutput.vout, 0);
+assert.equal(bridgeConfirmation.createsChildFundingOutput.txid, completedBridge.txid);
+assert.equal(bridgeConfirmation.createsChildFundingOutput.vout, 0);
+assert.equal(bridgeConfirmation.createsChildFundingOutput.valueSat, childFundingOutput.value.toString());
+assert.equal(bridgeConfirmation.createsChildFundingOutput.scriptPubKeyHex, childFundingWallet.scriptPubKeyHex);
+assert.equal(bridgeConfirmation.childFundingOutpointExists, true);
+assert.equal(bridgeConfirmation.childFundingOutpointUnspent, true);
+
 console.log(JSON.stringify({
   kind: 'niti.v0_1_cdlc_smoke_transcript.v1',
   boundary: 'deterministic regtest-equivalent transaction chain with signed fixture funding tx; no public broadcast',
@@ -330,6 +361,28 @@ console.log(JSON.stringify({
           },
         ],
       },
+      {
+        height: bridgeConfirmation.blockHeight,
+        hash: bridgeConfirmation.blockHash,
+        transactions: [
+          {
+            txid: bridgeConfirmation.txid,
+            role: 'bridge',
+            spends: bridgeConfirmation.spendsParentEdgeOutput,
+            creates: bridgeConfirmation.createsChildFundingOutput,
+          },
+        ],
+      },
+    ],
+    unspentOutputs: [
+      {
+        txid: bridgeConfirmation.createsChildFundingOutput.txid,
+        vout: bridgeConfirmation.createsChildFundingOutput.vout,
+        role: 'child_funding',
+        valueSat: bridgeConfirmation.createsChildFundingOutput.valueSat,
+        scriptPubKeyHex: bridgeConfirmation.createsChildFundingOutput.scriptPubKeyHex,
+        spent: false,
+      },
     ],
   },
   bridge: {
@@ -339,6 +392,7 @@ console.log(JSON.stringify({
     unsignedTxid: pendingBridge.txidNoWitness,
     completedRawTxHex: completedBridge.rawTxHex,
     completedTxid: completedBridge.txid,
+    confirmation: bridgeConfirmation,
     sighashHex: pendingBridge.sighashHex,
     sighashInputs: [
       {
@@ -394,5 +448,8 @@ console.log(JSON.stringify({
     fundedByBridgeTxid: completedBridge.txid,
     fundedByBridgeVout: 0,
     visibleInCompletedBridge: true,
+    confirmedByBridge: true,
+    fundingOutpointExists: bridgeConfirmation.childFundingOutpointExists,
+    fundingOutpointUnspent: bridgeConfirmation.childFundingOutpointUnspent,
   },
 }, null, 2));
