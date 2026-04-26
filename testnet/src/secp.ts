@@ -231,6 +231,18 @@ export function createBip340Signature(input: {
   };
 }
 
+export function verifyBip340Signature(input: {
+  signatureHex: string;
+  messageHashHex: string;
+  publicKeyXOnlyHex: string;
+}): boolean {
+  return schnorr.verify(
+    hexToBytes(input.signatureHex),
+    hexToBytes(input.messageHashHex),
+    hexToBytes(input.publicKeyXOnlyHex),
+  );
+}
+
 export function createBip340AdaptorSignature(input: {
   signerSecret: bigint;
   adaptorPoint: Point;
