@@ -85,6 +85,7 @@ flowchart LR
 | Primary whitepaper | [`WHITEPAPER.md`](WHITEPAPER.md) | cDLC construction, security claims, Lightning extension, limitations. |
 | Protocol summary | [`docs/PROTOCOL.md`](docs/PROTOCOL.md) | Compact description of oracle, adaptor, bridge, Lightning, and graph discipline. |
 | Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet layers. |
+| Layer 2 canonical scenario | [`docs/L2_SINGLE_CDLC_SCENARIO.md`](docs/L2_SINGLE_CDLC_SCENARIO.md) | Exact single-parent/single-child transaction graph, fixtures, timelocks, and pass/fail criteria for the v0.1 Layer 2 path. |
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Claim-by-claim mapping from formal algebra to transaction operations and smoke transcript fields. |
 | SPARK/Ada models | [`spark/`](spark/) | Formal algebra and finite accounting models. |
 | Testnet harness | [`testnet/`](testnet/) | TypeScript Taproot/adaptor, oracle, manifest, RPC, and Lightning hold-invoice tooling. |
@@ -158,6 +159,7 @@ docs/
   PROTOCOL.md                cDLC protocol summary
   ROADMAP.md                 Engineering roadmap
   SECURITY.md                Safety boundary and non-goals
+  L2_SINGLE_CDLC_SCENARIO.md Canonical single-parent/single-child scenario
   V0_1_ACCEPTANCE_MATRIX.md  Release claim and evidence matrix
   V0_1_CI.md                 CI gate documentation
   V0_1_RUNNER.md             One-command local v0.1 verification

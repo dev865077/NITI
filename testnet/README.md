@@ -57,6 +57,10 @@ single-parent/single-child path:
 npm run test:cdlc-smoke
 ```
 
+The canonical fixture, transaction graph, amounts, timelock ordering, and
+expected pass/fail criteria are specified in
+[`docs/L2_SINGLE_CDLC_SCENARIO.md`](../docs/L2_SINGLE_CDLC_SCENARIO.md).
+
 It produces a deterministic regtest-equivalent transcript with:
 
 - a parent CET whose adaptor witness is completed by the oracle scalar;
@@ -181,7 +185,7 @@ Implemented:
 Not implemented yet:
 
 - Full bilateral DLC negotiation.
-- Full parent CET -> bridge -> child funding transaction graph.
+- Full live-broadcast parent CET -> bridge -> child funding transaction graph.
 - Fee bump/anchor policy.
 - Production Lightning channel state machines, force-close behavior, watchtowers,
   route liquidity, or PTLC deployment.
