@@ -32,20 +32,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build TypeScript
-        run: npm run build
-
-      - name: Run deterministic harness tests
-        run: npm test
-
-      - name: Capture v0.1 cDLC smoke transcript
-        run: npm run test:cdlc-smoke > v0-1-cdlc-smoke-transcript.json
+      - name: Run v0.1 verifier for deterministic harness
+        run: npm run v0.1:verify -- --skip-ada --skip-spark --artifacts-dir v0-1-node-artifacts
 
       - name: Upload v0.1 smoke transcript
         uses: actions/upload-artifact@v4
         with:
           name: v0-1-cdlc-smoke-transcript
-          path: v0-1-cdlc-smoke-transcript.json
+          path: v0-1-node-artifacts/cdlc-smoke-transcript.json
           if-no-files-found: error
 
   ada-manifest:
@@ -71,11 +65,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gnat gprbuild
 
-      - name: Build Ada manifest validator
-        run: npm run ada:build
-
-      - name: Validate canonical cDLC manifest fixture
-        run: npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.json
+      - name: Run v0.1 verifier for Ada manifest validator
+        run: npm run v0.1:verify -- --skip-node --skip-spark --artifacts-dir v0-1-ada-artifacts
 
   spark-regression:
     name: SPARK proof regression
@@ -119,21 +110,10 @@ jobs:
           echo "SPARK include dir: $SPARK_INCLUDE_DIR"
           gnatprove --version
 
-      - name: Reject pragma Assume in SPARK sources
-        run: |
-          set -euo pipefail
-          if grep -RIn "pragma[[:space:]]\+Assume" spark/src spark/*.gpr; then
-            echo "SPARK proof sources must not use pragma Assume."
-            exit 1
-          fi
-
-      - name: Run core cDLC SPARK proofs
+      - name: Run v0.1 verifier for core cDLC SPARK proofs
         run: |
           set -euo pipefail
           cd /tmp/niti-spark-tools
           eval "$(alr printenv)"
           cd "$GITHUB_WORKSPACE"
-          gnatprove -P spark/cdlc_integer_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=fail
-          gnatprove -P spark/cdlc_residue_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=fail
-          gnatprove -P spark/cdlc_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=fail
-          gnatprove -P spark/lightning_cdlc_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=fail
+          scripts/run-v0.1.sh --skip-node --skip-ada --artifacts-dir v0-1-spark-artifacts
