@@ -62,6 +62,8 @@ expected pass/fail criteria are specified in
 [`docs/L2_SINGLE_CDLC_SCENARIO.md`](../docs/L2_SINGLE_CDLC_SCENARIO.md).
 The parent CET evidence fields are specified in
 [`docs/L2_PARENT_CET_HARNESS.md`](../docs/L2_PARENT_CET_HARNESS.md).
+The bridge transaction evidence fields are specified in
+[`docs/L2_BRIDGE_HARNESS.md`](../docs/L2_BRIDGE_HARNESS.md).
 
 It produces a deterministic regtest-equivalent transcript with:
 
@@ -196,6 +198,8 @@ Implemented:
   the parent CET smoke path.
 - Parent CET transcript fields for serialized unsigned/completed tx, stable
   txid, sighash inputs, edge output map, and bridge reference.
+- Bridge transcript fields for serialized unsigned/completed tx, stable txid,
+  parent edge input, and child funding output map.
 - Offline test proving that completed adaptor witness verifies.
 - Deterministic v0.1 smoke test for one parent CET edge, one bridge transaction,
   one child funding output, and wrong-outcome non-activation.

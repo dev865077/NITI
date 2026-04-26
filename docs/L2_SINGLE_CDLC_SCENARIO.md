@@ -139,6 +139,9 @@ output.
 
 The completed bridge txid is equal to the no-witness txid for the same reason.
 
+The serialized bridge, sighash input map, and child funding output map are
+recorded in [`L2_BRIDGE_HARNESS.md`](L2_BRIDGE_HARNESS.md).
+
 ### Child Funding Output
 
 The child funding output is the bridge transaction output `0`:
