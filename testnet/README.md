@@ -64,6 +64,8 @@ The parent CET evidence fields are specified in
 [`docs/L2_PARENT_CET_HARNESS.md`](../docs/L2_PARENT_CET_HARNESS.md).
 The bridge transaction evidence fields are specified in
 [`docs/L2_BRIDGE_HARNESS.md`](../docs/L2_BRIDGE_HARNESS.md).
+The bridge adaptor completion evidence fields are specified in
+[`docs/L2_BRIDGE_ADAPTOR_COMPLETION.md`](../docs/L2_BRIDGE_ADAPTOR_COMPLETION.md).
 
 It produces a deterministic regtest-equivalent transcript with:
 
@@ -200,6 +202,8 @@ Implemented:
   txid, sighash inputs, edge output map, and bridge reference.
 - Bridge transcript fields for serialized unsigned/completed tx, stable txid,
   parent edge input, and child funding output map.
+- Bridge adaptor transcript fields for pre-resolution signature failure,
+  correct scalar completion, scalar extraction, and wrong scalar rejection.
 - Offline test proving that completed adaptor witness verifies.
 - Deterministic v0.1 smoke test for one parent CET edge, one bridge transaction,
   one child funding output, and wrong-outcome non-activation.

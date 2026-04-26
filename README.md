@@ -89,6 +89,7 @@ flowchart LR
 | Layer 2 parent funding harness | [`docs/L2_PARENT_FUNDING_HARNESS.md`](docs/L2_PARENT_FUNDING_HARNESS.md) | Deterministic signed Taproot funding transaction, txid/vout, raw tx, and consumption by the parent CET fixture. |
 | Layer 2 parent CET harness | [`docs/L2_PARENT_CET_HARNESS.md`](docs/L2_PARENT_CET_HARNESS.md) | Serialized parent CET, stable txid, sighash inputs, edge output map, and bridge reference. |
 | Layer 2 bridge harness | [`docs/L2_BRIDGE_HARNESS.md`](docs/L2_BRIDGE_HARNESS.md) | Serialized bridge transaction, stable txid, parent edge input, and child funding output. |
+| Layer 2 bridge adaptor completion | [`docs/L2_BRIDGE_ADAPTOR_COMPLETION.md`](docs/L2_BRIDGE_ADAPTOR_COMPLETION.md) | Executable bridge signature evidence: pre-resolution failure, `s_x` completion, and `s_y` rejection. |
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Claim-by-claim mapping from formal algebra to transaction operations and smoke transcript fields. |
 | SPARK/Ada models | [`spark/`](spark/) | Formal algebra and finite accounting models. |
 | Testnet harness | [`testnet/`](testnet/) | TypeScript Taproot/adaptor, oracle, manifest, RPC, and Lightning hold-invoice tooling. |
@@ -166,6 +167,7 @@ docs/
   L2_PARENT_FUNDING_HARNESS.md Parent funding transaction artifact
   L2_PARENT_CET_HARNESS.md   Parent CET edge-output artifact
   L2_BRIDGE_HARNESS.md       Bridge-to-child funding artifact
+  L2_BRIDGE_ADAPTOR_COMPLETION.md Bridge signature completion artifact
   V0_1_ACCEPTANCE_MATRIX.md  Release claim and evidence matrix
   V0_1_CI.md                 CI gate documentation
   V0_1_RUNNER.md             One-command local v0.1 verification

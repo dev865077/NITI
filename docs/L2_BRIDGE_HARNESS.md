@@ -49,6 +49,9 @@ Completed bridge transaction:
 The bridge txid is known before oracle resolution because witness data is not
 part of the transaction id.
 
+Bridge adaptor completion evidence is recorded separately in
+[`L2_BRIDGE_ADAPTOR_COMPLETION.md`](L2_BRIDGE_ADAPTOR_COMPLETION.md).
+
 ## Child Funding Output `F_j`
 
 | Field | Value |

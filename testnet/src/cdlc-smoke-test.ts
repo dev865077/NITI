@@ -6,6 +6,7 @@ import {
   prepareOracleOutcome,
   pointFromCompressed,
   scalarFromHex,
+  verifyBip340Signature,
 } from './secp.js';
 import {
   buildTaprootAdaptorSpend,
@@ -202,16 +203,32 @@ assert.equal(pendingBridge.input.valueSat, parentEdgeOutput.value.toString());
 assert.equal(pendingBridge.input.scriptPubKeyHex, bridgeSignerWallet.scriptPubKeyHex);
 assert.equal(pendingBridge.adaptor.verifiesAdaptor, true);
 assert.equal(pendingBridge.adaptor.adaptorPointCompressedHex, activatingPrepared.attestationPointCompressedHex);
-assert.throws(
-  () => completeTaprootAdaptorSpend({
+
+const bridgePreResolutionSignatureHex =
+  `${pendingBridge.adaptor.adaptedNonceXOnlyHex}${pendingBridge.adaptor.adaptorSignatureScalarHex}`;
+const bridgePreResolutionSignatureVerifies = verifyBip340Signature({
+  signatureHex: bridgePreResolutionSignatureHex,
+  messageHashHex: pendingBridge.sighashHex,
+  publicKeyXOnlyHex: pendingBridge.adaptor.signerPublicXOnlyHex,
+});
+assert.equal(bridgePreResolutionSignatureVerifies, false);
+
+let bridgeWrongScalarRejected = false;
+let bridgeWrongScalarReason = '';
+try {
+  completeTaprootAdaptorSpend({
     pending: pendingBridge,
     attestationSecret: scalarFromHex(
       wrongAttestation.attestationSecretHex,
       'wrong attestation secret',
     ),
-  }),
-  /completed adaptor signature does not verify/,
-);
+  });
+} catch (error) {
+  bridgeWrongScalarRejected = true;
+  bridgeWrongScalarReason = error instanceof Error ? error.message : String(error);
+}
+assert.equal(bridgeWrongScalarRejected, true);
+assert.match(bridgeWrongScalarReason, /completed adaptor signature does not verify/);
 
 const completedBridge = completeTaprootAdaptorSpend({
   pending: pendingBridge,
@@ -299,6 +316,29 @@ console.log(JSON.stringify({
     ],
     selectedAdaptorNonceSecretHex: bridgeAdaptorNonceSecretHex,
     adaptorVerifies: pendingBridge.adaptor.verifiesAdaptor,
+    adaptor: {
+      signerPublicXOnlyHex: pendingBridge.adaptor.signerPublicXOnlyHex,
+      adaptorPointCompressedHex: pendingBridge.adaptor.adaptorPointCompressedHex,
+      adaptedNonceXOnlyHex: pendingBridge.adaptor.adaptedNonceXOnlyHex,
+      adaptorSignatureScalarHex: pendingBridge.adaptor.adaptorSignatureScalarHex,
+      preResolutionVerifies: pendingBridge.adaptor.verifiesAdaptor,
+      preResolutionHasCompletedWitness: false,
+      preResolutionSignatureHex: bridgePreResolutionSignatureHex,
+      preResolutionSignatureVerifies: bridgePreResolutionSignatureVerifies,
+    },
+    completion: {
+      attestationPointCompressedHex: activatingAttestation.attestationPointCompressedHex,
+      completedSignatureHex: completedBridge.completedSignatureHex,
+      completedSignatureVerifies: completedBridge.verifies,
+      extractedSecretHex: completedBridge.extractedSecretHex,
+      extractedSecretMatchesOracleScalar:
+        completedBridge.extractedSecretHex === activatingAttestation.attestationSecretHex,
+    },
+    wrongScalar: {
+      attestationPointCompressedHex: wrongAttestation.attestationPointCompressedHex,
+      rejected: bridgeWrongScalarRejected,
+      reason: bridgeWrongScalarReason,
+    },
     completedSignatureVerifies: completedBridge.verifies,
     extractedSecretMatchesOracleScalar:
       completedBridge.extractedSecretHex === activatingAttestation.attestationSecretHex,
