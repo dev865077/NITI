@@ -10,9 +10,10 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run test:offline && npm run test:lightning",
+    "test": "npm run test:offline && npm run test:lightning && npm run test:cdlc-smoke",
     "test:offline": "TMPDIR=/tmp tsx testnet/src/offline-test.ts",
     "test:lightning": "TMPDIR=/tmp tsx testnet/src/lightning-offline-test.ts",
+    "test:cdlc-smoke": "TMPDIR=/tmp tsx testnet/src/cdlc-smoke-test.ts",
     "testnet": "TMPDIR=/tmp tsx testnet/src/cli.ts",
     "site:build": "tsc -p site/tsconfig.json",
     "site:serve": "npm run site:build && tsc -p site/tsconfig.server.json && node site/dist-server/server.js",
