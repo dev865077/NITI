@@ -31,6 +31,7 @@ npm run build
 npm run ada:build
 npm run test:offline
 npm run test:lightning
+npm run test:cdlc-smoke
 npm run testnet -- manifest:sample --network testnet4 --out testnet/examples/sample-manifest.json
 npm run testnet -- manifest:validate --file testnet/examples/sample-manifest.json
 ```
@@ -44,6 +45,27 @@ Expected offline result:
   "completedSignatureVerifies": true
 }
 ```
+
+The v0.1 cDLC smoke test is the mandatory release-gate command for the
+single-parent/single-child path:
+
+```sh
+npm run test:cdlc-smoke
+```
+
+It produces a deterministic regtest-equivalent transcript with:
+
+- a parent CET whose adaptor witness is completed by the oracle scalar;
+- a materialized parent edge output;
+- an oracle announcement/attestation for the activating outcome;
+- a bridge transaction whose adaptor signature is completed by the parent
+  oracle scalar;
+- a visible child funding output in the completed bridge transaction;
+- a paired wrong-outcome negative check that must fail before the test passes.
+
+This command does not claim public testnet confirmation. Public broadcast is a
+separate Layer 2 artifact because mempool and faucet availability are external
+conditions.
 
 ## RPC Configuration
 
@@ -139,6 +161,8 @@ Implemented:
 - Bitcoin Core JSON-RPC client for info, scan, and broadcast.
 - Ada manifest validator for finite cDLC graphs.
 - Offline test proving that completed adaptor witness verifies.
+- Deterministic v0.1 smoke test for one parent CET edge, one bridge transaction,
+  one child funding output, and wrong-outcome non-activation.
 - LND REST hold-invoice preparation for the Lightning HTLC extension.
 - Offline Lightning mock proving that the oracle scalar matches the payment
   hash and settles the prepared condition.

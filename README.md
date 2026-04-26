@@ -77,6 +77,7 @@ docs/
   PROTOCOL.md              cDLC protocol summary
   ROADMAP.md               Engineering roadmap
   SECURITY.md              Threat model and safety boundaries
+  V0_1_ACCEPTANCE_MATRIX.md v0.1 testnet release gate matrix
 research/
   covered-call-yield-note-math.md
   cdlc-technical-note.md
@@ -108,7 +109,7 @@ Build and test the TypeScript harness:
 
 ```sh
 npm run build
-npm run test:offline
+npm test
 ```
 
 Build and serve the site locally:
@@ -150,11 +151,20 @@ The harness supports:
 - testnet/signet/regtest-style Taproot addresses;
 - oracle outcome preparation and attestation;
 - Taproot key-path adaptor spend generation;
+- deterministic v0.1 parent-CET -> bridge -> child-funding smoke test;
 - transaction completion after attestation;
 - Lightning HTLC hold-invoice preparation and settlement hooks for LND REST;
 - Bitcoin Core RPC scan and broadcast.
 
 Broadcast is deliberately blocked unless the CLI receives `--allow-broadcast`.
+
+The v0.1 release gate is tracked in
+[`docs/V0_1_ACCEPTANCE_MATRIX.md`](docs/V0_1_ACCEPTANCE_MATRIX.md). The minimum
+single-path cDLC smoke command is:
+
+```sh
+npm run test:cdlc-smoke
+```
 
 ## Formal Proofs
 

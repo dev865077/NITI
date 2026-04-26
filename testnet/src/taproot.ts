@@ -137,6 +137,7 @@ export function buildTaprootAdaptorSpend(input: {
   destinationAddress: string;
   feeSat: bigint;
   adaptorPoint: Point;
+  adaptorNonceSecret?: bigint;
 }): PendingTaprootAdaptorSpend {
   const network = resolveNetwork(input.network);
   const scriptPubKey = requireHexBytes(input.signerScriptPubKeyHex, 34, 'signerScriptPubKey');
@@ -163,6 +164,9 @@ export function buildTaprootAdaptorSpend(input: {
     signerSecret: input.signerOutputSecret,
     adaptorPoint: input.adaptorPoint,
     message32: sighash,
+    ...(input.adaptorNonceSecret === undefined
+      ? {}
+      : { nonceSecret: input.adaptorNonceSecret }),
   });
 
   return {

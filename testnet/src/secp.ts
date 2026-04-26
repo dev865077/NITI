@@ -195,6 +195,7 @@ export function createBip340AdaptorSignature(input: {
   signerSecret: bigint;
   adaptorPoint: Point;
   message32: Uint8Array;
+  nonceSecret?: bigint;
 }): AdaptorSignature {
   if (input.message32.length !== 32) {
     throw new Error('adaptor signature message must be 32 bytes');
@@ -202,8 +203,13 @@ export function createBip340AdaptorSignature(input: {
   const signer = normalizeBip340Secret(input.signerSecret);
   const publicX = pointToXOnly(signer.point);
 
-  for (let attempt = 0; attempt < 10_000; attempt += 1) {
-    const nonce = normalizeBip340Secret(randomScalar());
+  const nonceSecrets = input.nonceSecret === undefined
+    ? undefined
+    : [input.nonceSecret];
+  const attempts = nonceSecrets?.length ?? 10_000;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const nonce = normalizeBip340Secret(nonceSecrets?.[attempt] ?? randomScalar());
     const adaptedNonce = nonce.point.add(input.adaptorPoint);
     if (adaptedNonce.is0() || !hasEvenY(adaptedNonce)) {
       continue;
@@ -229,7 +235,9 @@ export function createBip340AdaptorSignature(input: {
     };
   }
 
-  throw new Error('could not find an even adapted nonce');
+  throw new Error(input.nonceSecret === undefined
+    ? 'could not find an even adapted nonce'
+    : 'deterministic adaptor nonce produced an invalid adapted nonce');
 }
 
 export function completeAdaptorSignature(input: {
