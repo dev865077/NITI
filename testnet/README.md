@@ -63,6 +63,8 @@ expected pass/fail criteria are specified in
 
 It produces a deterministic regtest-equivalent transcript with:
 
+- a signed parent funding transaction fixture and known parent funding
+  txid/vout;
 - a parent CET whose adaptor witness is completed by the oracle scalar;
 - a materialized parent edge output;
 - an oracle announcement/attestation for the activating outcome;
@@ -74,6 +76,19 @@ It produces a deterministic regtest-equivalent transcript with:
 This command does not claim public testnet confirmation. Public broadcast is a
 separate Layer 2 artifact because mempool and faucet availability are external
 conditions.
+
+To emit only the parent funding artifact required by the Layer 2 funding
+harness:
+
+```sh
+npm run testnet -- cdlc:parent-funding \
+  --network testnet4 \
+  --out testnet/artifacts/parent-funding.json \
+  --raw-out testnet/artifacts/parent-funding.hex
+```
+
+The expected funding output is documented in
+[`docs/L2_PARENT_FUNDING_HARNESS.md`](../docs/L2_PARENT_FUNDING_HARNESS.md).
 
 ## RPC Configuration
 
@@ -175,6 +190,8 @@ Implemented:
 - Oracle prepare/attest flow using the BIP340 equation.
 - Bitcoin Core JSON-RPC client for info, scan, and broadcast.
 - Ada manifest validator for finite cDLC graphs.
+- Deterministic signed Taproot parent funding transaction fixture consumed by
+  the parent CET smoke path.
 - Offline test proving that completed adaptor witness verifies.
 - Deterministic v0.1 smoke test for one parent CET edge, one bridge transaction,
   one child funding output, and wrong-outcome non-activation.

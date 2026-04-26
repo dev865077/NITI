@@ -15,12 +15,15 @@ The default run performs:
 
 1. TypeScript build.
 2. Deterministic adaptor, Lightning, and cDLC smoke tests.
-3. A fresh cDLC smoke transcript at
+3. A fresh parent funding artifact at
+   `testnet/artifacts/v0.1-*/parent-funding.json` and raw transaction at
+   `testnet/artifacts/v0.1-*/parent-funding.hex`.
+4. A fresh cDLC smoke transcript at
    `testnet/artifacts/v0.1-*/cdlc-smoke-transcript.json`.
-4. Ada cDLC manifest validator build.
-5. Sample finite cDLC manifest generation and validation.
-6. `pragma Assume` scan over SPARK proof sources.
-7. Core SPARK proof targets:
+5. Ada cDLC manifest validator build.
+6. Sample finite cDLC manifest generation and validation.
+7. `pragma Assume` scan over SPARK proof sources.
+8. Core SPARK proof targets:
    - `spark/cdlc_integer_proofs.gpr`
    - `spark/cdlc_residue_proofs.gpr`
    - `spark/cdlc_proofs.gpr`

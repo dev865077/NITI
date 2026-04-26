@@ -4,14 +4,13 @@ import { Point } from '@noble/secp256k1';
 import {
   bytesToHex,
   bytesToNumber,
-  concatBytes,
   hexToBytes,
-  numberToBytes32,
   requireHexBytes,
   reverseBytes,
 } from './bytes.js';
 import {
   completeAdaptorSignature,
+  createBip340Signature,
   createBip340AdaptorSignature,
   CURVE_N,
   hasEvenY,
@@ -20,7 +19,6 @@ import {
   pointFromCompressed,
   pointToCompressed,
   pointToXOnly,
-  pointXOnlyHex,
   scalarFromHex,
   scalarToHex,
 } from './secp.js';
@@ -94,6 +92,36 @@ export interface UtxoInput {
   valueSat: bigint;
 }
 
+export interface CompletedTaprootKeySpend {
+  kind: 'niti.taproot_key_spend.v1';
+  network: BitcoinNetworkName;
+  input: Omit<UtxoInput, 'valueSat'> & {
+    valueSat: string;
+    scriptPubKeyHex: string;
+  };
+  destinationAddress: string;
+  output: {
+    vout: number;
+    valueSat: string;
+    scriptPubKeyHex: string;
+  };
+  feeSat: string;
+  unsignedTxHex: string;
+  rawTxHex: string;
+  txidNoWitness: string;
+  txid: string;
+  sighashHex: string;
+  signature: {
+    signerPublicXOnlyHex: string;
+    signerPublicCompressedHex: string;
+    nonceXOnlyHex: string;
+    nonceCompressedHex: string;
+    signatureScalarHex: string;
+    signatureHex: string;
+    verifies: boolean;
+  };
+}
+
 export interface PendingTaprootAdaptorSpend {
   kind: 'niti.taproot_adaptor_spend.v1';
   network: BitcoinNetworkName;
@@ -127,6 +155,87 @@ export interface CompletedTaprootAdaptorSpend {
   txid: string;
   verifies: boolean;
   extractedSecretHex: string;
+}
+
+export function buildTaprootKeySpend(input: {
+  network: BitcoinNetworkName;
+  signerOutputSecret: bigint;
+  signerScriptPubKeyHex: string;
+  utxo: UtxoInput;
+  destinationAddress: string;
+  outputValueSat: bigint;
+  nonceSecret?: bigint;
+}): CompletedTaprootKeySpend {
+  const network = resolveNetwork(input.network);
+  const scriptPubKey = requireHexBytes(input.signerScriptPubKeyHex, 34, 'signerScriptPubKey');
+  if (input.outputValueSat <= 0n) {
+    throw new Error('output value must be positive');
+  }
+  if (input.outputValueSat < 330n) {
+    throw new Error('output value is below a conservative taproot dust floor');
+  }
+  if (input.utxo.valueSat <= input.outputValueSat) {
+    throw new Error('source value must exceed output value');
+  }
+  const feeSat = input.utxo.valueSat - input.outputValueSat;
+
+  const tx = new Transaction();
+  tx.version = 2;
+  tx.addInput(reverseBytes(requireHexBytes(input.utxo.txid, 32, 'utxo.txid')), input.utxo.vout);
+  tx.addOutput(address.toOutputScript(input.destinationAddress, network.bitcoinjs), input.outputValueSat);
+  const unsignedTxHex = tx.toHex();
+  const txidNoWitness = tx.getId();
+
+  const sighash = tx.hashForWitnessV1(
+    0,
+    [scriptPubKey],
+    [input.utxo.valueSat],
+    Transaction.SIGHASH_DEFAULT,
+  );
+  const signature = createBip340Signature({
+    signerSecret: input.signerOutputSecret,
+    message32: sighash,
+    ...(input.nonceSecret === undefined
+      ? {}
+      : { nonceSecret: input.nonceSecret }),
+  });
+  if (!signature.verifies) {
+    throw new Error('taproot key-path signature does not verify');
+  }
+  tx.setWitness(0, [hexToBytes(signature.signatureHex)]);
+  const outputScript = address.toOutputScript(input.destinationAddress, network.bitcoinjs);
+
+  return {
+    kind: 'niti.taproot_key_spend.v1',
+    network: input.network,
+    input: {
+      txid: input.utxo.txid,
+      vout: input.utxo.vout,
+      valueSat: input.utxo.valueSat.toString(),
+      scriptPubKeyHex: input.signerScriptPubKeyHex,
+    },
+    destinationAddress: input.destinationAddress,
+    output: {
+      vout: 0,
+      valueSat: input.outputValueSat.toString(),
+      scriptPubKeyHex: bytesToHex(outputScript),
+    },
+    feeSat: feeSat.toString(),
+    unsignedTxHex,
+    rawTxHex: tx.toHex(),
+    txidNoWitness,
+    txid: tx.getId(),
+    sighashHex: bytesToHex(sighash),
+    signature: {
+      signerPublicXOnlyHex: signature.signerPublicXOnlyHex,
+      signerPublicCompressedHex: signature.signerPublicCompressedHex,
+      nonceXOnlyHex: signature.nonceXOnlyHex,
+      nonceCompressedHex: signature.nonceCompressedHex,
+      signatureScalarHex: signature.signatureScalarHex,
+      signatureHex: signature.signatureHex,
+      verifies: signature.verifies,
+    },
+  };
 }
 
 export function buildTaprootAdaptorSpend(input: {

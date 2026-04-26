@@ -10,58 +10,34 @@ import {
 import {
   buildTaprootAdaptorSpend,
   completeTaprootAdaptorSpend,
-  deriveTaprootWallet,
   resolveNetwork,
   type BitcoinNetworkName,
   type PendingTaprootAdaptorSpend,
   type TaprootWallet,
 } from './taproot.js';
+import {
+  buildCanonicalParentFundingFixture,
+  canonicalAmounts,
+  canonicalNetwork,
+  canonicalOutcomes,
+  canonicalSecrets,
+  canonicalWallets,
+} from './cdlc-scenario.js';
 
-const network: BitcoinNetworkName = 'testnet4';
+const network: BitcoinNetworkName = canonicalNetwork;
 resolveNetwork(network);
 
-const parentFundingTxid = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
-const parentFundingVout = 0;
-const parentFundingValueSat = 100_000n;
-const parentCetFeeSat = 1_000n;
-const bridgeFeeSat = 500n;
-
-const parentFundingWallet = deriveTaprootWallet({
-  network,
-  internalSecret: scalarFromHex(
-    '1111111111111111111111111111111111111111111111111111111111111111',
-    'parent funding secret',
-  ),
-});
-
-const bridgeSignerWallet = deriveTaprootWallet({
-  network,
-  internalSecret: scalarFromHex(
-    '2222222222222222222222222222222222222222222222222222222222222222',
-    'bridge signer secret',
-  ),
-});
-
-const childFundingWallet = deriveTaprootWallet({
-  network,
-  internalSecret: scalarFromHex(
-    '3333333333333333333333333333333333333333333333333333333333333333',
-    'child funding secret',
-  ),
-});
-
-const oracleSecret = scalarFromHex(
-  '4444444444444444444444444444444444444444444444444444444444444444',
-  'oracle secret',
-);
-const nonceSecret = scalarFromHex(
-  '5555555555555555555555555555555555555555555555555555555555555555',
-  'oracle nonce',
-);
-
-const eventId = 'niti-v0.1-parent-cdlc-smoke';
-const activatingOutcome = 'BTCUSD_ABOVE_STRIKE';
-const wrongOutcome = 'BTCUSD_BELOW_STRIKE';
+const parentCetFeeSat = canonicalAmounts.parentCetFeeSat;
+const bridgeFeeSat = canonicalAmounts.bridgeFeeSat;
+const wallets = canonicalWallets(network);
+const parentFundingWallet = wallets.parentFunding;
+const bridgeSignerWallet = wallets.bridgeSigner;
+const childFundingWallet = wallets.childFunding;
+const oracleSecret = scalarFromHex(canonicalSecrets.oracle, 'oracle secret');
+const nonceSecret = scalarFromHex(canonicalSecrets.oracleNonce, 'oracle nonce');
+const eventId = canonicalOutcomes.eventId;
+const activatingOutcome = canonicalOutcomes.activating;
+const wrongOutcome = canonicalOutcomes.wrong;
 
 function buildSpendWithDeterministicNonce(input: {
   signerWallet: TaprootWallet;
@@ -129,15 +105,21 @@ assert.notEqual(
   activatingPrepared.attestationPointCompressedHex,
 );
 
+const parentFundingFixture = buildCanonicalParentFundingFixture(network);
+assert.equal(parentFundingFixture.parentFunding.signatureVerifies, true);
+assert.equal(parentFundingFixture.parentFunding.vout, 0);
+assert.equal(parentFundingFixture.parentFunding.valueSat, canonicalAmounts.parentFundingValueSat.toString());
+assert.equal(parentFundingFixture.parentFunding.scriptPubKeyHex, parentFundingWallet.scriptPubKeyHex);
+
 const {
   pending: pendingParentCet,
   selectedAdaptorNonceSecretHex: parentAdaptorNonceSecretHex,
 } = buildSpendWithDeterministicNonce({
   signerWallet: parentFundingWallet,
   utxo: {
-    txid: parentFundingTxid,
-    vout: parentFundingVout,
-    valueSat: parentFundingValueSat,
+    txid: parentFundingFixture.parentFunding.txid,
+    vout: parentFundingFixture.parentFunding.vout,
+    valueSat: BigInt(parentFundingFixture.parentFunding.valueSat),
   },
   destinationAddress: bridgeSignerWallet.address,
   feeSat: parentCetFeeSat,
@@ -194,7 +176,7 @@ assert.equal(completedParentCet.extractedSecretHex, activatingAttestation.attest
 const parentCet = Transaction.fromHex(completedParentCet.rawTxHex);
 const parentEdgeOutput = outputAt(parentCet, 0);
 assert.equal(bytesToHex(parentEdgeOutput.script), bridgeSignerWallet.scriptPubKeyHex);
-assert.equal(parentEdgeOutput.value, parentFundingValueSat - parentCetFeeSat);
+assert.equal(parentEdgeOutput.value, canonicalAmounts.parentFundingValueSat - parentCetFeeSat);
 
 const {
   pending: pendingBridge,
@@ -242,10 +224,11 @@ assert.equal(childFundingOutput.value, parentEdgeOutput.value - bridgeFeeSat);
 
 console.log(JSON.stringify({
   kind: 'niti.v0_1_cdlc_smoke_transcript.v1',
-  boundary: 'deterministic regtest-equivalent transaction chain with fixture prevout; no public broadcast',
+  boundary: 'deterministic regtest-equivalent transaction chain with signed fixture funding tx; no public broadcast',
   network,
+  funding: parentFundingFixture,
   parent: {
-    fundingTxid: parentFundingTxid,
+    fundingTxid: parentFundingFixture.parentFunding.txid,
     cetUnsignedTxid: pendingParentCet.txidNoWitness,
     cetCompletedTxid: completedParentCet.txid,
     cetRawTxHex: completedParentCet.rawTxHex,
