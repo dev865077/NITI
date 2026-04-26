@@ -30,10 +30,12 @@ There are seventeen models:
   partitioning, capped deliverable notional, floor-quotient ITM claim bounds,
   escrowed/upfront conservation, and explicit OTM, ATM, ITM, capped-claim, and
   maximum-delivery vectors.
-- `synthetic_dollar_stable_exposure_algebra`: proves integer accounting for
-  BTC-collateralized synthetic dollar exposure: cross-multiplied stable-value
-  checks, collateral caps, residual BTC conservation, re-hedge continuation,
-  and wrong-branch settlement exclusion at the financial-state layer.
+- `synthetic_dollar_stable_exposure_algebra`: proves the integer payoff and
+  continuation identities for BTC-funded stable exposure: ceil-quotient stable
+  claim coverage, stable claim boundedness, BTC conservation, par-solvent and
+  insolvent branch partitioning, rounding error bounds, reserve-preserving
+  healthy rolls, valid de-risk transitions, liquidation-warning predicates, and
+  restriction of full-collateral terminal settlement to insolvency.
 - `perpetuals_rolling_forwards_algebra`: proves one-period forward/perpetual
   payoff accounting, zero-sum long/short scaled payoffs, funding accrual,
   collateral-capped BTC settlement, roll-state reference updates, and
@@ -112,8 +114,21 @@ There are seventeen models:
   premium settlement conserves posted collateral.
 - Explicit covered-call test vectors prove OTM, ATM, ITM, capped-claim, and
   maximum-delivery cases.
-- Synthetic-dollar accounting preserves the BTC-funded state under collateral
-  caps and division-free stable-value predicates.
+- Synthetic-dollar ceil witnesses prove `Need * P >= D * SAT` and
+  `Need = 0 or (Need - 1) * P < D * SAT`.
+- Stable claims are bounded by posted BTC collateral, and claim plus residual
+  conserves collateral.
+- In the par-solvent branch, the stable claim covers the scaled target and the
+  rounding error is less than one settlement-price unit.
+- In the insolvent branch, the stable-side holder receives all posted
+  collateral and residual is zero.
+- Healthy synthetic-dollar rolls preserve the reserve invariant
+  `Q * P * H_Den >= D * SAT * H_Num`.
+- Valid de-risk transitions conserve BTC, reduce the stable target exactly,
+  and prove the child reserve invariant.
+- Full-collateral terminal settlement is modeled as allowed only in the
+  insolvent branch; above-par liquidation warnings are separate policy
+  predicates.
 - Perpetual and rolling-forward payoffs are zero-sum before caps, and
   same-notional rolls telescope exactly over modeled periods.
 - Extended BTC-loan lifecycle branches preserve collateral accounting across
@@ -154,7 +169,8 @@ There are seventeen models:
 - Economic claims about stablecoins, collateral, liquidity, oracle markets,
   borrower behavior, lender solvency, real execution price, slippage beyond the
   modeled recovery ratio, option fair value, implied volatility, assignment
-  conventions, or legal enforceability.
+  conventions, peg stability, liquidation availability, or legal
+  enforceability.
 - Market microstructure, fair pricing, implied volatility surfaces, forward
   curve construction, funding-rate economics, oracle quality, event-definition
   ambiguity, legal/regulatory classification, hedging liquidity, transaction
@@ -205,7 +221,7 @@ PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools
 gnatprove -P spark/covered_call_yield_note_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
-Synthetic dollar and stable exposure model:
+Synthetic-dollar and stable exposure model:
 
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
