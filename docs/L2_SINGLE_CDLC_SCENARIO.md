@@ -135,6 +135,26 @@ witness is excluded from the SegWit/Taproot transaction id.
 The serialized parent CET, sighash input map, and edge output map are recorded
 in [`L2_PARENT_CET_HARNESS.md`](L2_PARENT_CET_HARNESS.md).
 
+### Parent Edge Timeout Refund
+
+If the bridge is not completed before the bridge timeout, the parent CET edge
+output has an alternative timelocked refund spend:
+
+| Field | Value |
+| --- | --- |
+| Input | parent CET txid `4022f2d86e4d433bfee78db9572c57598f5c1756625a6fc32d5e0a7aea4ed43d:0` |
+| Output 0 script | parent funding signer P2TR script pubkey |
+| Output 0 value | `98500 sat` |
+| Fee | `500 sat` |
+| Locktime | `3000100` |
+| Sequence | `4294967294` |
+| Fixture txid without witness | `faa93dde1d6d1b113c5283ff42cffdc9039f697e74f2487c567e4a7d2d3f7244` |
+
+This refund is mutually exclusive with the bridge success path because both
+transactions spend the same parent CET output. The timeout artifact is
+documented separately in
+[`L2_EDGE_REFUND_TIMEOUT.md`](L2_EDGE_REFUND_TIMEOUT.md).
+
 ### Bridge Transaction
 
 The bridge spends the parent CET edge output and creates the child funding
@@ -185,6 +205,7 @@ All amounts are in satoshis.
 | --- | ---: | ---: | ---: | --- |
 | Parent funding | `101000` | `100000` | `1000` | input = output + fee |
 | Parent CET | `100000` | `99000` | `1000` | input = output + fee |
+| Parent edge timeout refund | `99000` | `98500` | `500` | alternative to bridge if timeout matures |
 | Bridge | `99000` | `98500` | `500` | input = output + fee |
 | Child funding | `98500` | `98500` | `0` | bridge output becomes child funding |
 | Prepared child CET | `98500` | `98000` | `500` | prepared spend consumes child funding |
@@ -245,6 +266,9 @@ The scenario passes only if all of the following hold:
 15. The prepared child refund consumes the child funding outpoint, has
     `nLockTime = 3000300`, uses a non-final sequence, and its signature
     verifies.
+16. The parent edge timeout refund consumes the parent CET edge output, has
+    `nLockTime = 3000100`, uses a non-final sequence, fails before maturity,
+    and passes after the modeled maturity height.
 
 ## Expected Fail Events
 
@@ -264,6 +288,8 @@ The scenario fails closed if any of the following happen:
 10. The child CET or child refund consumes any outpoint other than the child
     funding output.
 11. The child CET adaptor or child refund signature fails verification.
+12. The parent edge timeout refund is accepted before its modeled maturity
+    height or rejected after its modeled maturity height.
 
 Oracle non-publication is not an activation failure. It is a liveness failure:
 the bridge remains incomplete and funds must follow the relevant timeout or
