@@ -61,7 +61,7 @@ CI runs the core cDLC targets plus the Lightning target in
 | Adding the correct oracle scalar completes the Taproot signature. | `Prove_Completion_Verifies` and `Verify_Completed(...)` in [`spark/src/cdlc_algebra.ads`](../spark/src/cdlc_algebra.ads). | `completeAdaptorSignature(...)` computes `completed = adaptorSignatureScalar + attestationSecret`; `completeTaprootAdaptorSpend(...)` inserts the completed signature as the witness in [`testnet/src/secp.ts`](../testnet/src/secp.ts) and [`testnet/src/taproot.ts`](../testnet/src/taproot.ts). | `parent.completedSignatureVerifies = true`; `bridge.completedSignatureVerifies = true`; `parent.cetRawTxHex` is a complete transaction; `bridge.completedTxid` identifies the completed bridge. | Bitcoin Core policy, mempool relay, fee policy, confirmation, and mainnet safety. |
 | A completed signature reveals the hidden oracle scalar by subtraction. | `Prove_Extraction` and `Extract(...)` in [`spark/src/cdlc_algebra.ads`](../spark/src/cdlc_algebra.ads). | `completeAdaptorSignature(...)` computes `extracted = completed - adaptorSignatureScalar` in [`testnet/src/secp.ts`](../testnet/src/secp.ts). | `parent.extractedSecretMatchesOracleScalar = true`; `bridge.extractedSecretMatchesOracleScalar = true`. | Operational secrecy before attestation, signer storage safety, and whether counterparties retain adaptor records. |
 | A wrong oracle scalar does not complete the same adaptor signature. | `Prove_Wrong_Secret_Does_Not_Verify` in [`spark/src/cdlc_algebra.ads`](../spark/src/cdlc_algebra.ads), with explicit modular variants in [`spark/src/cdlc_algebra.adb`](../spark/src/cdlc_algebra.adb) and [`spark/src/cdlc_residue_algebra.adb`](../spark/src/cdlc_residue_algebra.adb). | `completeTaprootAdaptorSpend(...)` throws when the completed signature fails verification; the smoke test asserts this for both parent and bridge wrong-outcome attempts in [`testnet/src/cdlc-smoke-test.ts`](../testnet/src/cdlc-smoke-test.ts). | `parent.wrongOutcomeRejected = true`; `bridge.wrongOutcomeRejected = true`; wrong attestation point differs from the activating point. | Oracle equivocation, hash collisions, nonce reuse, and any implementation bug that bypasses signature verification. |
-| The parent outcome funds the child path through a bridge transaction. | The SPARK algebra proves activation of the signature condition, not Bitcoin transaction graph validity. The graph transition is a harness invariant. | The smoke test builds a signed parent funding fixture, completes the parent CET that spends `funding.parentFunding.txid:0`, extracts output `0`, builds a bridge spending that output, completes the bridge, and checks the child funding output in [`testnet/src/cdlc-smoke-test.ts`](../testnet/src/cdlc-smoke-test.ts). | `funding.parentFunding.signatureVerifies = true`; `parent.fundingTxid = funding.parentFunding.txid`; `bridge.spendsParentCetTxid = parent.cetCompletedTxid`; `bridge.spendsParentCetVout = 0`; `child.fundedByBridgeTxid = bridge.completedTxid`; `child.visibleInCompletedBridge = true`. | Full DLC negotiation, public broadcast, transaction package relay, CPFP/anchor policy, reorg handling, and wallet state management. |
+| The parent outcome funds the child path through a bridge transaction. | The SPARK algebra proves activation of the signature condition, not Bitcoin transaction graph validity. The graph transition is a harness invariant. | The smoke test builds a signed parent funding fixture, completes the parent CET that spends `funding.parentFunding.txid:0`, records the parent CET sighash input map and edge output, builds a bridge spending that output, completes the bridge, and checks the child funding output in [`testnet/src/cdlc-smoke-test.ts`](../testnet/src/cdlc-smoke-test.ts). | `funding.parentFunding.signatureVerifies = true`; `parent.fundingTxid = funding.parentFunding.txid`; `parent.cetUnsignedTxid = parent.cetCompletedTxid`; `parent.sighashInputs[0]` identifies the funding outpoint; `parent.outputMap[0]` identifies `O_e`; `bridge.spendsParentCetTxid = parent.cetCompletedTxid`; `bridge.spendsParentCetVout = 0`; `child.fundedByBridgeTxid = bridge.completedTxid`; `child.visibleInCompletedBridge = true`. | Full DLC negotiation, public broadcast, transaction package relay, CPFP/anchor policy, reorg handling, and wallet state management. |
 
 ## Data Path
 
@@ -119,11 +119,14 @@ The following remain assumptions or separate release gates:
 1. Run `npm run test:cdlc-smoke`.
 2. Confirm `parent.adaptorVerifies`, `parent.completedSignatureVerifies`, and
    `parent.extractedSecretMatchesOracleScalar` are true.
-3. Confirm `bridge.adaptorVerifies`, `bridge.completedSignatureVerifies`, and
+3. Confirm `parent.cetUnsignedTxid = parent.cetCompletedTxid`, the parent
+   sighash input names `funding.parentFunding.txid:0`, and
+   `parent.outputMap[0]` is the bridge edge output.
+4. Confirm `bridge.adaptorVerifies`, `bridge.completedSignatureVerifies`, and
    `bridge.extractedSecretMatchesOracleScalar` are true.
-4. Confirm `parent.wrongOutcomeRejected` and `bridge.wrongOutcomeRejected` are
+5. Confirm `parent.wrongOutcomeRejected` and `bridge.wrongOutcomeRejected` are
    true.
-5. Confirm `child.visibleInCompletedBridge` is true and
+6. Confirm `child.visibleInCompletedBridge` is true and
    `child.fundedByBridgeTxid = bridge.completedTxid`.
-6. Run the core SPARK targets or inspect the CI run for the same commit.
-7. Treat any claim beyond the proof boundary as unproven by this trace.
+7. Run the core SPARK targets or inspect the CI run for the same commit.
+8. Treat any claim beyond the proof boundary as unproven by this trace.

@@ -126,6 +126,10 @@ const {
   adaptorPointHex: activatingPrepared.attestationPointCompressedHex,
 });
 assert.equal(pendingParentCet.adaptor.verifiesAdaptor, true);
+assert.equal(pendingParentCet.input.txid, parentFundingFixture.parentFunding.txid);
+assert.equal(pendingParentCet.input.vout, parentFundingFixture.parentFunding.vout);
+assert.equal(pendingParentCet.input.valueSat, parentFundingFixture.parentFunding.valueSat);
+assert.equal(pendingParentCet.input.scriptPubKeyHex, parentFundingWallet.scriptPubKeyHex);
 assert.equal(
   pendingParentCet.adaptor.adaptorPointCompressedHex,
   activatingPrepared.attestationPointCompressedHex,
@@ -229,9 +233,20 @@ console.log(JSON.stringify({
   funding: parentFundingFixture,
   parent: {
     fundingTxid: parentFundingFixture.parentFunding.txid,
+    fundingVout: parentFundingFixture.parentFunding.vout,
+    cetUnsignedTxHex: pendingParentCet.unsignedTxHex,
     cetUnsignedTxid: pendingParentCet.txidNoWitness,
     cetCompletedTxid: completedParentCet.txid,
     cetRawTxHex: completedParentCet.rawTxHex,
+    cetSighashHex: pendingParentCet.sighashHex,
+    sighashInputs: [
+      {
+        txid: pendingParentCet.input.txid,
+        vout: pendingParentCet.input.vout,
+        valueSat: pendingParentCet.input.valueSat,
+        scriptPubKeyHex: pendingParentCet.input.scriptPubKeyHex,
+      },
+    ],
     selectedAdaptorNonceSecretHex: parentAdaptorNonceSecretHex,
     adaptorVerifies: pendingParentCet.adaptor.verifiesAdaptor,
     completedSignatureVerifies: completedParentCet.verifies,
@@ -243,6 +258,15 @@ console.log(JSON.stringify({
       valueSat: parentEdgeOutput.value.toString(),
       scriptPubKeyHex: bridgeSignerWallet.scriptPubKeyHex,
     },
+    outputMap: [
+      {
+        name: 'edge',
+        vout: 0,
+        valueSat: parentEdgeOutput.value.toString(),
+        scriptPubKeyHex: bridgeSignerWallet.scriptPubKeyHex,
+        spendRole: 'bridge signer',
+      },
+    ],
   },
   oracle: {
     eventId,
