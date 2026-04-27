@@ -37,7 +37,7 @@ export function resolveNetwork(name: string | undefined): NitiNetwork {
   if (!['testnet', 'testnet4', 'signet', 'regtest'].includes(value)) {
     throw new Error(`unsupported network: ${name}`);
   }
-  return { name: value, bitcoinjs: networks.testnet };
+  return { name: value, bitcoinjs: value === 'regtest' ? networks.regtest : networks.testnet };
 }
 
 export interface TaprootWallet {

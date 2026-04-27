@@ -18,7 +18,9 @@ Status: done.
 - Broadcast on testnet/signet.
 - Record txid and raw transaction artifacts.
 
-Status: ready for final RPC and faucet configuration.
+Status: Bitcoin Core regtest broadcast and confirmation evidence exists in
+[`docs/evidence/issue-132-regtest`](evidence/issue-132-regtest). Public
+testnet/signet broadcast still requires final RPC and faucet configuration.
 
 ## Phase 2: Parent CET To Bridge
 
