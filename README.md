@@ -96,6 +96,7 @@ flowchart LR
 | Layer 2 edge refund timeout | [`docs/L2_EDGE_REFUND_TIMEOUT.md`](docs/L2_EDGE_REFUND_TIMEOUT.md) | Negative path proving the parent edge refund is rejected before timeout and accepted after maturity. |
 | Layer 2 E2E transcript | [`docs/L2_E2E_TRANSCRIPT.md`](docs/L2_E2E_TRANSCRIPT.md) | Redacted audit transcript with replay commands and deterministic pass/fail checks. |
 | Layer 2 deterministic closeout | [`docs/L2_EPIC_CLOSEOUT.md`](docs/L2_EPIC_CLOSEOUT.md) | Deterministic #56 evidence: child issue status, bounded Layer 2 claim, replay command, and residual risks. |
+| Issue #132 regtest tx evidence | [`docs/evidence/issue-132-regtest/`](docs/evidence/issue-132-regtest/) | Bitcoin Core regtest RPC broadcast, mempool checks, confirmations, raw tx files, and signature-state distinctions. |
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Claim-by-claim mapping from formal algebra to transaction operations and smoke transcript fields. |
 | SPARK/Ada models | [`spark/`](spark/) | Formal algebra and finite accounting models. |
 | Testnet harness | [`testnet/`](testnet/) | TypeScript Taproot/adaptor, oracle, manifest, RPC, and Lightning hold-invoice tooling. |
@@ -165,6 +166,7 @@ See [`testnet/REGTEST.md`](testnet/REGTEST.md).
 .github/workflows/
   v0-1-validation.yml        Remote v0.1 validation gate
 docs/
+  evidence/issue-132-regtest/ Bitcoin Core regtest tx evidence bundle
   ARCHITECTURE.md            Research/proof/testnet architecture
   PROTOCOL.md                cDLC protocol summary
   ROADMAP.md                 Engineering roadmap

@@ -51,11 +51,11 @@ txindex=1
 fallbackfee=0.00001000
 rpcuser=${RPC_USER}
 rpcpassword=${RPC_PASSWORD}
-rpcbind=${RPC_HOST}
-rpcallowip=127.0.0.1
 
 [regtest]
 rpcport=${RPC_PORT}
+rpcbind=${RPC_HOST}
+rpcallowip=127.0.0.1
 port=18444
 CONF
 }
