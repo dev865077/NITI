@@ -1,6 +1,7 @@
 import { scalarFromHex } from './secp.js';
 import {
   buildTaprootKeySpend,
+  conservativeTaprootDustFloorSat,
   deriveTaprootWallet,
   resolveNetwork,
   type BitcoinNetworkName,
@@ -44,6 +45,25 @@ export const canonicalSourcePrevout = {
   txid: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
   vout: 0,
 } as const;
+
+function maxBigInt(values: bigint[]): bigint {
+  const [first, ...rest] = values;
+  if (first === undefined) {
+    throw new Error('cannot take max of empty bigint list');
+  }
+  return rest.reduce((current, value) => (value > current ? value : current), first);
+}
+
+export function canonicalPublicActivationMinimumValueSat(): bigint {
+  return maxBigInt([
+    canonicalAmounts.parentCetFeeSat + conservativeTaprootDustFloorSat,
+    canonicalAmounts.parentCetFeeSat + canonicalAmounts.bridgeFeeSat + conservativeTaprootDustFloorSat,
+    canonicalAmounts.parentCetFeeSat + canonicalAmounts.bridgeFeeSat
+      + canonicalAmounts.childCetFeeSat + conservativeTaprootDustFloorSat,
+    canonicalAmounts.parentCetFeeSat + canonicalAmounts.bridgeFeeSat
+      + canonicalAmounts.childRefundFeeSat + conservativeTaprootDustFloorSat,
+  ]);
+}
 
 export function canonicalWallets(network: BitcoinNetworkName = canonicalNetwork): {
   sourceFunding: ReturnType<typeof deriveTaprootWallet>;

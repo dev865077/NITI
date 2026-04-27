@@ -22,6 +22,7 @@ import {
 import {
   canonicalAmounts,
   canonicalOutcomes,
+  canonicalPublicActivationMinimumValueSat,
   canonicalSecrets,
   canonicalWallets,
 } from './cdlc-scenario.js';
@@ -289,6 +290,7 @@ async function scanFundingUtxo(input: {
   address: string;
   scriptPubKeyHex: string;
 }): Promise<PublicFundingOutput> {
+  const minimumValueSat = canonicalPublicActivationMinimumValueSat();
   const scan = await rpcCall<{
     success: boolean;
     unspents: Array<{
@@ -308,7 +310,7 @@ async function scanFundingUtxo(input: {
       ...utxo,
       valueSat: amountToSats(utxo.amount),
     }))
-    .filter((utxo) => utxo.valueSat > canonicalAmounts.parentCetFeeSat + canonicalAmounts.bridgeFeeSat + 330n)
+    .filter((utxo) => utxo.valueSat >= minimumValueSat)
     .sort((a, b) => b.confirmations - a.confirmations);
   const selected = candidates[0];
   if (!selected) {
@@ -341,6 +343,7 @@ function fundingRequest(args: string[]): void {
   const network = networkArg(args);
   const out = stringArg(args, '--out', `testnet/artifacts/public-${network}-funding-request.json`);
   const wallets = canonicalWallets(network);
+  const minimumValueSat = canonicalPublicActivationMinimumValueSat();
   const request = {
     kind: 'niti.v0_1_public_cdlc_funding_request.v1',
     issue: 153,
@@ -348,8 +351,10 @@ function fundingRequest(args: string[]): void {
     network,
     address: wallets.parentFunding.address,
     scriptPubKeyHex: wallets.parentFunding.scriptPubKeyHex,
-    minimumValueSat: canonicalAmounts.parentFundingValueSat.toString(),
-    minimumValueBtc: btcAmountString(canonicalAmounts.parentFundingValueSat),
+    minimumValueSat: minimumValueSat.toString(),
+    minimumValueBtc: btcAmountString(minimumValueSat),
+    deterministicFixtureValueSat: canonicalAmounts.parentFundingValueSat.toString(),
+    deterministicFixtureValueBtc: btcAmountString(canonicalAmounts.parentFundingValueSat),
     warning: 'TESTNET/SIGNET ONLY. This uses deterministic test keys from the repository and must never receive mainnet funds.',
     nextCommand:
       `npm run public:cdlc-execute -- --network ${network} --out-dir docs/evidence/public-${network}`,
@@ -571,7 +576,8 @@ async function executeActivation(args: string[]): Promise<void> {
     fundingRequest: {
       address: parentFundingWallet.address,
       scriptPubKeyHex: parentFundingWallet.scriptPubKeyHex,
-      minimumValueSat: canonicalAmounts.parentFundingValueSat.toString(),
+      minimumValueSat: canonicalPublicActivationMinimumValueSat().toString(),
+      deterministicFixtureValueSat: canonicalAmounts.parentFundingValueSat.toString(),
     },
     oracle: {
       eventId: canonicalOutcomes.eventId,
