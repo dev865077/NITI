@@ -20,7 +20,8 @@ The request prints:
 - public network;
 - funding address;
 - scriptPubKey;
-- minimum value in sats and BTC;
+- executable minimum value in sats and BTC;
+- deterministic fixture value used by the stable local docs;
 - the exact follow-up command.
 
 The deterministic address is testnet/signet only. Never send mainnet BTC to
@@ -28,9 +29,25 @@ any address produced by this harness.
 
 ## 2. Fund And Wait For Confirmation
 
-Fund the printed address with at least the requested amount. For signet, a
+Fund the printed address with at least the executable minimum. For signet, a
 public faucet or a manually controlled signet wallet can be used. The harness
 will not proceed until the funded UTXO has the requested confirmation count.
+
+The executable minimum is derived from the public activation path:
+
+```text
+V_min = max(
+  parent_cet_fee + dust,
+  parent_cet_fee + bridge_fee + dust,
+  parent_cet_fee + bridge_fee + child_cet_fee + dust,
+  parent_cet_fee + bridge_fee + child_refund_fee + dust
+)
+```
+
+With the current canonical fees and the conservative Taproot dust floor, this
+is lower than the 100,000 sat deterministic fixture size used in the local
+documentation. The fixture size is intentionally retained for stable local
+artifacts; it is not the public faucet funding minimum.
 
 The Bitcoin Core RPC node must be synced and configured through `.env`:
 

@@ -27,6 +27,8 @@ initEccLib(tinysecp);
 
 export type BitcoinNetworkName = 'testnet' | 'testnet4' | 'signet' | 'regtest';
 
+export const conservativeTaprootDustFloorSat = 330n;
+
 export interface NitiNetwork {
   name: BitcoinNetworkName;
   bitcoinjs: typeof networks.testnet;
@@ -175,7 +177,7 @@ export function buildTaprootKeySpend(input: {
   if (input.outputValueSat <= 0n) {
     throw new Error('output value must be positive');
   }
-  if (input.outputValueSat < 330n) {
+  if (input.outputValueSat < conservativeTaprootDustFloorSat) {
     throw new Error('output value is below a conservative taproot dust floor');
   }
   if (input.utxo.valueSat <= input.outputValueSat) {
@@ -273,7 +275,7 @@ export function buildTaprootAdaptorSpend(input: {
   if (sendValue <= 0n) {
     throw new Error('fee is greater than or equal to input value');
   }
-  if (sendValue < 330n) {
+  if (sendValue < conservativeTaprootDustFloorSat) {
     throw new Error('send value is below a conservative taproot dust floor');
   }
 

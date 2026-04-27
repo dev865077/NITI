@@ -13,6 +13,7 @@ import {
   buildTaprootAdaptorSpend,
   buildTaprootKeySpend,
   completeTaprootAdaptorSpend,
+  conservativeTaprootDustFloorSat,
   resolveNetwork,
   type BitcoinNetworkName,
   type PendingTaprootAdaptorSpend,
@@ -23,6 +24,7 @@ import {
   canonicalAmounts,
   canonicalNetwork,
   canonicalOutcomes,
+  canonicalPublicActivationMinimumValueSat,
   canonicalSecrets,
   canonicalWallets,
 } from './cdlc-scenario.js';
@@ -35,6 +37,8 @@ const bridgeFeeSat = canonicalAmounts.bridgeFeeSat;
 const bridgeRefundFeeSat = canonicalAmounts.bridgeRefundFeeSat;
 const childCetFeeSat = canonicalAmounts.childCetFeeSat;
 const childRefundFeeSat = canonicalAmounts.childRefundFeeSat;
+const publicActivationMinimumValueSat = canonicalPublicActivationMinimumValueSat();
+const largestChildExitFeeSat = childCetFeeSat > childRefundFeeSat ? childCetFeeSat : childRefundFeeSat;
 const wallets = canonicalWallets(network);
 const parentFundingWallet = wallets.parentFunding;
 const bridgeSignerWallet = wallets.bridgeSigner;
@@ -145,6 +149,14 @@ assert.equal(parentFundingFixture.parentFunding.signatureVerifies, true);
 assert.equal(parentFundingFixture.parentFunding.vout, 0);
 assert.equal(parentFundingFixture.parentFunding.valueSat, canonicalAmounts.parentFundingValueSat.toString());
 assert.equal(parentFundingFixture.parentFunding.scriptPubKeyHex, parentFundingWallet.scriptPubKeyHex);
+assert.equal(
+  publicActivationMinimumValueSat,
+  parentCetFeeSat + bridgeFeeSat + largestChildExitFeeSat + conservativeTaprootDustFloorSat,
+);
+assert.ok(publicActivationMinimumValueSat >= parentCetFeeSat + conservativeTaprootDustFloorSat);
+assert.ok(publicActivationMinimumValueSat >= parentCetFeeSat + bridgeFeeSat + conservativeTaprootDustFloorSat);
+assert.ok(publicActivationMinimumValueSat < canonicalAmounts.parentFundingValueSat);
+assert.ok(10_000n >= publicActivationMinimumValueSat);
 
 const {
   pending: pendingParentCet,
