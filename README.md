@@ -100,6 +100,7 @@ flowchart LR
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Claim-by-claim mapping from formal algebra to transaction operations and smoke transcript fields. |
 | SPARK/Ada models | [`spark/`](spark/) | Formal algebra and finite accounting models. |
 | Testnet harness | [`testnet/`](testnet/) | TypeScript Taproot/adaptor, oracle, manifest, RPC, and Lightning hold-invoice tooling. |
+| Public signet/testnet guide | [`testnet/PUBLIC_SIGNET.md`](testnet/PUBLIC_SIGNET.md) | Funding request and public-network activation workflow for #153 and #56. |
 | Deterministic smoke test | `npm run test:cdlc-smoke` | Parent CET -> bridge -> child funding transcript, including wrong-outcome rejection. |
 | CI gate | [GitHub Actions](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) | Build, deterministic tests, Ada validator, and core SPARK proof regression. |
 | Security notes | [`docs/SECURITY.md`](docs/SECURITY.md) | Operational boundaries and explicit non-goals. |
@@ -199,6 +200,7 @@ testnet/
   examples/                  Canonical manifests
   README.md                  Operational testnet flow
   LIGHTNING.md               Lightning hold-invoice harness
+  PUBLIC_SIGNET.md           Public signet/testnet funding and activation guide
   REGTEST.md                 Deterministic Bitcoin Core regtest guide
 WHITEPAPER.md                Primary cDLC whitepaper
 LEGACY-WHITEPAPER.md         Historical NITI draft

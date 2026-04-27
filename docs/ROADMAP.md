@@ -20,7 +20,8 @@ Status: done.
 
 Status: Bitcoin Core regtest broadcast and confirmation evidence exists in
 [`docs/evidence/issue-132-regtest`](evidence/issue-132-regtest). Public
-testnet/signet broadcast still requires final RPC and faucet configuration.
+testnet/signet broadcast tooling is tracked by #153 and still requires final
+RPC and faucet configuration.
 
 ## Phase 2: Parent CET To Bridge
 

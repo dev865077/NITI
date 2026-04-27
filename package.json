@@ -18,6 +18,8 @@
     "test:evidence-bundle": "TMPDIR=/tmp tsx testnet/src/evidence-bundle-verify.ts",
     "testnet": "TMPDIR=/tmp tsx testnet/src/cli.ts",
     "regtest:cdlc-evidence": "TMPDIR=/tmp tsx testnet/src/regtest-cdlc-evidence.ts",
+    "public:cdlc-funding-request": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode funding-request",
+    "public:cdlc-execute": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode execute-activation",
     "v0.1:verify": "bash scripts/run-v0.1.sh",
     "regtest:start": "bash scripts/regtest-env.sh start",
     "regtest:stop": "bash scripts/regtest-env.sh stop",
