@@ -1,6 +1,6 @@
 # BTC-Backed Loan Lifecycle Math
 
-This note resolves the mathematical specification for issue #12. It extends
+This note defines the mathematical specification for the BTC-backed loan lifecycle. It extends
 the existing BTC-collateralized loan algebra into a full lifecycle model:
 origination, interest accrual, LTV branch selection, auto-refinancing, margin
 top-up, partial liquidation, full liquidation, and residual roll.
@@ -610,7 +610,7 @@ spark/btc_collateral_loan_proofs.gpr
 ```
 
 already proves the core loan algebra. A lifecycle companion or extension for
-issue #13 should add the following explicit obligations.
+a future SPARK target should add the following explicit obligations.
 
 ```text
 1. Debt accrual preserves non-negativity.

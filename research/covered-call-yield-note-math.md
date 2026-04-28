@@ -1,7 +1,8 @@
 # Covered Calls And BTC Yield Notes
 
-This note executes GitHub issue #6. It gives the mathematical specification
-that should be encoded by the later SPARK target in issue #7.
+This note gives the mathematical specification for a BTC-collateralized
+covered-call/yield-note model. A later SPARK target should encode the same
+invariants directly.
 
 The purpose is narrow: prove the payoff algebra for a BTC-collateralized
 covered call or yield note whose settlement is selected by a DLC oracle price.
@@ -533,7 +534,7 @@ The bridge into the next cDLC uses the existing cDLC activation mechanism:
 the oracle scalar for `x_S` completes the bridge adaptor signatures. This note
 does not restate the cryptographic proof.
 
-## 9. Requirements For Issue #7
+## 9. Requirements For The SPARK Target
 
 The SPARK proof target should encode these functions first:
 
@@ -585,8 +586,8 @@ Intrinsic = Buyer_Claim * S + Remainder
 That approach is acceptable if the proof target clearly states that it proves
 payoff correctness for any quotient-remainder pair satisfying the relation.
 
-## 10. Completion Criteria For Issue #6
+## 10. Completion Criteria
 
-Issue #6 is mathematically complete when this note is accepted as the canonical
-covered-call/yield-note specification and the future SPARK issue #7 can encode
+This specification is mathematically complete when this note is accepted as the
+canonical covered-call/yield-note specification and the future SPARK target can encode
 the formulas without adding financial assumptions.

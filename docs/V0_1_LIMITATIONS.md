@@ -1,8 +1,8 @@
 # v0.1 Limitations For Technical Diligence
 
-This document is the investor-facing limitations artifact for issue #134. It is
-written for technical and commercial diligence. It is not legal advice,
-regulatory advice, an offer document, or a production risk disclosure.
+This document is written for technical and commercial diligence. It is not
+legal advice, regulatory advice, an offer document, or a production risk
+disclosure.
 
 The central v0.1 result is real but bounded:
 
@@ -83,8 +83,8 @@ v0.1 includes deterministic and formal models for:
 
 Evidence:
 
-- [`docs/L2_EPIC_CLOSEOUT.md`](L2_EPIC_CLOSEOUT.md)
-- [`docs/evidence/issue-132-regtest/`](evidence/issue-132-regtest/)
+- [`docs/L2_DETERMINISTIC_CLOSEOUT.md`](L2_DETERMINISTIC_CLOSEOUT.md)
+- [`docs/evidence/regtest-cdlc/`](evidence/regtest-cdlc/)
 - [`research/`](../research/)
 - [`spark/`](../spark/)
 
@@ -119,7 +119,7 @@ yet provide a production oracle service with:
 - public equivocation evidence format;
 - operational key management and monitoring.
 
-Open work is tracked under the Layer 4 oracle issues in
+Remaining oracle work is summarized in the Layer 4 section of
 [`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md).
 
 ### Fees, Timelocks, And Mempool Policy
@@ -161,7 +161,7 @@ Production collateral design still needs:
 - gap-risk treatment;
 - historical and adversarial stress testing.
 
-Layer 5 economic stress issues remain open in
+Layer 5 economic stress work remains open in
 [`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md).
 
 ### State Retention

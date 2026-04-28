@@ -1,6 +1,6 @@
 # Parametric Insurance and Event-Linked Notes Math
 
-This note resolves the mathematical specification for issue #28. It models
+This note defines the mathematical specification for parametric insurance and event-linked notes. It models
 binary and tiered oracle-event risk transfer using BTC collateral:
 
 ```text
@@ -866,7 +866,7 @@ DLC oracle scalar exactly as in the base cDLC construction. This financial
 model assumes the selected outcome branch is activated correctly and proves
 only the branch accounting.
 
-## 13. SPARK Handoff for Issue #29
+## 13. SPARK Handoff
 
 The first SPARK target should model binary first, then the three-region tiered
 schedule. Recommended types:

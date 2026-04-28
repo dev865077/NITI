@@ -1,6 +1,6 @@
 # Volatility, Variance, and Corridor Variance Swaps Math
 
-This note resolves the mathematical specification for issue #24. It models
+This note defines the mathematical specification for volatility, variance, and corridor swaps. It models
 oracle-settled realized variance products over discrete price observations:
 plain realized variance swaps and corridor variance swaps. Volatility swaps are
 documented as a later approximation layer because the first formal model should
@@ -672,12 +672,12 @@ define an integer square-root approximation and prove:
 Root^2 <= VarScaled < (Root + 1)^2
 ```
 
-before defining a volatility payoff. That is outside this issue's first
-machine-checkable target.
+before defining a volatility payoff. That is outside the first
+machine-checkable target for this product family.
 
 ## 11. SPARK Encoding Requirements
 
-A future SPARK target for issue #25 should encode:
+A future SPARK target should encode:
 
 ```text
 TermNum(S_prev, S_cur)

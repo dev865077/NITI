@@ -1,7 +1,6 @@
 # NITI v0.1 Release Notes Draft
 
-This draft is the release-notes artifact for issue #113. Its purpose is to
-state the v0.1 technical result without overclaiming.
+This draft states the v0.1 technical result without overclaiming.
 
 These notes are not investor pitch copy, legal analysis, regulatory analysis,
 or production user documentation.

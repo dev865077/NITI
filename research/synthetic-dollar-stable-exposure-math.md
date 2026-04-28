@@ -1,6 +1,6 @@
 # Synthetic Dollar and Stable Exposure Math
 
-This note resolves the mathematical specification for issue #8. It defines a
+This note defines the mathematical specification for synthetic-dollar and stable exposure. It defines a
 BTC-funded stable-value claim whose settlement is selected by a cDLC price
 oracle. The goal is not to prove peg stability or market liquidity. The goal is
 to prove the integer payoff and continuation invariants that a future SPARK
@@ -564,7 +564,7 @@ to each branch.
 
 ## 11. SPARK Encoding Requirements
 
-A future SPARK target for issue #9 should encode:
+A future SPARK target should encode:
 
 ```text
 Need(D, P) = ceil((D * B) / P)

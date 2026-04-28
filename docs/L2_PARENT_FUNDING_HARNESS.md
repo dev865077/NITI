@@ -1,6 +1,6 @@
 # Layer 2 Parent Funding Harness
 
-This document records the deterministic parent funding artifact for issue #67.
+This document records the deterministic parent funding artifact.
 It materializes the parent funding output consumed by the canonical parent CET
 fixture in [`L2_SINGLE_CDLC_SCENARIO.md`](L2_SINGLE_CDLC_SCENARIO.md).
 

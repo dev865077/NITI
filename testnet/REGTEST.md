@@ -62,13 +62,14 @@ npm run testnet -- rpc:broadcast \
 
 ## cDLC Evidence Bundle
 
-Issue #132 is generated against the same Bitcoin Core regtest RPC path:
+The committed regtest evidence bundle is generated against the same Bitcoin
+Core regtest RPC path:
 
 ```sh
 scripts/regtest-env.sh start
 scripts/regtest-env.sh env > .env
-npm run regtest:cdlc-evidence -- --out-dir docs/evidence/issue-132-regtest
-npm run test:evidence-bundle -- --bundle docs/evidence/issue-132-regtest/tx-evidence-bundle.json
+npm run regtest:cdlc-evidence -- --out-dir docs/evidence/regtest-cdlc
+npm run test:evidence-bundle -- --bundle docs/evidence/regtest-cdlc/tx-evidence-bundle.json
 ```
 
 The bundle records real regtest `sendrawtransaction`, `testmempoolaccept`,

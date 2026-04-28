@@ -1,8 +1,8 @@
 # Layer 2 Bridge Transaction Harness
 
-This document records the bridge transaction artifact for issue #69. The bridge
-transaction `B_e` spends the parent CET edge output `O_e` and creates the child
-DLC funding output `F_j`.
+This document records the bridge transaction artifact. The bridge transaction
+`B_e` spends the parent CET edge output `O_e` and creates the child DLC funding
+output `F_j`.
 
 The artifact is emitted in the deterministic cDLC smoke transcript:
 
@@ -70,7 +70,7 @@ c67a49c69e90becc5dafcb3cbd4d954431a9029576c99bf2c2a25ac8f2a243e6:0
 
 ## Transcript Fields
 
-Issue #69 evidence lives under these transcript fields:
+The evidence lives under these transcript fields:
 
 | Evidence | Transcript field |
 | --- | --- |

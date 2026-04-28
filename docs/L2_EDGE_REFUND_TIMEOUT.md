@@ -1,6 +1,6 @@
 # Layer 2 Edge Refund Timeout
 
-This document records the negative refund/timelock artifact for issue #74. It
+This document records the negative refund/timelock artifact. It
 models the case where the parent CET resolves but the bridge transaction is not
 completed or broadcast before the bridge timeout.
 
@@ -67,7 +67,7 @@ when the transaction locktime is below the candidate block height.
 
 ## Required Checks
 
-The issue #74 checks are:
+The timeout checks are:
 
 ```text
 parent.edgeTimeoutRefund.input.txid = parent.cetCompletedTxid

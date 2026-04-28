@@ -15,8 +15,8 @@
     "commands": [
       "scripts/regtest-env.sh start",
       "scripts/regtest-env.sh env > .env",
-      "npm run regtest:cdlc-evidence -- --out-dir docs/evidence/issue-132-regtest",
-      "npm run test:evidence-bundle -- --bundle docs/evidence/issue-132-regtest/tx-evidence-bundle.json"
+      "npm run regtest:cdlc-evidence -- --out-dir docs/evidence/regtest-cdlc",
+      "npm run test:evidence-bundle -- --bundle docs/evidence/regtest-cdlc/tx-evidence-bundle.json"
     ]
   },
   "redaction": {
@@ -45,7 +45,7 @@
       "address": "bcrt1p9fjtrm3nwhemkjek0wxtswz2glmneu33w9lcylrvd7alttk0psmqqf08dg",
       "signatureState": "bitcoin-core-wallet-signed-funding-transaction",
       "rawTx": {
-        "path": "docs/evidence/issue-132-regtest/activation-01-parent-funding.hex",
+        "path": "docs/evidence/regtest-cdlc/activation-01-parent-funding.hex",
         "rawTxHex": "0200000000010158d798f71a22f6dbea0853855e0cf18e55585410f311f51be3178ec83c2cb40a0000000000fdffffff024f5c012a01000000225120873423bf5864a394e4a048c0dc50b2114311be4496b92c82dc1c9dbb7e445c5ca0860100000000002251202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c360140bbd8f82101cbdca56c6b4ba7c7ad74ca30568a60cd1e008c673b674da03ad2626f1f3ba1ffbabedcd0087732d853f12b810a86c54652a1e22376a288259bc6f86c000000"
       },
       "confirmation": {
@@ -82,7 +82,7 @@
       "completedSignatureHex": "f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac879b55f907e0edb31f2c7c3692e6beefb934df5a6c3cae89245e7b477318d84f7",
       "extractedSecretHex": "2ba3facbf7a84e325506bf4c27ebf3cf115b0b79c23f2ca509cfb4bb7c8bb81d",
       "rawTx": {
-        "path": "docs/evidence/issue-132-regtest/activation-02-parent-cet.hex",
+        "path": "docs/evidence/regtest-cdlc/activation-02-parent-cet.hex",
         "rawTxHex": "02000000000101ea954961b3cbf7461327a4dd029b26ed7389c4e3e1838fbdf626b52ed35af6ed0100000000ffffffff01b882010000000000225120624fff658880e6c942efcc527d29597f16e576137b88b3f267ac54685c5f582d0140f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac879b55f907e0edb31f2c7c3692e6beefb934df5a6c3cae89245e7b477318d84f700000000"
       },
       "mempoolAccept": {
@@ -143,7 +143,7 @@
         "rejected": true
       },
       "rawTx": {
-        "path": "docs/evidence/issue-132-regtest/activation-03-bridge.hex",
+        "path": "docs/evidence/regtest-cdlc/activation-03-bridge.hex",
         "rawTxHex": "02000000000101cab18b4232b3ee64e164afdc58f9594efac451ac5265f0877ceb671c8f7c0bd00000000000ffffffff01c480010000000000225120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b0140f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac811a9db7700302d34ae1ea70c3ea0933a92707d4ae5b74d7eb226021d7cb52d1700000000"
       },
       "mempoolAccept": {
@@ -191,7 +191,7 @@
         "preResolutionSignatureVerifies": false
       },
       "rawTx": {
-        "path": "docs/evidence/issue-132-regtest/activation-04-child-prepared-cet-unsigned.hex",
+        "path": "docs/evidence/regtest-cdlc/activation-04-child-prepared-cet-unsigned.hex",
         "rawTxHex": "0200000001d679cc4f5b771b5b16578d66db288a8fd92b52a000961c655fc7bca977a07dd70000000000ffffffff01d07e0100000000002251202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c3600000000"
       }
     },
@@ -220,7 +220,7 @@
         "reject-details": "non-final"
       },
       "rawTx": {
-        "path": "docs/evidence/issue-132-regtest/activation-05-child-refund-timelocked.hex",
+        "path": "docs/evidence/regtest-cdlc/activation-05-child-refund-timelocked.hex",
         "rawTxHex": "02000000000101d679cc4f5b771b5b16578d66db288a8fd92b52a000961c655fc7bca977a07dd70000000000feffffff01d07e010000000000225120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b01406a04ab98d9e4774ad806e302dddeb63bea16b5cb5f223ee77478e861bb583eb3979cee35922e7d21cd039808ee050a1b5886dc48c5bc6727cff297d23b7b458b70000000"
       }
     }
@@ -234,7 +234,7 @@
       "address": "bcrt1p9fjtrm3nwhemkjek0wxtswz2glmneu33w9lcylrvd7alttk0psmqqf08dg",
       "signatureState": "bitcoin-core-wallet-signed-funding-transaction",
       "rawTx": {
-        "path": "docs/evidence/issue-132-regtest/timeout-01-parent-funding.hex",
+        "path": "docs/evidence/regtest-cdlc/timeout-01-parent-funding.hex",
         "rawTxHex": "02000000000101ea954961b3cbf7461327a4dd029b26ed7389c4e3e1838fbdf626b52ed35af6ed0000000000fdffffff02a0860100000000002251202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c3614d5ff290100000022512006dfe4b9f9de25c1dedc9dda54d0e080b280f8d5e08ddf1f723e0a5c181b5cf501408d9125773299e576146eeb16fb3c82bbe5c5c8d8c2b9d0bd224b2f26c5f5b2387ae2a69a761cab6a052f003a528c287980f64df2ee15357db42fadceee2b99c16f000000"
       },
       "confirmation": {
@@ -260,7 +260,7 @@
       "signatureState": "completed-schnorr-signature-after-parent-oracle-attestation",
       "completedSignatureHex": "f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac80e5f15fa3cfecb972908be96a9f0db3489ea128b00d8c4d23412790a3198bf5d",
       "rawTx": {
-        "path": "docs/evidence/issue-132-regtest/timeout-02-parent-cet.hex",
+        "path": "docs/evidence/regtest-cdlc/timeout-02-parent-cet.hex",
         "rawTxHex": "020000000001012276a567062eec1a63111b04fa77c97da4d3f13684b6cc42a1a695c4d62a1a6c0000000000ffffffff01b882010000000000225120624fff658880e6c942efcc527d29597f16e576137b88b3f267ac54685c5f582d0140f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac80e5f15fa3cfecb972908be96a9f0db3489ea128b00d8c4d23412790a3198bf5d00000000"
       },
       "mempoolAccept": {
@@ -321,7 +321,7 @@
         }
       },
       "rawTx": {
-        "path": "docs/evidence/issue-132-regtest/timeout-03-edge-timeout-refund.hex",
+        "path": "docs/evidence/regtest-cdlc/timeout-03-edge-timeout-refund.hex",
         "rawTxHex": "0200000000010143f7480dfc35eec2ba2fe9124fc49c87675aa94c37ca8bb668f8f74a149164b00000000000feffffff01c4800100000000002251202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c36014068680737c76dabb801cb2204f57dbe4e4579e4f710cd67dc1b4227592c81e9b50e8354df3df61f76b1d2cfe8daaccd9366cb046414f3e7690f76c6bccd72120d72000000"
       },
       "broadcastTxid": "b5d1d6ceeba22ff99af1ef6e65dbea5aa681a932c15079ad8bf61ef198dc8c36",
