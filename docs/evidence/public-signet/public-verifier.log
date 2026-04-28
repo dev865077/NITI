@@ -1,0 +1,9 @@
+
+> niti-cdlc-testnet@1.0.0 test:evidence-bundle
+> TMPDIR=/tmp tsx testnet/src/evidence-bundle-verify.ts --bundle docs/evidence/public-signet/public-activation-evidence-bundle.json
+
+{
+  "ok": true,
+  "bundle": "docs/evidence/public-signet/public-activation-evidence-bundle.json",
+  "checkedTransactions": 5
+}
