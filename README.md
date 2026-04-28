@@ -52,6 +52,7 @@ fee/reorg policy, and external review.
 - [Evidence Map](#evidence-map)
 - [Quick Start](#quick-start)
 - [Reproduce The v0.1 Evidence](#reproduce-the-v01-evidence)
+- [Run The Technical Demo](#run-the-technical-demo)
 - [Repository Map](#repository-map)
 - [Formal Models](#formal-models)
 - [Bitcoin Harnesses](#bitcoin-harnesses)
@@ -133,6 +134,7 @@ Use this table as the top-level audit map.
 | Protocol summary | [`docs/PROTOCOL.md`](docs/PROTOCOL.md) | Compact protocol description: oracle, adaptor, bridge, Lightning, graph discipline. |
 | Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet architecture. |
 | Public signet activation bundle | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) | Funded public signet parent CET, bridge confirmation, child funding output, raw tx files, verifier log. |
+| v0.1 technical demo script | [`docs/V0_1_TECHNICAL_DEMO.md`](docs/V0_1_TECHNICAL_DEMO.md), [`scripts/demo-v0.1.sh`](scripts/demo-v0.1.sh) | Reproducible demo sequence from public signet artifacts, with explicit claim boundaries. |
 | Regtest Bitcoin Core bundle | [`docs/evidence/issue-132-regtest/`](docs/evidence/issue-132-regtest/) | Controlled Bitcoin Core regtest RPC broadcast, mempool checks, confirmations, raw tx files, timeout path. |
 | Deterministic Layer 2 closeout | [`docs/L2_EPIC_CLOSEOUT.md`](docs/L2_EPIC_CLOSEOUT.md) | Deterministic #56 evidence, original child issue status, residual risks. |
 | Canonical Layer 2 scenario | [`docs/L2_SINGLE_CDLC_SCENARIO.md`](docs/L2_SINGLE_CDLC_SCENARIO.md) | Single-parent/single-child transaction graph, fixture amounts, keys, timelocks, pass/fail criteria. |
@@ -259,6 +261,25 @@ npm run public:cdlc-execute -- \
 
 The harness uses deterministic test keys. Never send mainnet BTC to any address
 printed by this repository.
+
+## Run The Technical Demo
+
+The technical demo wraps the public signet evidence verifier and prints the
+parent funding, parent CET, bridge, child funding, wrong-scalar rejection, and
+timelock boundary from committed artifacts:
+
+```sh
+npm run demo:v0.1
+```
+
+For a longer session that also executes the full local v0.1 gate:
+
+```sh
+npm run demo:v0.1 -- --full-local-gate
+```
+
+Use [`docs/V0_1_TECHNICAL_DEMO.md`](docs/V0_1_TECHNICAL_DEMO.md) as the
+presenter and reviewer script.
 
 ## Repository Map
 
