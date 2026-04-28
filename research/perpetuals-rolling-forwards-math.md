@@ -1,6 +1,6 @@
 # Perpetuals and Rolling Forwards Math
 
-This note resolves the mathematical specification for issue #10. It models a
+This note defines the mathematical specification for perpetuals and rolling forwards. It models a
 finite sequence of one-period USD-notional forwards that can roll through a
 cDLC graph. The construction approximates perpetual exposure by repeatedly
 settling mark-to-market and funding, then funding the next pre-negotiated
@@ -519,7 +519,7 @@ core cDLC adaptor-signature proofs.
 
 ## 13. SPARK Encoding Requirements
 
-A future SPARK target for issue #11 should encode:
+A future SPARK target should encode:
 
 ```text
 DeltaScaled = B * (N * (P - F) + Phi * F)

@@ -1,6 +1,6 @@
 # CPPI and Portfolio-Insurance Vaults Math
 
-This note resolves the mathematical specification for issue #22. It models a
+This note defines the mathematical specification for CPPI portfolio insurance. It models a
 discrete Constant Proportion Portfolio Insurance (CPPI) vault whose cDLC state
 reduces BTC exposure as account value approaches a protected floor and
 increases BTC exposure as the cushion rises.
@@ -560,7 +560,7 @@ to those branches.
 
 ## 10. SPARK Encoding Requirements
 
-A future SPARK target for issue #23 should encode:
+A future SPARK target should encode:
 
 ```text
 Cushion(A, F)

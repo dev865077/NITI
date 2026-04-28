@@ -1,6 +1,6 @@
 # Layer 2 Child Prepared Spends
 
-This document records the child DLC prepared-spend artifact for issue #73. It
+This document records the child DLC prepared-spend artifact. It
 shows that the child funding output `F_j` created by the bridge is accepted by
 two child-state spends:
 
@@ -60,8 +60,9 @@ destination:
 | Adaptor verifies | `true` |
 | Pre-resolution signature verifies | `false` |
 
-The child CET is intentionally not completed in this issue. Completion requires
-the child oracle scalar, which is outside the #73 scope.
+The child CET is intentionally not completed in this artifact. Completion
+requires the child oracle scalar, which is outside this prepared-spend evidence
+boundary.
 
 ## Prepared Child Refund
 
@@ -101,5 +102,5 @@ visible in the completed bridge transaction.
 This artifact proves that the deterministic child funding output is accepted
 by prepared child CET and refund spends with expected sighashes. It does not
 prove child oracle settlement, broadcast of the child CET, public relay,
-fee-bumping, reorg handling, or the negative refund/timelock path reserved for
-issue #74.
+fee-bumping, reorg handling, or the negative refund/timelock path documented
+separately.

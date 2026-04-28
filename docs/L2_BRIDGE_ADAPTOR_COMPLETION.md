@@ -1,6 +1,6 @@
 # Layer 2 Bridge Adaptor Completion
 
-This document records the executable bridge-signature evidence for issue #70.
+This document records the executable bridge-signature evidence.
 It shows that the bridge adaptor is not a valid Taproot/Schnorr signature before
 oracle resolution, that the parent outcome scalar `s_x` completes it, and that
 the wrong outcome scalar `s_y` does not.
@@ -73,7 +73,7 @@ bridge.wrongScalar.reason = completed adaptor signature does not verify
 
 ## Transcript Fields
 
-Issue #70 evidence lives under these transcript fields:
+The evidence lives under these transcript fields:
 
 | Evidence | Transcript field |
 | --- | --- |

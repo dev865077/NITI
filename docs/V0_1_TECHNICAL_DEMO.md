@@ -1,8 +1,8 @@
 # v0.1 Technical Demo Script
 
-This is the technical demo script for issue #135. It is designed for an
-engineer, reviewer, or investor diligence team that wants to see the v0.1
-claim from reproducible artifacts instead of screenshots or verbal claims.
+This technical demo script is designed for an engineer, reviewer, or investor
+diligence team that wants to see the v0.1 claim from reproducible artifacts
+instead of screenshots or verbal claims.
 
 The demo claim is intentionally narrow:
 
@@ -47,7 +47,7 @@ credentials, and signet funds. Use
 | 5. Bridge activation | Before attestation the bridge adaptor signature is not a valid Bitcoin witness; after the scalar is revealed the bridge signature verifies and the tx confirms. | Bundle fields `bridge.adaptor.preResolutionSignatureVerifies = false`, `bridge.completion.completedSignatureVerifies = true`, bridge tx [`6b0c1951...0f8042cc`](https://mempool.space/signet/tx/6b0c1951480aa62914ed38ca3629666d4d37033b2dabf9f424ffb7450f8042cc), block `302041`. |
 | 6. Child funding | The bridge creates the child funding output and the child CET/refund spends are precomputed from that output. | Bundle fields `activationPath.bridge.output`, `activationPath.childPreparedCet.input`, and `activationPath.childRefund.input`. |
 | 7. Negative path | A non-corresponding oracle scalar does not activate the bridge; the early child refund is rejected as non-final. | Bundle fields `bridge.wrongScalar.rejected = true`, `checks.parentWrongOutcomeRejected = true`, `checks.bridgeWrongScalarRejected = true`, and `childRefund.earlyMempoolAccept.allowed = false`. |
-| 8. Stress summary | The public signet demo proves technical activation, not economic solvency. Financial-product payoff invariants exist as separate math/SPARK models; historical stress simulation remains a Layer 5 gate. | [`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md), [`research/synthetic-dollar-stable-exposure-math.md`](../research/synthetic-dollar-stable-exposure-math.md), [`spark/synthetic_dollar_stable_exposure_proofs.gpr`](../spark/synthetic_dollar_stable_exposure_proofs.gpr), issue #59. |
+| 8. Stress summary | The public signet demo proves technical activation, not economic solvency. Financial-product payoff invariants exist as separate math/SPARK models; historical stress simulation remains a Layer 5 gate. | [`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md), [`research/synthetic-dollar-stable-exposure-math.md`](../research/synthetic-dollar-stable-exposure-math.md), [`spark/synthetic_dollar_stable_exposure_proofs.gpr`](../spark/synthetic_dollar_stable_exposure_proofs.gpr). |
 
 ## Artifact Demo Command
 

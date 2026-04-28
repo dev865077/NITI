@@ -3,9 +3,8 @@
 This document defines the canonical Layer 2 v0.1 scenario for one parent DLC
 outcome activating one child funding path through one bridge transaction.
 
-It is the scenario contract for issue #66. Later Layer 2 work should implement
-or extend this exact case before adding more branches, bilateral negotiation,
-or production fee policy.
+Later Layer 2 work should implement or extend this exact case before adding
+more branches, bilateral negotiation, or production fee policy.
 
 ## Claim
 
@@ -36,10 +35,10 @@ regtest-equivalent: it constructs and verifies transactions locally using a
 signed fixture funding transaction and does not claim public mempool relay or
 confirmation.
 
-Live regtest/testnet issues may replace only the parent funding txid/vout with
-a real funded outpoint. They must preserve the same transaction graph, roles,
-outcomes, pass/fail checks, and accounting unless a later issue explicitly
-amends this scenario.
+Live regtest/testnet evidence may replace only the parent funding txid/vout
+with a real funded outpoint. It must preserve the same transaction graph,
+roles, outcomes, pass/fail checks, and accounting unless a later protocol
+revision explicitly amends this scenario.
 
 ## Roles And Fixture Keys
 

@@ -1,6 +1,6 @@
 # Accumulators and Decumulators Math
 
-This note resolves the mathematical specification for issue #20. It models
+This note defines the mathematical specification for accumulators and decumulators. It models
 periodic BTC accumulation and decumulation structures where each observation
 settles a fixed or multiplied BTC quantity at a strike price, unless a
 knock-out branch terminates the remaining schedule.
@@ -546,7 +546,7 @@ branches.
 
 ## 12. SPARK Encoding Requirements
 
-A future SPARK target for issue #21 should encode:
+A future SPARK target should encode:
 
 ```text
 KnockOut(S, H)

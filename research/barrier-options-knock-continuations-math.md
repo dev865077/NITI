@@ -1,6 +1,6 @@
 # Barrier Options and Knock-In/Knock-Out Continuations Math
 
-This note resolves the mathematical specification for issue #16. It models
+This note defines the mathematical specification for barrier options and knock-continuations. It models
 discrete barrier observation states and the option payoffs that depend on those
 states: one-touch, no-touch, knock-in calls/puts, knock-out calls/puts, and
 barrier-triggered cDLC continuation states.
@@ -423,9 +423,8 @@ Substitute `Live_T = false` into the payoff definitions.
 
 ## 9. One-Touch and No-Touch Digitals
 
-The issue text asks for a no-touch zero-payoff proof if the barrier predicate
-never held. That is not the market convention. This specification uses the
-standard convention:
+For no-touch payoffs, a zero payoff when the barrier never held would contradict
+the standard market convention. This specification uses the standard convention:
 
 ```text
 one-touch pays if the barrier touched;
@@ -681,7 +680,7 @@ proves the financial state and payoff invariants attached to those branches.
 
 ## 13. SPARK Encoding Requirements
 
-A future SPARK target for issue #17 should encode:
+A future SPARK target should encode:
 
 ```text
 HitUp(S, H)

@@ -1,8 +1,7 @@
 # External Auditor Quickstart
 
-This quickstart is for issue #133. It gives an external reviewer the shortest
-path to reproduce or audit the NITI v0.1 technical claim without private
-instructions.
+This quickstart gives an external reviewer the shortest path to reproduce or
+audit the NITI v0.1 technical claim without private instructions.
 
 The claim under review is narrow:
 

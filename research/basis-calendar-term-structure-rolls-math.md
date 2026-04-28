@@ -1,6 +1,6 @@
 # Basis Trades, Calendar Spreads, and Term-Structure Rolls Math
 
-This note resolves the mathematical specification for issue #26. It models
+This note defines the mathematical specification for basis, calendar, and term-structure rolls. It models
 BTC-collateralized exposure to relative prices rather than outright BTC price:
 
 ```text
@@ -12,7 +12,7 @@ BTC-collateralized exposure to relative prices rather than outright BTC price:
 
 The purpose is narrow. The note proves the integer accounting, branch
 selection, BTC collateral conservation, collateral caps, and roll-state
-invariants that a later SPARK model in issue #27 can encode directly. It does
+invariants that a later SPARK model can encode directly. It does
 not prove forward-curve construction, arbitrage convergence, liquidity,
 exchange execution, oracle correctness, or the cryptographic cDLC adaptor
 claims already covered by the base cDLC proof targets.
@@ -737,7 +737,7 @@ as in the base cDLC construction. This financial model does not reprove that
 cryptographic activation. It assumes the selected parent outcome activates the
 correct branch and then proves that the branch accounting is coherent.
 
-## 13. SPARK Handoff for Issue #27
+## 13. SPARK Handoff
 
 The first SPARK target should be minimal and integer-only. Recommended model:
 

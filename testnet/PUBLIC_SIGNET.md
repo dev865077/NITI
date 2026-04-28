@@ -1,7 +1,6 @@
 # Public Signet/Testnet cDLC Evidence
 
 This guide is the public-network layer above the Bitcoin Core regtest bundle.
-It is intended for issue #153 and the open #56 Layer 2 EPIC.
 
 The workflow does not mine blocks locally. It requires a synced Bitcoin Core
 node on `signet`, `testnet`, or `testnet4`, with `txindex=1`, and a funded

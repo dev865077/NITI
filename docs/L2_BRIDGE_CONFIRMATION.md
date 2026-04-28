@@ -1,7 +1,7 @@
 # Layer 2 Bridge Confirmation Simulation
 
-This document records the deterministic bridge confirmation artifact for issue
-#72. The v0.1 harness does not depend on public testnet faucet, mempool, or
+This document records the deterministic bridge confirmation artifact. The v0.1
+harness does not depend on public testnet faucet, mempool, or
 local `bitcoind` availability; instead it records a deterministic
 regtest-equivalent confirmation transcript for the completed bridge
 transaction.

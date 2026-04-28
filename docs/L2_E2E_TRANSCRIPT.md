@@ -1,7 +1,6 @@
 # Layer 2 Deterministic E2E Transcript
 
-This document records the externally auditable Layer 2 transcript artifact for
-issue #75.
+This document records the externally auditable Layer 2 transcript artifact.
 
 The raw smoke transcript is still emitted as:
 

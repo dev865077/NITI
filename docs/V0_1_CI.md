@@ -3,7 +3,7 @@
 The `v0.1 validation` GitHub Actions workflow is the remote release gate for
 the narrow v0.1 claim.
 
-It runs on every pull request and on pushes to `main`.
+It runs on every proposed repository change and on pushes to `main`.
 
 ## Jobs
 
@@ -34,7 +34,7 @@ The workflow deliberately does not do the following:
 
 Those are separate release gates. The v0.1 CI gate proves that regressions in
 the core proof targets and deterministic harnesses are caught remotely before a
-PR can be treated as release-ready.
+proposed change can be treated as release-ready.
 
 ## Interpreting A Pass
 

@@ -39,8 +39,8 @@ The funded public signet run was merged in
 | Evidence bundle | [`public-activation-evidence-bundle.json`](docs/evidence/public-signet/public-activation-evidence-bundle.json) |
 | Verifier log | [`public-verifier.log`](docs/evidence/public-signet/public-verifier.log) |
 
-The Layer 2 public signet EPIC is closed. The remaining major work is not
-another proof of the basic activation primitive; it is protocol hardening:
+The Layer 2 public signet milestone is complete. The remaining major work is
+not another proof of the basic activation primitive; it is protocol hardening:
 bilateral negotiation, oracle auditability, economic stress, wallet UX,
 fee/reorg policy, and external review.
 
@@ -138,8 +138,8 @@ Use this table as the top-level audit map.
 | External auditor quickstart | [`docs/AUDITOR_QUICKSTART.md`](docs/AUDITOR_QUICKSTART.md) | Minimal reviewer path with dependencies, commands, expected outputs, troubleshooting, and a committed demo transcript. |
 | v0.1 limitations document | [`docs/V0_1_LIMITATIONS.md`](docs/V0_1_LIMITATIONS.md) | Technical diligence boundary for oracle, fee, liquidity, collateral, state retention, bilateral protocol, Lightning, and mainnet readiness. |
 | v0.1 release notes draft | [`docs/V0_1_RELEASE_NOTES.md`](docs/V0_1_RELEASE_NOTES.md) | Allowed/forbidden release claims, residual assumptions, and anti-overclaim reviewer checklist. |
-| Regtest Bitcoin Core bundle | [`docs/evidence/issue-132-regtest/`](docs/evidence/issue-132-regtest/) | Controlled Bitcoin Core regtest RPC broadcast, mempool checks, confirmations, raw tx files, timeout path. |
-| Deterministic Layer 2 closeout | [`docs/L2_EPIC_CLOSEOUT.md`](docs/L2_EPIC_CLOSEOUT.md) | Deterministic #56 evidence, original child issue status, residual risks. |
+| Regtest Bitcoin Core bundle | [`docs/evidence/regtest-cdlc/`](docs/evidence/regtest-cdlc/) | Controlled Bitcoin Core regtest RPC broadcast, mempool checks, confirmations, raw tx files, timeout path. |
+| Deterministic Layer 2 closeout | [`docs/L2_DETERMINISTIC_CLOSEOUT.md`](docs/L2_DETERMINISTIC_CLOSEOUT.md) | Deterministic Layer 2 evidence, component status, and residual risks. |
 | Canonical Layer 2 scenario | [`docs/L2_SINGLE_CDLC_SCENARIO.md`](docs/L2_SINGLE_CDLC_SCENARIO.md) | Single-parent/single-child transaction graph, fixture amounts, keys, timelocks, pass/fail criteria. |
 | Parent funding harness | [`docs/L2_PARENT_FUNDING_HARNESS.md`](docs/L2_PARENT_FUNDING_HARNESS.md) | Deterministic signed Taproot parent funding fixture. |
 | Parent CET harness | [`docs/L2_PARENT_CET_HARNESS.md`](docs/L2_PARENT_CET_HARNESS.md) | Serialized parent CET, stable txid, edge output map, bridge reference. |
@@ -236,7 +236,7 @@ npm run regtest:stop
 ```
 
 Committed regtest evidence lives in
-[`docs/evidence/issue-132-regtest/`](docs/evidence/issue-132-regtest/).
+[`docs/evidence/regtest-cdlc/`](docs/evidence/regtest-cdlc/).
 
 ### Public Signet Evidence
 
@@ -291,7 +291,7 @@ presenter and reviewer script.
   v0-1-validation.yml        Remote v0.1 validation gate
 docs/
   evidence/public-signet/    Public signet parent CET -> bridge evidence
-  evidence/issue-132-regtest/ Bitcoin Core regtest tx evidence bundle
+  evidence/regtest-cdlc/ Bitcoin Core regtest tx evidence bundle
   ARCHITECTURE.md            Research/proof/testnet architecture
   PROTOCOL.md                cDLC protocol summary
   ROADMAP.md                 Engineering roadmap
@@ -474,8 +474,8 @@ Do not infer more than the artifacts prove:
 - Every new substantive change should preserve the evidence boundary and add
   validation proportional to the risk.
 
-When choosing the next issue, prefer work that closes a remaining production
-gap rather than re-proving the already demonstrated activation path:
+When choosing the next engineering focus, prefer work that closes a remaining
+production gap rather than re-proving the already demonstrated activation path:
 
 - bilateral participant protocol;
 - auditable oracle service;

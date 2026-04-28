@@ -194,7 +194,7 @@ function main(): void {
   const bundlePath = stringArg(
     process.argv.slice(2),
     '--bundle',
-    'docs/evidence/issue-132-regtest/tx-evidence-bundle.json',
+    'docs/evidence/regtest-cdlc/tx-evidence-bundle.json',
   );
   const repoRoot = process.cwd();
   const bundle = assertObject(JSON.parse(fs.readFileSync(bundlePath, 'utf8')), 'bundle');

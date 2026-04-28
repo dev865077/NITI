@@ -1,9 +1,9 @@
 # Layer 2 Parent CET Confirmation Simulation
 
-This document records the deterministic parent CET confirmation artifact for
-issue #71. The v0.1 harness does not depend on public testnet faucet,
-mempool, or local `bitcoind` availability; instead it records a deterministic
-regtest-equivalent confirmation transcript for the selected parent outcome.
+This document records the deterministic parent CET confirmation artifact. The
+v0.1 harness does not depend on public testnet faucet, mempool, or local
+`bitcoind` availability; instead it records a deterministic regtest-equivalent
+confirmation transcript for the selected parent outcome.
 
 The artifact is emitted in the deterministic cDLC smoke transcript:
 

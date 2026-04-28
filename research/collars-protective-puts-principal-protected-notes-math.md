@@ -1,6 +1,6 @@
 # Collars, Protective Puts, and Principal-Protected Notes Math
 
-This note resolves the mathematical specification for issue #14. It models
+This note defines the mathematical specification for collars, protective puts, and principal-protected notes. It models
 three closely related BTC-linked payoff packages:
 
 ```text
@@ -525,7 +525,7 @@ branch.
 
 ## 9. SPARK Encoding Requirements
 
-A future SPARK target for issue #15 should encode:
+A future SPARK target should encode:
 
 ```text
 Pos(X, Y)

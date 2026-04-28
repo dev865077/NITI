@@ -1,8 +1,8 @@
 # Layer 2 Parent CET Harness
 
-This document records the parent Contract Execution Transaction artifact for
-issue #68. It is the parent outcome transaction that exposes the edge output
-`O_e` consumed by the bridge.
+This document records the parent Contract Execution Transaction artifact. It is
+the parent outcome transaction that exposes the edge output `O_e` consumed by
+the bridge.
 
 The artifact is emitted in the deterministic cDLC smoke transcript:
 
@@ -80,7 +80,7 @@ bridge.spendsParentCetVout = 0
 
 ## Transcript Fields
 
-Issue #68 evidence lives under these transcript fields:
+The evidence lives under these transcript fields:
 
 | Evidence | Transcript field |
 | --- | --- |

@@ -1,6 +1,6 @@
 # Autocallables and Callable Yield Notes Math
 
-This note resolves the mathematical specification for issue #18. It models a
+This note defines the mathematical specification for autocallables and callable yield notes. It models a
 finite discrete-observation structured note whose cDLC state either redeems
 early when an autocall trigger is met or continues with an updated coupon state.
 
@@ -547,7 +547,7 @@ branches.
 
 ## 10. SPARK Encoding Requirements
 
-A future SPARK target for issue #19 should encode:
+A future SPARK target should encode:
 
 ```text
 Autocall(S, A)
