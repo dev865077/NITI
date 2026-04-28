@@ -1,0 +1,64 @@
+
+> niti-cdlc-testnet@1.0.0 demo:v0.1
+> bash scripts/demo-v0.1.sh
+
+NITI v0.1 technical demo
+Evidence bundle: docs/evidence/public-signet/public-activation-evidence-bundle.json
+
+==> 1. Verify public signet evidence bundle
+
+> niti-cdlc-testnet@1.0.0 test:evidence-bundle
+> TMPDIR=/tmp tsx testnet/src/evidence-bundle-verify.ts --bundle docs/evidence/public-signet/public-activation-evidence-bundle.json
+
+{
+  "ok": true,
+  "bundle": "docs/evidence/public-signet/public-activation-evidence-bundle.json",
+  "checkedTransactions": 5
+}
+
+==> 2. Check boolean evidence gates
+ok: publicNetwork=true
+ok: fundingConfirmed=true
+ok: parentCetAccepted=true
+ok: parentCetConfirmed=true
+ok: parentWrongOutcomeRejected=true
+ok: bridgeAdaptorPreResolutionNotValidSignature=true
+ok: bridgeWrongScalarRejected=true
+ok: bridgeAccepted=true
+ok: bridgeConfirmed=true
+ok: bridgeCreatesChildFunding=true
+ok: childPreparedCetAdaptorOnly=true
+ok: childRefundEarlyRejected=true
+
+==> 3. Parent -> bridge -> child trace
+network: signet
+bitcoin_core: /Satoshi:31.0.0/ blocks=302039
+funding_outpoint: 65d17c3ccddb83733030995a7b1c59796beb4e4012b5706caa4ab6abb9db2490:0 value_sat=10000
+oracle_event: niti-v0.1-parent-cdlc-smoke
+activating_outcome: BTCUSD_ABOVE_STRIKE
+wrong_outcome: BTCUSD_BELOW_STRIKE
+activating_attestation_point: 03a9853a7527b53165a23208738656cb6337d734297173e4939e1d6420f31a1124
+parent_cet: b6d800695fa61219bdf7de10a4b97e0efae0bf974283293284aa40e893b9838c block=302040
+bridge_pre_resolution_signature_valid: false
+bridge_completed_signature_valid: true
+bridge_wrong_scalar_rejected: true
+bridge_tx: 6b0c1951480aa62914ed38ca3629666d4d37033b2dabf9f424ffb7450f8042cc block=302041
+child_funding_outpoint: 6b0c1951480aa62914ed38ca3629666d4d37033b2dabf9f424ffb7450f8042cc:0 value_sat=8500
+child_prepared_cet_input: 6b0c1951480aa62914ed38ca3629666d4d37033b2dabf9f424ffb7450f8042cc:0
+child_refund_input: 6b0c1951480aa62914ed38ca3629666d4d37033b2dabf9f424ffb7450f8042cc:0
+child_refund_early_accept: false reason=non-final
+
+==> 4. Evidence links
+funding_tx: https://mempool.space/signet/tx/65d17c3ccddb83733030995a7b1c59796beb4e4012b5706caa4ab6abb9db2490
+parent_cet_tx: https://mempool.space/signet/tx/b6d800695fa61219bdf7de10a4b97e0efae0bf974283293284aa40e893b9838c
+bridge_tx: https://mempool.space/signet/tx/6b0c1951480aa62914ed38ca3629666d4d37033b2dabf9f424ffb7450f8042cc
+raw_parent_cet: docs/evidence/public-signet/public-02-parent-cet.hex
+raw_bridge: docs/evidence/public-signet/public-03-bridge.hex
+raw_child_prepared_cet: docs/evidence/public-signet/public-04-child-prepared-cet-unsigned.hex
+raw_child_refund: docs/evidence/public-signet/public-05-child-refund-timelocked.hex
+
+Demo boundary:
+- This is public signet technical-existence evidence for one cDLC activation path.
+- It is not mainnet readiness, production custody software, a production oracle,
+  a stablecoin, a solvency guarantee, or completed Lightning support.
+- Economic stress remains a separate Layer 5 release gate.
