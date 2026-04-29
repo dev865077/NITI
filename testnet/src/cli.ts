@@ -157,7 +157,7 @@ Commands:
   lightning:lnd:lookup-invoice --role receiver --payment-hash-hex <hex> [--out result.json]
   rpc:info
   rpc:scan-address --address <addr>
-  rpc:broadcast --raw-tx-hex <hex> --allow-broadcast
+  rpc:broadcast --raw-tx-hex <hex> --allow-broadcast [--allow-mainnet-broadcast]
 `);
 }
 
@@ -178,6 +178,9 @@ async function main(): Promise<void> {
 
   if (command === 'wallet:new') {
     const network = resolveNetwork(stringArg(args, 'network', 'testnet4')).name;
+    if (network === 'mainnet') {
+      throw new Error('refusing generic mainnet wallet output; use the guarded mainnet live-run plan instead');
+    }
     const secret = optionalStringArg(args, 'secret-hex')
       ? scalarFromHex(stringArg(args, 'secret-hex'), 'secret-hex')
       : randomScalar();
@@ -223,6 +226,9 @@ async function main(): Promise<void> {
 
   if (command === 'cdlc:parent-funding') {
     const network = resolveNetwork(stringArg(args, 'network', 'testnet4')).name;
+    if (network === 'mainnet') {
+      throw new Error('refusing to build deterministic parent funding fixture for mainnet');
+    }
     const funding = buildCanonicalParentFundingFixture(network);
     const rawOut = optionalStringArg(args, 'raw-out');
     if (rawOut) {
@@ -275,6 +281,9 @@ async function main(): Promise<void> {
 
   if (command === 'manifest:sample') {
     const network = resolveNetwork(stringArg(args, 'network', 'testnet4')).name;
+    if (network === 'mainnet') {
+      throw new Error('manifest sample does not support mainnet');
+    }
     const out = stringArg(args, 'out');
     writeSampleManifest(out, network);
     console.log(`wrote ${out}`);
@@ -447,6 +456,10 @@ async function main(): Promise<void> {
   if (command === 'rpc:broadcast') {
     if (args['allow-broadcast'] !== true) {
       throw new Error('refusing to broadcast without --allow-broadcast');
+    }
+    const blockchainInfo = await getBlockchainInfo() as Record<string, unknown>;
+    if (blockchainInfo.chain === 'main' && args['allow-mainnet-broadcast'] !== true) {
+      throw new Error('refusing mainnet broadcast without --allow-mainnet-broadcast');
     }
     const rawHex = optionalStringArg(args, 'raw-tx-hex')
       ?? readFileSync(stringArg(args, 'raw-tx-file'), 'utf8').trim();
