@@ -1,14 +1,14 @@
-# Composable Discreet Log Contracts
+# Cascading Discreet Log Contracts
 
 ## Abstract
 
-This paper describes a construction for composable Discreet Log Contracts, or
+This paper describes a construction for Cascading Discreet Log Contracts, or
 cDLCs. A cDLC is a finite graph of ordinary Bitcoin transactions in which the
 attestation secret revealed by the oracle of one DLC completes adaptor
 signatures that activate another DLC. The construction requires no new opcode,
 no covenant, and no on-chain awareness of the contract graph.
 
-Composition is obtained by using the future oracle signature of a parent
+Cascading activation is obtained by using the future oracle signature of a parent
 contract as the hidden scalar of adaptor signatures that spend a parent outcome
 output into the funding output of a child contract.
 
@@ -950,12 +950,12 @@ surface of cDLCs, but they remain extensions of the cDLC construction rather
 than a replacement for it.
 
 The result is real but bounded. The paper supports the mathematical existence
-of composable DLC activation under explicit assumptions. It does not remove the
+of Cascading DLC activation under explicit assumptions. It does not remove the
 need for robust oracle operations, careful fee and timeout engineering,
 Lightning implementation work, liquidity design, collateral design, or legal
 analysis. cDLCs are therefore best understood as a new Bitcoin-native
-composition primitive: strong enough to justify implementation and testing, but
-not by itself a finished financial system.
+cascading activation primitive: strong enough to justify implementation and
+testing, but not by itself a finished financial system.
 
 ## References
 

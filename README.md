@@ -6,8 +6,8 @@
 ![License](https://img.shields.io/badge/license-ISC-blue)
 ![Network](https://img.shields.io/badge/network-signet%2Fregtest%2Ftestnet-lightgrey)
 
-NITI is a research and implementation workspace for composable Discreet Log
-Contracts, or cDLCs.
+NITI is a research and implementation workspace for Cascading Discreet Log Contracts,
+or cDLCs.
 
 The core result is narrow: a DLC oracle attestation scalar revealed by a parent
 contract can also complete adaptor signatures on a bridge transaction that
@@ -48,7 +48,7 @@ fee/reorg policy, and external review.
 
 - [Current State](#current-state)
 - [Precise Claim](#precise-claim)
-- [How cDLC Composition Works](#how-cdlc-composition-works)
+- [How cDLC Cascading Works](#how-cdlc-cascading-works)
 - [Evidence Map](#evidence-map)
 - [Quick Start](#quick-start)
 - [Reproduce The v0.1 Evidence](#reproduce-the-v01-evidence)
@@ -67,7 +67,7 @@ fee/reorg policy, and external review.
 The conservative claim supported by the current repository is:
 
 > Under the documented cryptographic and operational assumptions, NITI
-> demonstrates a composable cDLC activation path in which a parent DLC oracle
+> demonstrates a Cascading DLC activation path in which a parent DLC oracle
 > scalar completes the selected parent settlement and also completes a bridge
 > transaction into child funding, while a non-corresponding oracle scalar fails
 > to activate that bridge.
@@ -91,7 +91,7 @@ NITI does not claim:
 - guaranteed liquidity, solvency, or redemption;
 - legal or regulatory readiness.
 
-## How cDLC Composition Works
+## How cDLC Cascading Works
 
 A Schnorr oracle commits to a nonce point `R_o` and later attests an outcome
 `x` by revealing:

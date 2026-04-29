@@ -205,7 +205,7 @@ test keys and harness flows are for signet, testnet, and regtest only.
 
 Allowed claim:
 
-> NITI v0.1 demonstrates technical existence of a composable cDLC activation
+> NITI v0.1 demonstrates technical existence of a Cascading DLC activation
 > path on public signet under documented assumptions.
 
 Forbidden claims:
@@ -232,8 +232,8 @@ Forbidden claims:
 
 ## Diligence Conclusion
 
-The current evidence supports a serious technical prototype claim: the
-composable cDLC activation primitive exists and has been demonstrated on public
-signet for one path. It does not yet support claims about production financial
+The current evidence supports a serious technical prototype claim: the cDLC
+activation primitive exists and has been demonstrated on public signet for one
+path. It does not yet support claims about production financial
 operations, broad product-market readiness, mainnet safety, or user-fund
 custody.
