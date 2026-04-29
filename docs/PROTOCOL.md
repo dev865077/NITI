@@ -1,6 +1,6 @@
 # Protocol Summary
 
-Composable Discreet Log Contracts are finite graphs of DLC transactions. Each
+Cascading Discreet Log Contracts are finite graphs of DLC transactions. Each
 edge represents a conditional activation:
 
 ```text

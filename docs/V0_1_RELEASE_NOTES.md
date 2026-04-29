@@ -13,7 +13,7 @@ NITI v0.1: public signet cDLC activation evidence
 
 ## Release Claim
 
-NITI v0.1 demonstrates technical existence of a composable cDLC activation
+NITI v0.1 demonstrates technical existence of a Cascading DLC activation
 path:
 
 ```text
@@ -139,7 +139,7 @@ Before approving v0.1 language, check:
 
 Use this conservative summary:
 
-> NITI v0.1 demonstrates a composable DLC activation primitive on public
+> NITI v0.1 demonstrates a Cascading DLC activation primitive on public
 > signet: a parent DLC oracle scalar completes a bridge signature and funds a
 > prepared child path, while the wrong outcome scalar is rejected. This is
 > technical existence evidence for the primitive, not mainnet readiness or a
