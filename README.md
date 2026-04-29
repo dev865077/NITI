@@ -156,6 +156,7 @@ Use this table as the top-level audit map.
 | External auditor quickstart | [`docs/AUDITOR_QUICKSTART.md`](docs/AUDITOR_QUICKSTART.md) | Minimal reviewer path with dependencies, commands, expected outputs, troubleshooting, and a committed demo transcript. |
 | v0.1 limitations document | [`docs/V0_1_LIMITATIONS.md`](docs/V0_1_LIMITATIONS.md) | Technical diligence boundary for oracle, fee, liquidity, collateral, state retention, bilateral protocol, Lightning, and mainnet readiness. |
 | v0.1 release notes draft | [`docs/V0_1_RELEASE_NOTES.md`](docs/V0_1_RELEASE_NOTES.md) | Allowed/forbidden release claims, residual assumptions, and anti-overclaim reviewer checklist. |
+| SPARK target inventory | [`docs/SPARK_TARGET_INVENTORY.md`](docs/SPARK_TARGET_INVENTORY.md) | Canonical map from SPARK targets to package files, object directories, commands, and claim families. |
 | Regtest Bitcoin Core bundle | [`docs/evidence/regtest-cdlc/`](docs/evidence/regtest-cdlc/) | Controlled Bitcoin Core regtest RPC broadcast, mempool checks, confirmations, raw tx files, timeout path. |
 | Deterministic Layer 2 closeout | [`docs/L2_DETERMINISTIC_CLOSEOUT.md`](docs/L2_DETERMINISTIC_CLOSEOUT.md) | Deterministic Layer 2 evidence, component status, and residual risks. |
 | Canonical Layer 2 scenario | [`docs/L2_SINGLE_CDLC_SCENARIO.md`](docs/L2_SINGLE_CDLC_SCENARIO.md) | Single-parent/single-child transaction graph, fixture amounts, keys, timelocks, pass/fail criteria. |
