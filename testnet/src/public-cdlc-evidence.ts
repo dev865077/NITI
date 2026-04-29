@@ -7,13 +7,16 @@ import {
   attestOracleOutcome,
   prepareOracleOutcome,
   pointFromCompressed,
+  randomScalar,
   scalarFromHex,
+  scalarToHex,
   verifyBip340Signature,
 } from './secp.js';
 import {
   buildTaprootAdaptorSpend,
   buildTaprootKeySpend,
   completeTaprootAdaptorSpend,
+  deriveTaprootWallet,
   resolveNetwork,
   type BitcoinNetworkName,
   type PendingTaprootAdaptorSpend,
@@ -65,6 +68,39 @@ interface PublicFundingOutput {
   confirmations: number;
 }
 
+interface MainnetLiveRunPlan {
+  kind: 'niti.v0_1_mainnet_live_run_private_plan.v1';
+  network: 'mainnet';
+  createdAt: string;
+  warning: string;
+  secrets: {
+    parentFunding: string;
+    bridgeSigner: string;
+    childFunding: string;
+    oracle: string;
+    oracleNonce: string;
+    childOracle: string;
+    childOracleNonce: string;
+    childRefundNonce: string;
+  };
+}
+
+interface LiveRunWallets {
+  parentFunding: TaprootWallet;
+  bridgeSigner: TaprootWallet;
+  childFunding: TaprootWallet;
+}
+
+interface TxOutResponse {
+  bestblock: string;
+  confirmations: number;
+  value: number;
+  scriptPubKey: {
+    hex: string;
+  };
+  coinbase: boolean;
+}
+
 function stringArg(args: string[], name: string, fallback?: string): string {
   const index = args.indexOf(name);
   if (index === -1) {
@@ -80,6 +116,22 @@ function stringArg(args: string[], name: string, fallback?: string): string {
   return value;
 }
 
+function optionalStringArg(args: string[], name: string): string | undefined {
+  const index = args.indexOf(name);
+  if (index === -1) {
+    return undefined;
+  }
+  const value = args[index + 1];
+  if (!value || value.startsWith('--')) {
+    throw new Error(`${name} requires a value`);
+  }
+  return value;
+}
+
+function hasFlag(args: string[], name: string): boolean {
+  return args.includes(name);
+}
+
 function numberArg(args: string[], name: string, fallback: number): number {
   const parsed = Number(stringArg(args, name, String(fallback)));
   if (!Number.isInteger(parsed) || parsed < 0) {
@@ -90,11 +142,19 @@ function numberArg(args: string[], name: string, fallback: number): number {
 
 function networkArg(args: string[]): BitcoinNetworkName {
   const network = stringArg(args, '--network', 'signet') as BitcoinNetworkName;
-  if (!['signet', 'testnet', 'testnet4'].includes(network)) {
-    throw new Error('--network must be signet, testnet, or testnet4');
+  if (!['mainnet', 'signet', 'testnet', 'testnet4'].includes(network)) {
+    throw new Error('--network must be mainnet, signet, testnet, or testnet4');
   }
   resolveNetwork(network);
   return network;
+}
+
+function bigintArg(args: string[], name: string): bigint {
+  const value = stringArg(args, name);
+  if (!/^[0-9]+$/.test(value)) {
+    throw new Error(`${name} must be an unsigned integer`);
+  }
+  return BigInt(value);
 }
 
 function btcAmountString(sats: bigint): string {
@@ -110,6 +170,15 @@ function amountToSats(amount: number): bigint {
 function writeJson(filePath: string, value: unknown): void {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
+}
+
+function writePrivateJson(filePath: string, value: unknown): void {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, { mode: 0o600 });
+}
+
+function readJson(filePath: string): unknown {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8')) as unknown;
 }
 
 function writeText(filePath: string, value: string): void {
@@ -181,6 +250,61 @@ function buildSpendWithDeterministicNonce(input: {
     }
   }
   throw new Error('could not find deterministic adaptor nonce fixture');
+}
+
+function generateMainnetPlan(): MainnetLiveRunPlan {
+  return {
+    kind: 'niti.v0_1_mainnet_live_run_private_plan.v1',
+    network: 'mainnet',
+    createdAt: new Date().toISOString(),
+    warning: 'PRIVATE MAINNET TEST SECRETS. Keep this file out of git. Fund only the listed parentFunding address with the smallest amount required for the live run.',
+    secrets: {
+      parentFunding: scalarToHex(randomScalar()),
+      bridgeSigner: scalarToHex(randomScalar()),
+      childFunding: scalarToHex(randomScalar()),
+      oracle: scalarToHex(randomScalar()),
+      oracleNonce: scalarToHex(randomScalar()),
+      childOracle: scalarToHex(randomScalar()),
+      childOracleNonce: scalarToHex(randomScalar()),
+      childRefundNonce: scalarToHex(randomScalar()),
+    },
+  };
+}
+
+function parseMainnetPlan(value: unknown): MainnetLiveRunPlan {
+  if (!value || typeof value !== 'object') {
+    throw new Error('mainnet plan must be an object');
+  }
+  const candidate = value as MainnetLiveRunPlan;
+  if (candidate.kind !== 'niti.v0_1_mainnet_live_run_private_plan.v1') {
+    throw new Error('unsupported mainnet plan kind');
+  }
+  if (candidate.network !== 'mainnet') {
+    throw new Error('mainnet plan network must be mainnet');
+  }
+  for (const [name, secret] of Object.entries(candidate.secrets)) {
+    scalarFromHex(secret, `mainnet plan ${name}`);
+  }
+  return candidate;
+}
+
+function readMainnetPlan(filePath: string): MainnetLiveRunPlan {
+  return parseMainnetPlan(readJson(filePath));
+}
+
+function walletsFromMainnetPlan(plan: MainnetLiveRunPlan): LiveRunWallets {
+  return {
+    parentFunding: deriveMainnetWallet(plan.secrets.parentFunding),
+    bridgeSigner: deriveMainnetWallet(plan.secrets.bridgeSigner),
+    childFunding: deriveMainnetWallet(plan.secrets.childFunding),
+  };
+}
+
+function deriveMainnetWallet(secretHex: string): TaprootWallet {
+  return deriveTaprootWallet({
+    internalSecret: scalarFromHex(secretHex, 'mainnet wallet secret'),
+    network: 'mainnet',
+  });
 }
 
 async function getRawTx(txid: string): Promise<RawTxVerbose> {
@@ -274,7 +398,8 @@ async function assertRpcNetwork(network: BitcoinNetworkName): Promise<Record<str
   const info = await rpcCall<Record<string, unknown>>(readRpcConfig(), 'getblockchaininfo');
   const chain = info.chain;
   const ok =
-    (network === 'signet' && chain === 'signet')
+    (network === 'mainnet' && chain === 'main')
+    || (network === 'signet' && chain === 'signet')
     || (network === 'testnet' && chain === 'test')
     || (network === 'testnet4' && chain === 'testnet4');
   if (!ok) {
@@ -327,6 +452,44 @@ async function scanFundingUtxo(input: {
   };
 }
 
+async function readExplicitFundingUtxo(input: {
+  args: string[];
+  expectedScriptPubKeyHex: string;
+}): Promise<PublicFundingOutput> {
+  const txid = stringArg(input.args, '--funding-txid');
+  const voutRaw = Number(stringArg(input.args, '--funding-vout'));
+  if (!Number.isInteger(voutRaw) || voutRaw < 0) {
+    throw new Error('--funding-vout must be a non-negative integer');
+  }
+  const vout = voutRaw;
+  const expectedValueSat = bigintArg(input.args, '--funding-value-sat');
+  const txout = await rpcCall<TxOutResponse | null>(
+    readRpcConfig(),
+    'gettxout',
+    [txid, vout, true],
+  );
+  if (!txout) {
+    throw new Error(`funding outpoint is not currently unspent: ${txid}:${vout}`);
+  }
+  const valueSat = amountToSats(txout.value);
+  if (valueSat !== expectedValueSat) {
+    throw new Error(`funding value mismatch: expected ${expectedValueSat}, got ${valueSat}`);
+  }
+  if (txout.scriptPubKey.hex !== input.expectedScriptPubKeyHex) {
+    throw new Error('funding scriptPubKey does not match the mainnet live-run parent funding wallet');
+  }
+  const rawTxHex = optionalStringArg(input.args, '--funding-raw-tx-hex')
+    ?? (await getRawTx(txid)).hex;
+  return {
+    txid,
+    vout,
+    valueSat,
+    scriptPubKeyHex: txout.scriptPubKey.hex,
+    rawTxHex,
+    confirmations: txout.confirmations,
+  };
+}
+
 function rawTxArtifact(outDir: string, name: string, rawTxHex: string): {
   path: string;
   rawTxHex: string;
@@ -342,12 +505,32 @@ function rawTxArtifact(outDir: string, name: string, rawTxHex: string): {
 function fundingRequest(args: string[]): void {
   const network = networkArg(args);
   const out = stringArg(args, '--out', `testnet/artifacts/public-${network}-funding-request.json`);
+  if (network === 'mainnet') {
+    const plan = readMainnetPlan(stringArg(args, '--plan'));
+    const wallets = walletsFromMainnetPlan(plan);
+    const minimumValueSat = canonicalPublicActivationMinimumValueSat();
+    const request = {
+      kind: 'niti.v0_1_mainnet_cdlc_funding_request.v1',
+      network,
+      address: wallets.parentFunding.address,
+      scriptPubKeyHex: wallets.parentFunding.scriptPubKeyHex,
+      minimumValueSat: minimumValueSat.toString(),
+      minimumValueBtc: btcAmountString(minimumValueSat),
+      warning: 'MAINNET LIVE-RUN ADDRESS. Fund only with the smallest amount required for this test. Keep the private plan file out of git.',
+      nextDryRunCommand:
+        `npm run mainnet:cdlc-execute -- --plan ${stringArg(args, '--plan')} --funding-txid <txid> --funding-vout <n> --funding-value-sat <sat> --out-dir testnet/artifacts/mainnet-live-run`,
+      nextBroadcastCommand:
+        `npm run mainnet:cdlc-execute -- --plan ${stringArg(args, '--plan')} --funding-txid <txid> --funding-vout <n> --funding-value-sat <sat> --out-dir testnet/artifacts/mainnet-live-run --mainnet-broadcast-i-understand`,
+    };
+    writeJson(out, request);
+    console.log(JSON.stringify(request, null, 2));
+    return;
+  }
+
   const wallets = canonicalWallets(network);
   const minimumValueSat = canonicalPublicActivationMinimumValueSat();
   const request = {
     kind: 'niti.v0_1_public_cdlc_funding_request.v1',
-    issue: 153,
-    parentEpic: 56,
     network,
     address: wallets.parentFunding.address,
     scriptPubKeyHex: wallets.parentFunding.scriptPubKeyHex,
@@ -363,24 +546,55 @@ function fundingRequest(args: string[]): void {
   console.log(JSON.stringify(request, null, 2));
 }
 
+function mainnetPlan(args: string[]): void {
+  const out = stringArg(args, '--out', 'testnet/artifacts/mainnet-live-run/private-plan.json');
+  const plan = generateMainnetPlan();
+  const wallets = walletsFromMainnetPlan(plan);
+  writePrivateJson(out, plan);
+  const publicSummary = {
+    kind: 'niti.v0_1_mainnet_live_run_public_plan_summary.v1',
+    network: 'mainnet',
+    privatePlanPath: out,
+    parentFundingAddress: wallets.parentFunding.address,
+    parentFundingScriptPubKeyHex: wallets.parentFunding.scriptPubKeyHex,
+    bridgeSignerAddress: wallets.bridgeSigner.address,
+    childFundingAddress: wallets.childFunding.address,
+    minimumValueSat: canonicalPublicActivationMinimumValueSat().toString(),
+    minimumValueBtc: btcAmountString(canonicalPublicActivationMinimumValueSat()),
+    warning: 'The private plan file contains mainnet signing secrets. It is written under ignored artifacts by default and must not be committed.',
+  };
+  console.log(JSON.stringify(publicSummary, null, 2));
+}
+
 async function executeActivation(args: string[]): Promise<void> {
   const network = networkArg(args);
   const outDir = path.resolve(stringArg(args, '--out-dir', `docs/evidence/public-${network}`));
   const minConfirmations = numberArg(args, '--min-confirmations', 1);
   const waitSeconds = numberArg(args, '--wait-seconds', 7200);
+  const mainnetBroadcast = hasFlag(args, '--mainnet-broadcast-i-understand');
+  const mainnetDryRun = network === 'mainnet' && !mainnetBroadcast;
   fs.mkdirSync(outDir, { recursive: true });
 
   const chainInfo = await assertRpcNetwork(network);
   const networkInfo = await rpcCall<Record<string, unknown>>(readRpcConfig(), 'getnetworkinfo');
-  const wallets = canonicalWallets(network);
+  const privatePlan = network === 'mainnet'
+    ? readMainnetPlan(stringArg(args, '--plan'))
+    : null;
+  const wallets = privatePlan ? walletsFromMainnetPlan(privatePlan) : canonicalWallets(network);
   const parentFundingWallet = wallets.parentFunding;
   const bridgeSignerWallet = wallets.bridgeSigner;
   const childFundingWallet = wallets.childFunding;
 
-  const oracleSecret = scalarFromHex(canonicalSecrets.oracle, 'oracle secret');
-  const nonceSecret = scalarFromHex(canonicalSecrets.oracleNonce, 'oracle nonce');
-  const childOracleSecret = scalarFromHex(canonicalSecrets.childOracle, 'child oracle secret');
-  const childNonceSecret = scalarFromHex(canonicalSecrets.childOracleNonce, 'child oracle nonce');
+  const oracleSecret = scalarFromHex(privatePlan?.secrets.oracle ?? canonicalSecrets.oracle, 'oracle secret');
+  const nonceSecret = scalarFromHex(privatePlan?.secrets.oracleNonce ?? canonicalSecrets.oracleNonce, 'oracle nonce');
+  const childOracleSecret = scalarFromHex(
+    privatePlan?.secrets.childOracle ?? canonicalSecrets.childOracle,
+    'child oracle secret',
+  );
+  const childNonceSecret = scalarFromHex(
+    privatePlan?.secrets.childOracleNonce ?? canonicalSecrets.childOracleNonce,
+    'child oracle nonce',
+  );
   const activatingPrepared = prepareOracleOutcome({
     eventId: canonicalOutcomes.eventId,
     outcome: canonicalOutcomes.activating,
@@ -412,10 +626,15 @@ async function executeActivation(args: string[]): Promise<void> {
     nonceSecret: childNonceSecret,
   });
 
-  const funding = await scanFundingUtxo({
-    address: parentFundingWallet.address,
-    scriptPubKeyHex: parentFundingWallet.scriptPubKeyHex,
-  });
+  const funding = network === 'mainnet'
+    ? await readExplicitFundingUtxo({
+      args,
+      expectedScriptPubKeyHex: parentFundingWallet.scriptPubKeyHex,
+    })
+    : await scanFundingUtxo({
+      address: parentFundingWallet.address,
+      scriptPubKeyHex: parentFundingWallet.scriptPubKeyHex,
+    });
   if (funding.confirmations < minConfirmations) {
     throw new Error(`funding UTXO has ${funding.confirmations} confirmations; need ${minConfirmations}`);
   }
@@ -439,12 +658,15 @@ async function executeActivation(args: string[]): Promise<void> {
     pending: parentPending,
     attestationSecret: scalarFromHex(activatingAttestation.attestationSecretHex, 'activating scalar'),
   });
-  const parentBroadcast = await broadcastAndConfirm({
-    rawTxHex: parentCompleted.rawTxHex,
-    expectedTxid: parentCompleted.txid,
-    minConfirmations,
-    waitSeconds,
-  });
+  const parentMempoolAccept = await testMempool(parentCompleted.rawTxHex);
+  const parentBroadcast = mainnetDryRun
+    ? null
+    : await broadcastAndConfirm({
+      rawTxHex: parentCompleted.rawTxHex,
+      expectedTxid: parentCompleted.txid,
+      minConfirmations,
+      waitSeconds,
+    });
   const parentTx = Transaction.fromHex(parentCompleted.rawTxHex);
   assert.equal(inputTxid(parentTx, 0), funding.txid);
   assert.equal(inputVout(parentTx, 0), funding.vout);
@@ -485,12 +707,14 @@ async function executeActivation(args: string[]): Promise<void> {
     pending: bridgePending,
     attestationSecret: scalarFromHex(activatingAttestation.attestationSecretHex, 'activating scalar'),
   });
-  const bridgeBroadcast = await broadcastAndConfirm({
-    rawTxHex: bridgeCompleted.rawTxHex,
-    expectedTxid: bridgeCompleted.txid,
-    minConfirmations,
-    waitSeconds,
-  });
+  const bridgeBroadcast = mainnetDryRun
+    ? null
+    : await broadcastAndConfirm({
+      rawTxHex: bridgeCompleted.rawTxHex,
+      expectedTxid: bridgeCompleted.txid,
+      minConfirmations,
+      waitSeconds,
+    });
   const bridgeTx = Transaction.fromHex(bridgeCompleted.rawTxHex);
   assert.equal(inputTxid(bridgeTx, 0), parentCompleted.txid);
   assert.equal(inputVout(bridgeTx, 0), 0);
@@ -529,10 +753,12 @@ async function executeActivation(args: string[]): Promise<void> {
     outputValueSat: childFundingOutput.value - canonicalAmounts.childRefundFeeSat,
     locktime: Number(chainInfo.blocks ?? 0) + 144,
     sequence: 0xfffffffe,
-    nonceSecret: scalarFromHex(canonicalSecrets.childRefundNonce, 'child refund nonce'),
+    nonceSecret: scalarFromHex(privatePlan?.secrets.childRefundNonce ?? canonicalSecrets.childRefundNonce, 'child refund nonce'),
   });
-  const childRefundEarlyMempool = await testMempool(childRefund.rawTxHex);
-  assert.equal(childRefundEarlyMempool.allowed, false);
+  const childRefundEarlyMempool = mainnetDryRun ? null : await testMempool(childRefund.rawTxHex);
+  if (childRefundEarlyMempool) {
+    assert.equal(childRefundEarlyMempool.allowed, false);
+  }
 
   const fundingHex = rawTxArtifact(outDir, 'public-01-parent-funding', funding.rawTxHex);
   const parentCetHex = rawTxArtifact(outDir, 'public-02-parent-cet', parentCompleted.rawTxHex);
@@ -540,32 +766,88 @@ async function executeActivation(args: string[]): Promise<void> {
   const childPreparedCetHex = rawTxArtifact(outDir, 'public-04-child-prepared-cet-unsigned', childCetPending.unsignedTxHex);
   const childRefundHex = rawTxArtifact(outDir, 'public-05-child-refund-timelocked', childRefund.rawTxHex);
 
+  if (mainnetDryRun) {
+    const dryRunPath = path.join(outDir, 'mainnet-dry-run-bundle.json');
+    const dryRunBundle = {
+      kind: 'niti.v0_1_mainnet_cdlc_dry_run_bundle.v1',
+      network,
+      boundary: 'Mainnet dry-run: real funded outpoint is verified, transactions are built, parent CET is checked with testmempoolaccept, and no transaction is broadcast.',
+      generatedAt: new Date().toISOString(),
+      broadcast: false,
+      broadcastRequiresFlag: '--mainnet-broadcast-i-understand',
+      bitcoinCore: {
+        chain: chainInfo.chain,
+        blocks: chainInfo.blocks,
+        version: networkInfo.version,
+        subversion: networkInfo.subversion,
+      },
+      funding: {
+        txid: funding.txid,
+        vout: funding.vout,
+        valueSat: funding.valueSat.toString(),
+        confirmations: funding.confirmations,
+        scriptPubKeyHex: funding.scriptPubKeyHex,
+        address: parentFundingWallet.address,
+        rawTx: fundingHex,
+      },
+      parentCet: {
+        txid: parentCompleted.txid,
+        mempoolAccept: parentMempoolAccept,
+        rawTx: parentCetHex,
+      },
+      bridge: {
+        txid: bridgeCompleted.txid,
+        wrongScalarRejected: bridgeWrongScalarRejected,
+        preResolutionSignatureVerifies: bridgePreResolutionSignatureVerifies,
+        rawTx: bridgeHex,
+      },
+      childPreparedCet: {
+        txidNoWitness: childCetPending.txidNoWitness,
+        rawTx: childPreparedCetHex,
+      },
+      childRefund: {
+        txid: childRefund.txid,
+        locktime: childRefund.locktime,
+        rawTx: childRefundHex,
+      },
+    };
+    writeJson(dryRunPath, dryRunBundle);
+    console.log(`wrote ${relativeFromRepo(dryRunPath)}`);
+    return;
+  }
+
+  assert.notEqual(parentBroadcast, null);
+  assert.notEqual(bridgeBroadcast, null);
+  assert.notEqual(childRefundEarlyMempool, null);
+
   const checks = {
-    publicNetwork: network === 'signet' || network === 'testnet' || network === 'testnet4',
+    publicNetwork: network === 'mainnet' || network === 'signet' || network === 'testnet' || network === 'testnet4',
     fundingConfirmed: funding.confirmations >= minConfirmations,
-    parentCetAccepted: parentBroadcast.mempoolAccept.allowed,
-    parentCetConfirmed: parentBroadcast.confirmation.confirmations >= minConfirmations,
+    parentCetAccepted: parentBroadcast!.mempoolAccept.allowed,
+    parentCetConfirmed: parentBroadcast!.confirmation.confirmations >= minConfirmations,
     parentWrongOutcomeRejected: true,
     bridgeAdaptorPreResolutionNotValidSignature: bridgePreResolutionSignatureVerifies === false,
     bridgeWrongScalarRejected,
-    bridgeAccepted: bridgeBroadcast.mempoolAccept.allowed,
-    bridgeConfirmed: bridgeBroadcast.confirmation.confirmations >= minConfirmations,
+    bridgeAccepted: bridgeBroadcast!.mempoolAccept.allowed,
+    bridgeConfirmed: bridgeBroadcast!.confirmation.confirmations >= minConfirmations,
     bridgeCreatesChildFunding:
       bytesToHex(childFundingOutput.script) === childFundingWallet.scriptPubKeyHex,
     childPreparedCetAdaptorOnly:
       childCetPending.adaptor.verifiesAdaptor && childCetPreResolutionSignatureVerifies === false,
-    childRefundEarlyRejected: childRefundEarlyMempool.allowed === false,
+    childRefundEarlyRejected: childRefundEarlyMempool!.allowed === false,
   };
   const failed = Object.entries(checks).filter(([, passed]) => !passed).map(([name]) => name);
   assert.deepEqual(failed, [], `failed public evidence checks: ${failed.join(', ')}`);
 
   const bundlePath = path.join(outDir, 'public-activation-evidence-bundle.json');
   const bundle = {
-    kind: 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1',
-    issue: 153,
-    parentEpic: 56,
+    kind: network === 'mainnet'
+      ? 'niti.v0_1_mainnet_activation_evidence_bundle.v1'
+      : 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1',
     network,
-    boundary: 'Public signet/testnet execution with Bitcoin Core RPC broadcast, mempool checks, and observed confirmations; not regtest mining',
+    boundary: network === 'mainnet'
+      ? 'Mainnet Bitcoin execution with real sats, Bitcoin Core RPC broadcast, mempool checks, and observed confirmations.'
+      : 'Public signet/testnet execution with Bitcoin Core RPC broadcast, mempool checks, and observed confirmations; not regtest mining',
     generatedAt: new Date().toISOString(),
     bitcoinCore: {
       chain: chainInfo.chain,
@@ -614,9 +896,9 @@ async function executeActivation(args: string[]): Promise<void> {
         signatureState: 'completed-schnorr-signature-after-parent-oracle-attestation',
         completedSignatureHex: parentCompleted.completedSignatureHex,
         rawTx: parentCetHex,
-        mempoolAccept: parentBroadcast.mempoolAccept,
-        broadcastTxid: parentBroadcast.broadcastTxid,
-        confirmation: parentBroadcast.confirmation,
+        mempoolAccept: parentBroadcast!.mempoolAccept,
+        broadcastTxid: parentBroadcast!.broadcastTxid,
+        confirmation: parentBroadcast!.confirmation,
       },
       bridge: {
         txid: bridgeCompleted.txid,
@@ -644,9 +926,9 @@ async function executeActivation(args: string[]): Promise<void> {
           rejected: bridgeWrongScalarRejected,
         },
         rawTx: bridgeHex,
-        mempoolAccept: bridgeBroadcast.mempoolAccept,
-        broadcastTxid: bridgeBroadcast.broadcastTxid,
-        confirmation: bridgeBroadcast.confirmation,
+        mempoolAccept: bridgeBroadcast!.mempoolAccept,
+        broadcastTxid: bridgeBroadcast!.broadcastTxid,
+        confirmation: bridgeBroadcast!.confirmation,
       },
       childPreparedCet: {
         txidNoWitness: childCetPending.txidNoWitness,
@@ -670,7 +952,7 @@ async function executeActivation(args: string[]): Promise<void> {
         sequence: childRefund.sequence,
         signatureState: 'complete-schnorr-signature-but-timelocked',
         signatureVerifies: childRefund.signature.verifies,
-        earlyMempoolAccept: childRefundEarlyMempool,
+        earlyMempoolAccept: childRefundEarlyMempool!,
         rawTx: childRefundHex,
       },
     },
@@ -683,6 +965,10 @@ async function executeActivation(args: string[]): Promise<void> {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const mode = stringArg(args, '--mode', 'funding-request');
+  if (mode === 'mainnet-plan') {
+    mainnetPlan(args);
+    return;
+  }
   if (mode === 'funding-request') {
     fundingRequest(args);
     return;
@@ -691,7 +977,7 @@ async function main(): Promise<void> {
     await executeActivation(args);
     return;
   }
-  throw new Error('--mode must be funding-request or execute-activation');
+  throw new Error('--mode must be mainnet-plan, funding-request, or execute-activation');
 }
 
 main().catch((error: unknown) => {

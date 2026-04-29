@@ -25,19 +25,22 @@ import {
 
 initEccLib(tinysecp);
 
-export type BitcoinNetworkName = 'testnet' | 'testnet4' | 'signet' | 'regtest';
+export type BitcoinNetworkName = 'mainnet' | 'testnet' | 'testnet4' | 'signet' | 'regtest';
 
 export const conservativeTaprootDustFloorSat = 330n;
 
 export interface NitiNetwork {
   name: BitcoinNetworkName;
-  bitcoinjs: typeof networks.testnet;
+  bitcoinjs: typeof networks.bitcoin;
 }
 
 export function resolveNetwork(name: string | undefined): NitiNetwork {
   const value = (name ?? 'testnet4') as BitcoinNetworkName;
-  if (!['testnet', 'testnet4', 'signet', 'regtest'].includes(value)) {
+  if (!['mainnet', 'testnet', 'testnet4', 'signet', 'regtest'].includes(value)) {
     throw new Error(`unsupported network: ${name}`);
+  }
+  if (value === 'mainnet') {
+    return { name: value, bitcoinjs: networks.bitcoin };
   }
   return { name: value, bitcoinjs: value === 'regtest' ? networks.regtest : networks.testnet };
 }

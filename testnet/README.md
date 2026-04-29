@@ -1,7 +1,8 @@
 # NITI cDLC Testnet Harness
 
-This harness is for testnet/signet/regtest validation only. Do not use these
-commands or generated secrets on mainnet.
+This harness is primarily for testnet/signet/regtest validation. A guarded
+mainnet live-run path exists for the smallest real-sats cDLC activation test;
+see [`MAINNET_LIVE_RUN.md`](MAINNET_LIVE_RUN.md).
 
 ## What This Tests
 
@@ -26,6 +27,8 @@ attestation scalar is the invoice preimage. See [`LIGHTNING.md`](LIGHTNING.md).
 
 For controlled Bitcoin Core execution that avoids faucet and public mempool
 variance, use the deterministic regtest guide in [`REGTEST.md`](REGTEST.md).
+For a real mainnet activation run with explicit broadcast controls, use
+[`MAINNET_LIVE_RUN.md`](MAINNET_LIVE_RUN.md).
 
 ## Build And Offline Test
 
