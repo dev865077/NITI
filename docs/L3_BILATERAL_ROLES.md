@@ -2,9 +2,8 @@
 
 This document defines the first bilateral protocol fixture for the cDLC test
 harness. Its purpose is narrow: Alice and Bob must have independent key,
-nonce, refund, and storage scopes before later protocol work defines setup
-messages, funding validation, adaptor exchange, process isolation, and recovery
-behavior.
+nonce, refund, and storage scopes before protocol work validates funding,
+exchanges adaptors, runs isolated processes, and exercises recovery behavior.
 
 The fixture is deterministic and local. It is not a production wallet model and
 must not be used with mainnet funds.
@@ -26,7 +25,7 @@ The private fixture material lives in
 setup messages are derived from that material and intentionally omit every
 private scalar.
 
-## Public Setup Message
+## Public Role Announcement
 
 The exported public message kind is:
 
@@ -34,7 +33,7 @@ The exported public message kind is:
 niti.l3.bilateral_setup_message.v1
 ```
 
-Each message contains:
+Each role announcement contains:
 
 - participant role: `alice` or `bob`;
 - network name;
@@ -82,5 +81,5 @@ niti.l3_bilateral_role_fixture.v1
 ```
 
 The fixture is suitable for the next Layer 3 steps because it gives later tests
-stable Alice/Bob public setup messages while keeping all private material local
-to the generating participant.
+stable Alice/Bob public role announcements while keeping all private material
+local to the generating participant.
