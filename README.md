@@ -47,6 +47,7 @@ fee/reorg policy, and external review.
 ## Contents
 
 - [Current State](#current-state)
+- [Reproducibility Status](#reproducibility-status)
 - [Precise Claim](#precise-claim)
 - [How cDLC Cascading Works](#how-cdlc-cascading-works)
 - [Evidence Map](#evidence-map)
@@ -61,6 +62,22 @@ fee/reorg policy, and external review.
 - [Security Boundary](#security-boundary)
 - [Roadmap](#roadmap)
 - [License](#license)
+
+## Reproducibility Status
+
+The current remote release gate is the
+[v0.1 validation workflow](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml).
+The latest recorded green `main` baseline for this status is commit
+[`f13e662751eadfc4e0038b82ece88c099b6ab574`](https://github.com/dev865077/NITI/commit/f13e662751eadfc4e0038b82ece88c099b6ab574),
+validated by
+[GitHub Actions run `25088426740`](https://github.com/dev865077/NITI/actions/runs/25088426740).
+
+| Surface | Status | Evidence |
+| --- | --- | --- |
+| Remote v0.1 CI gate | Passing for the recorded `main` baseline. | [`v0.1 validation`](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) |
+| Local full gate | Reproducible with `npm run v0.1:verify` when Node, Ada, and SPARK toolchains are installed. | [`docs/V0_1_RUNNER.md`](docs/V0_1_RUNNER.md) |
+| Public signet activation | Committed public evidence exists for one parent -> bridge -> child funding path. | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) |
+| Manual or experimental surfaces | Fresh public signet broadcast, faucet funding, production wallet behavior, fee-bump policy, and product-level SPARK sweeps remain explicit manual or extended steps. | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) |
 
 ## Precise Claim
 
@@ -135,6 +152,7 @@ Use this table as the top-level audit map.
 | Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet architecture. |
 | Public signet activation bundle | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) | Funded public signet parent CET, bridge confirmation, child funding output, raw tx files, verifier log. |
 | v0.1 technical demo script | [`docs/V0_1_TECHNICAL_DEMO.md`](docs/V0_1_TECHNICAL_DEMO.md), [`scripts/demo-v0.1.sh`](scripts/demo-v0.1.sh) | Reproducible demo sequence from public signet artifacts, with explicit claim boundaries. |
+| v0.1 reproducibility status | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) | Current CI, local runner, public evidence, and manual/experimental boundaries. |
 | External auditor quickstart | [`docs/AUDITOR_QUICKSTART.md`](docs/AUDITOR_QUICKSTART.md) | Minimal reviewer path with dependencies, commands, expected outputs, troubleshooting, and a committed demo transcript. |
 | v0.1 limitations document | [`docs/V0_1_LIMITATIONS.md`](docs/V0_1_LIMITATIONS.md) | Technical diligence boundary for oracle, fee, liquidity, collateral, state retention, bilateral protocol, Lightning, and mainnet readiness. |
 | v0.1 release notes draft | [`docs/V0_1_RELEASE_NOTES.md`](docs/V0_1_RELEASE_NOTES.md) | Allowed/forbidden release claims, residual assumptions, and anti-overclaim reviewer checklist. |
