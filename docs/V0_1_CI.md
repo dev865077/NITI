@@ -9,7 +9,7 @@ It runs on every proposed repository change and on pushes to `main`.
 
 | Job | Purpose | Commands |
 | --- | --- | --- |
-| TypeScript deterministic harness | Build and run the deterministic protocol harnesses, including bilateral role fixtures and the cDLC smoke path. | `npm run v0.1:verify -- --skip-ada --skip-spark` |
+| TypeScript deterministic harness | Build and run the deterministic protocol harnesses, including bilateral setup fixtures and the cDLC smoke path. | `npm run v0.1:verify -- --skip-ada --skip-spark` |
 | Ada manifest validator | Build the finite cDLC graph manifest validator and validate the canonical fixture. | `npm run v0.1:verify -- --skip-node --skip-spark` |
 | SPARK proof regression | Run the core cDLC and Lightning SPARK proof targets and reject `pragma Assume` in proof sources. | `scripts/run-v0.1.sh --skip-node --skip-ada` |
 
@@ -41,7 +41,7 @@ proposed change can be treated as release-ready.
 A green workflow means:
 
 - the TypeScript code compiles;
-- the deterministic adaptor, bilateral role, Lightning, and cDLC smoke harnesses pass;
+- the deterministic adaptor, bilateral setup, Lightning, and cDLC smoke harnesses pass;
 - the Ada cDLC graph manifest validator builds and accepts the canonical
   manifest fixture;
 - the core cDLC and Lightning SPARK proof targets pass in CI;

@@ -63,9 +63,10 @@ timeout refund evidence done.
 - Add fee bump and timeout policies.
 
 Status: Alice/Bob role separation fixtures exist in
-[`docs/L3_BILATERAL_ROLES.md`](L3_BILATERAL_ROLES.md). Bilateral setup message
-validation, funding validation, adaptor exchange, and two-process execution
-remain open.
+[`docs/L3_BILATERAL_ROLES.md`](L3_BILATERAL_ROLES.md). Deterministic setup
+message validation exists in
+[`docs/L3_BILATERAL_SETUP_SCHEMA.md`](L3_BILATERAL_SETUP_SCHEMA.md). Funding
+validation, adaptor exchange, and two-process execution remain open.
 
 ## Phase 5: Auditable Prototype
 

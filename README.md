@@ -151,6 +151,7 @@ Use this table as the top-level audit map.
 | Edge refund timeout | [`docs/L2_EDGE_REFUND_TIMEOUT.md`](docs/L2_EDGE_REFUND_TIMEOUT.md) | Negative timeout/refund path for the parent edge output. |
 | E2E transcript | [`docs/L2_E2E_TRANSCRIPT.md`](docs/L2_E2E_TRANSCRIPT.md) | Redacted deterministic audit transcript and replay commands. |
 | Bilateral role fixtures | [`docs/L3_BILATERAL_ROLES.md`](docs/L3_BILATERAL_ROLES.md) | Alice/Bob key scopes, nonce commitments, storage identities, and local fixture checks. |
+| Bilateral setup schema | [`docs/L3_BILATERAL_SETUP_SCHEMA.md`](docs/L3_BILATERAL_SETUP_SCHEMA.md) | Versioned setup messages, canonical digests, critical-field rejection, and examples. |
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Mapping from formal algebra claims to TypeScript/Bitcoin transaction fields. |
 | SPARK/Ada models | [`spark/`](spark/) | Formal algebra, Lightning witness models, and finite financial accounting models. |
 | TypeScript harness | [`testnet/`](testnet/) | Taproot/adaptor/oracle/RPC harnesses, manifests, public signet and regtest flows. |
@@ -518,7 +519,8 @@ state is:
 2. Bitcoin Core regtest broadcast/confirmation evidence: done.
 3. Public signet parent CET -> bridge -> child funding evidence: done.
 4. Bilateral protocol transcript with two independent participants: role
-   separation fixtures exist; message exchange remains the next major gap.
+   separation fixtures and setup schema exist; funding validation and adaptor
+   exchange remain the next major gaps.
 5. Auditable oracle layer with announcement, nonce commitment, attestation
    verification, and history: next major gap.
 6. Economic stress simulations for collateral, liquidation, timelocks, and
