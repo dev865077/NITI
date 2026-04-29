@@ -14,7 +14,7 @@ npm run v0.1:verify
 The default run performs:
 
 1. TypeScript build.
-2. Deterministic adaptor, Lightning, and cDLC smoke tests.
+2. Deterministic adaptor, bilateral role, Lightning, and cDLC smoke tests.
 3. A fresh parent funding artifact at
    `testnet/artifacts/v0.1-*/parent-funding.json` and raw transaction at
    `testnet/artifacts/v0.1-*/parent-funding.hex`.

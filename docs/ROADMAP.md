@@ -62,6 +62,11 @@ timeout refund evidence done.
 - Add threshold/multi-oracle outcome attestations.
 - Add fee bump and timeout policies.
 
+Status: Alice/Bob role separation fixtures exist in
+[`docs/L3_BILATERAL_ROLES.md`](L3_BILATERAL_ROLES.md). Bilateral setup message
+validation, funding validation, adaptor exchange, and two-process execution
+remain open.
+
 ## Phase 5: Auditable Prototype
 
 - External cryptography review.
