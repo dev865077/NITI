@@ -3,7 +3,7 @@
 [![v0.1 validation](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml/badge.svg)](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml)
 ![Status](https://img.shields.io/badge/status-research%20prototype-orange)
 ![Evidence](https://img.shields.io/badge/evidence-public%20Bitcoin%20verified-brightgreen)
-![License](https://img.shields.io/badge/license-ISC-blue)
+![License](https://img.shields.io/badge/license-GPL-black)
 ![Network](https://img.shields.io/badge/network-signet%2Ftestnet%2Fmainnet-lightgrey)
 
 NITI is a research and implementation workspace for Cascading Discreet Log Contracts,
