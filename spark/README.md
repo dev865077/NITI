@@ -8,7 +8,7 @@ For the canonical map from proof targets to package files, object directories,
 commands, and claim families, see
 [`docs/SPARK_TARGET_INVENTORY.md`](../docs/SPARK_TARGET_INVENTORY.md).
 
-There are seventeen models:
+There are eighteen models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -20,6 +20,12 @@ There are seventeen models:
 - `cdlc_algebra`: proves the same identities using Ada's built-in `type mod 97`.
   This target includes explicit ghost lemmas for modular sum rotation and
   left-cancellation so GNATprove can close the bit-vector modular obligations.
+- `lazy_cdlc_window_algebra`: proves the finite-window preparation predicate
+  used by Lazy cDLCs: terminal outcomes do not require child preparation, live
+  outcomes require child mappings, valid in-window live edges imply prepared
+  child paths, out-of-window descendants are not forced by the current window,
+  the active node is in its own window, and one-step continuation requires
+  `K >= 2` under the active-node-counting convention.
 - `lightning_cdlc_algebra`: proves the Lightning companion identities using
   Ada's built-in `type mod 97`: HTLC compatibility under an ideal injective
   hash model, PTLC point locks, HTLC route witness reuse, PTLC route tweaks,
@@ -87,6 +93,10 @@ There are seventeen models:
 - Adding the oracle scalar completes the signature.
 - A completed signature reveals the oracle scalar by subtraction.
 - A different oracle scalar does not complete the same bridge signature.
+- In the Lazy cDLC window model, the active node is always in its own
+  preparation window, terminal outcomes do not require child preparation, valid
+  in-window live edges require prepared child paths, and a one-step
+  continuation window requires `K >= 2`.
 - In the Lightning model, an oracle scalar settles an HTLC when the oracle
   precommits to its payment hash.
 - In the Lightning model, the same oracle scalar settles a point-locked PTLC.
