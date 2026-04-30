@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run test:offline && npm run test:bilateral-roles && npm run test:bilateral-setup-schema && npm run test:bilateral-state-machine && npm run test:bilateral-template-agreement && npm run test:bilateral-funding-validation && npm run test:bilateral-adaptor-exchange && npm run test:mainnet-guards && npm run test:lightning && npm run test:cdlc-smoke && npm run test:evidence-bundle",
+    "test": "npm run test:offline && npm run test:bilateral-roles && npm run test:bilateral-setup-schema && npm run test:bilateral-state-machine && npm run test:bilateral-template-agreement && npm run test:bilateral-funding-validation && npm run test:bilateral-adaptor-exchange && npm run test:bilateral-state-retention && npm run test:mainnet-guards && npm run test:lightning && npm run test:cdlc-smoke && npm run test:evidence-bundle",
     "test:offline": "TMPDIR=/tmp tsx testnet/src/offline-test.ts",
     "test:bilateral-roles": "TMPDIR=/tmp tsx testnet/src/bilateral-roles-test.ts",
     "test:bilateral-setup-schema": "TMPDIR=/tmp tsx testnet/src/bilateral-setup-schema-test.ts",
@@ -18,6 +18,7 @@
     "test:bilateral-template-agreement": "TMPDIR=/tmp tsx testnet/src/bilateral-template-agreement-test.ts",
     "test:bilateral-funding-validation": "TMPDIR=/tmp tsx testnet/src/bilateral-funding-validation-test.ts",
     "test:bilateral-adaptor-exchange": "TMPDIR=/tmp tsx testnet/src/bilateral-adaptor-exchange-test.ts",
+    "test:bilateral-state-retention": "TMPDIR=/tmp tsx testnet/src/bilateral-state-retention-test.ts",
     "test:mainnet-guards": "TMPDIR=/tmp tsx testnet/src/mainnet-guards-test.ts",
     "test:lightning": "TMPDIR=/tmp tsx testnet/src/lightning-offline-test.ts",
     "test:cdlc-smoke": "TMPDIR=/tmp tsx testnet/src/cdlc-smoke-test.ts",

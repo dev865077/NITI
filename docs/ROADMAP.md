@@ -91,6 +91,8 @@ Funding validation is defined in
 [`docs/L3_BILATERAL_FUNDING_VALIDATION.md`](L3_BILATERAL_FUNDING_VALIDATION.md).
 Deterministic adaptor-signature exchange is defined in
 [`docs/L3_BILATERAL_ADAPTOR_EXCHANGE.md`](L3_BILATERAL_ADAPTOR_EXCHANGE.md).
+Per-participant retained state is defined in
+[`docs/L3_BILATERAL_STATE_RETENTION.md`](L3_BILATERAL_STATE_RETENTION.md).
 Two-process execution remains open.
 
 Oracle equivocation evidence is defined in
