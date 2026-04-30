@@ -80,8 +80,10 @@ The result is live-state compression, not a production liveness guarantee. See
 Status: Alice/Bob role separation fixtures exist in
 [`docs/L3_BILATERAL_ROLES.md`](L3_BILATERAL_ROLES.md). Deterministic setup
 message validation exists in
-[`docs/L3_BILATERAL_SETUP_SCHEMA.md`](L3_BILATERAL_SETUP_SCHEMA.md). Funding
-validation, adaptor exchange, and two-process execution remain open.
+[`docs/L3_BILATERAL_SETUP_SCHEMA.md`](L3_BILATERAL_SETUP_SCHEMA.md). The audit
+transcript format is defined in
+[`docs/L3_BILATERAL_TRANSCRIPT_FORMAT.md`](L3_BILATERAL_TRANSCRIPT_FORMAT.md).
+Funding validation, adaptor exchange, and two-process execution remain open.
 
 ## Phase 5: Auditable Prototype
 

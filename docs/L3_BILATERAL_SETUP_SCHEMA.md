@@ -47,6 +47,8 @@ The validator rejects:
 
 The TypeScript schema and validator live in
 [`testnet/src/bilateral-setup-schema.ts`](../testnet/src/bilateral-setup-schema.ts).
+The audit transcript format is described in
+[`L3_BILATERAL_TRANSCRIPT_FORMAT.md`](L3_BILATERAL_TRANSCRIPT_FORMAT.md).
 
 ## Example Message
 
