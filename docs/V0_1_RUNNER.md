@@ -1,5 +1,9 @@
 # v0.1 One-Command Runner
 
+This page records the historical v0.1 local runner. The same runner now also
+exposes the Lazy SPARK suite used by the current Lazy status; see
+[`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md).
+
 `scripts/run-v0.1.sh` is the local reproducibility entry point for the narrow
 v0.1 claim. It is deliberately stricter than the normal developer loop: missing
 tools, failed proofs, failed tests, or failed invariants return a nonzero exit

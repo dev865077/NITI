@@ -1,5 +1,9 @@
 # v0.1 Reproducibility Status
 
+This page records the historical v0.1 reproducibility baseline. The current
+project status includes Lazy cDLC compression proofs and dust-sized Lazy
+mainnet evidence; see [`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md).
+
 NITI's v0.1 reproducibility surface has three independently inspectable parts:
 remote CI, local deterministic verification, and committed public-network
 evidence.

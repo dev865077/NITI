@@ -1,5 +1,9 @@
 # v0.1 Technical Demo Script
 
+This is the historical v0.1 demo script. For the current Lazy cDLC status,
+including the dust-sized Lazy mainnet artifact and compression proof boundary,
+see [`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md).
+
 This technical demo script is designed for an engineer, reviewer, or investor
 diligence team that wants to see the v0.1 claim from reproducible artifacts
 instead of screenshots or verbal claims.

@@ -1,5 +1,9 @@
 # NITI v0.1 Release Notes Draft
 
+These are historical v0.1 notes. The current repository also contains Lazy
+cDLC compression models and dust-sized Lazy mainnet activation evidence. See
+[`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md) for the current project status.
+
 This draft states the v0.1 technical result without overclaiming.
 
 These notes are not investor pitch copy, legal analysis, regulatory analysis,

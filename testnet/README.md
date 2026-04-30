@@ -1,12 +1,13 @@
 # NITI cDLC Testnet Harness
 
-This harness is primarily for testnet/signet/regtest validation. A guarded
-mainnet live-run path exists for the smallest real-sats cDLC activation test;
-see [`MAINNET_LIVE_RUN.md`](MAINNET_LIVE_RUN.md).
+This harness covers deterministic, regtest, public signet/testnet, and guarded
+dust-sized mainnet cDLC activation tests. The current public-network path is
+Lazy `K = 2` preparation: parent CET -> bridge -> child funding with a bounded
+prepared window.
 
 ## What This Tests
 
-The first real Bitcoin-facing experiment is intentionally narrow:
+The core Bitcoin-facing experiment is intentionally narrow:
 
 1. Generate a Taproot testnet address.
 2. Fund it with testnet coins.
@@ -15,9 +16,10 @@ The first real Bitcoin-facing experiment is intentionally narrow:
 4. Complete that signature with a DLC-style oracle attestation scalar.
 5. Broadcast only when `--allow-broadcast` is explicitly provided.
 
-This validates the core cDLC activation primitive on a real Bitcoin transaction:
-an oracle attestation scalar turns an incomplete adaptor signature into a valid
-Taproot witness.
+This validates the core cDLC activation primitive on Bitcoin transactions: an
+oracle attestation scalar turns incomplete adaptor signatures into valid
+Taproot witnesses. The Lazy runners add an explicit bounded preparation window
+and verify that the prepared child path consumes the bridge output.
 
 The Ada validator checks a canonical cDLC graph manifest: node ids, dust floors,
 edge references, bridge values, timelock ordering, and acyclicity.
@@ -27,7 +29,8 @@ attestation scalar is the invoice preimage. See [`LIGHTNING.md`](LIGHTNING.md).
 
 For controlled Bitcoin Core execution that avoids faucet and public mempool
 variance, use the deterministic regtest guide in [`REGTEST.md`](REGTEST.md).
-For a real mainnet activation run with explicit broadcast controls, use
+For public signet/testnet Lazy runs, use [`PUBLIC_SIGNET.md`](PUBLIC_SIGNET.md).
+For a dust-sized mainnet activation run with explicit broadcast controls, use
 [`MAINNET_LIVE_RUN.md`](MAINNET_LIVE_RUN.md).
 
 ## Build And Offline Test
@@ -100,6 +103,13 @@ It produces a deterministic regtest-equivalent transcript with:
 This command does not claim public testnet confirmation. Public broadcast is a
 separate Layer 2 artifact because mempool and faucet availability are external
 conditions.
+
+The current public evidence layer contains committed Lazy runs on signet,
+testnet, and dust-sized mainnet:
+
+- [`../docs/evidence/lazy-public-signet/`](../docs/evidence/lazy-public-signet/)
+- [`../docs/evidence/lazy-public-testnet/`](../docs/evidence/lazy-public-testnet/)
+- [`../docs/evidence/lazy-public-mainnet/`](../docs/evidence/lazy-public-mainnet/)
 
 To emit only the parent funding artifact required by the Layer 2 funding
 harness:

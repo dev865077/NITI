@@ -61,6 +61,6 @@ rg -n "Source_Files|Object_Dir" spark/*.gpr -C 2
 rg --files spark/src -g "*.ads" -g "*.adb" | sort
 ```
 
-The public v0.1 gate runs the core cDLC and Lightning targets. The
-product-accounting targets are available for extended proof sweeps with the
-commands above.
+The remote validation gate runs the core cDLC, Lightning, and Lazy cDLC
+targets. The product-accounting targets are available for extended proof sweeps
+with the commands above.
