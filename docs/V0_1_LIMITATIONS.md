@@ -120,7 +120,8 @@ yet provide a production oracle service with:
 - signed public announcements for all production events;
 - enforced one-time nonce operations;
 - append-only attestation history;
-- price-source and timestamp policy;
+- price-source and timestamp policy, described in
+  [`docs/ORACLE_PRICE_SOURCE_POLICY.md`](ORACLE_PRICE_SOURCE_POLICY.md);
 - public equivocation evidence format, described in
   [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md);
 - operational key management and monitoring.

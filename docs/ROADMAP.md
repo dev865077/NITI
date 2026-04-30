@@ -87,8 +87,10 @@ Funding validation, adaptor exchange, and two-process execution remain open.
 
 Oracle equivocation evidence is defined in
 [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md).
-Announcement schema, append-only history, price-source policy, and oracle
-service operations remain open.
+The deterministic price/source/timestamp policy is defined in
+[`docs/ORACLE_PRICE_SOURCE_POLICY.md`](ORACLE_PRICE_SOURCE_POLICY.md).
+Announcement schema, append-only history, and oracle service operations remain
+open.
 
 ## Phase 5: Auditable Prototype
 
