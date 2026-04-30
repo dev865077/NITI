@@ -1,0 +1,15 @@
+project Lazy_Cdlc_Edge_Proofs is
+   for Source_Dirs use
+     ("src", "/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/include/spark");
+   for Source_Files use
+     ("lazy_cdlc_edge_algebra.ads",
+      "lazy_cdlc_edge_algebra.adb");
+   for Object_Dir use "obj_lazy_cdlc_edge";
+   for Main use ();
+   package Compiler is
+      for Switches ("Ada") use
+        ("-gnata",
+         "-gnat2022",
+         "-I/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/include/spark");
+   end Compiler;
+end Lazy_Cdlc_Edge_Proofs;
