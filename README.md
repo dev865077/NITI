@@ -151,6 +151,7 @@ Use this table as the top-level audit map.
 | Protocol summary | [`docs/PROTOCOL.md`](docs/PROTOCOL.md) | Compact protocol description: oracle, adaptor, bridge, Lightning, graph discipline. |
 | Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet architecture. |
 | Public signet activation bundle | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) | Funded public signet parent CET, bridge confirmation, child funding output, raw tx files, verifier log. |
+| Lazy public testnet bundle | [`docs/evidence/lazy-public-testnet/`](docs/evidence/lazy-public-testnet/) | Public Bitcoin testnet Lazy `K = 2` parent CET, bridge confirmation, child funding output, raw tx files, and Lazy window manifest. |
 | v0.1 technical demo script | [`docs/V0_1_TECHNICAL_DEMO.md`](docs/V0_1_TECHNICAL_DEMO.md), [`scripts/demo-v0.1.sh`](scripts/demo-v0.1.sh) | Reproducible demo sequence from public signet artifacts, with explicit claim boundaries. |
 | v0.1 reproducibility status | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) | Current CI, local runner, public evidence, and manual/experimental boundaries. |
 | External auditor quickstart | [`docs/AUDITOR_QUICKSTART.md`](docs/AUDITOR_QUICKSTART.md) | Minimal reviewer path with dependencies, commands, expected outputs, troubleshooting, and a committed demo transcript. |
@@ -312,6 +313,8 @@ presenter and reviewer script.
   v0-1-validation.yml        Remote v0.1 validation gate
 docs/
   evidence/public-signet/    Public signet parent CET -> bridge evidence
+  evidence/lazy-public-testnet/
+                              Lazy public testnet parent CET -> bridge evidence
   evidence/regtest-cdlc/ Bitcoin Core regtest tx evidence bundle
   ARCHITECTURE.md            Research/proof/testnet architecture
   PROTOCOL.md                cDLC protocol summary

@@ -122,6 +122,15 @@ npm run test:evidence-bundle -- \
   --bundle docs/evidence/lazy-public-signet/lazy-activation-evidence-bundle.json
 ```
 
+## Committed Lazy Public Runs
+
+Two Lazy bounded-window public-network runs are committed:
+
+| Network | Parent funding | Parent CET | Bridge | Child funding output | Bundle |
+| --- | --- | --- | --- | --- | --- |
+| Signet | [`49f1dc18...3958bf92`](https://mempool.space/signet/tx/49f1dc1897ffd93dd2e7c97d7fadac511a6e067c6b70f213ead0733d3958bf92) | [`be667402...cf34f225`](https://mempool.space/signet/tx/be6674029b01d39ddc04a0ace79d6b3725bcb2ed7ad6d623c2d0229bcf34f225) | [`c33346d4...f3b3c097`](https://mempool.space/signet/tx/c33346d461f408ef4b0a463e0d4b63498d29b69eca34dc61359f8460f3b3c097) | `c33346d4...f3b3c097:0`, 8,500 sats | [`docs/evidence/lazy-public-signet/`](../docs/evidence/lazy-public-signet/) |
+| Testnet | [`fb1cd26f...b74c79b9`](https://mempool.space/testnet/tx/fb1cd26fd4723f55a986e93a4a6c4d53a34e395e7c5dc91bc71181aeb74c79b9) | [`f2e08e70...8dd18d7d`](https://mempool.space/testnet/tx/f2e08e70ec1135cea46b41dbbddbff24a9dc0030b1ae0743376d6d598dd18d7d) | [`63dc4419...27507e13`](https://mempool.space/testnet/tx/63dc4419059c28306794cd95179e6c8adcc553f788fb2b1c52e988fa27507e13) | `63dc4419...27507e13:0`, 227,663 sats | [`docs/evidence/lazy-public-testnet/`](../docs/evidence/lazy-public-testnet/) |
+
 ## 4. Verify Bundle
 
 ```sh
