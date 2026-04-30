@@ -115,6 +115,7 @@ export interface BilateralRetainedStateValidation {
     setupAccepted: boolean;
     fundingDigestMatches: boolean;
     templateDigestMatches: boolean;
+    timelocksOrdered: boolean;
     adaptorExchangeRetained: boolean;
     adaptorEquationsVerify: boolean;
     oracleMetadataMatchesTemplate: boolean;
@@ -419,6 +420,7 @@ function validateRetainedStateOrThrow(
       && funding.fundingDigestHex === state.fundingDigestHex
       && funding.fundingDigestHex === state.retainedArtifacts.fundingValidation.fundingDigestHex,
     templateDigestMatches: participantView.canonicalTemplateDigestHex === state.templateDigestHex,
+    timelocksOrdered: template.timelocks.ordered,
     adaptorExchangeRetained: exchange.sessionIdHex === state.sessionIdHex
       && exchange.templateDigestHex === state.templateDigestHex
       && bilateralAdaptorNoncePurposes.every((purpose) => packetPurposes.has(purpose)),
@@ -467,6 +469,7 @@ export function validateBilateralRetainedState(
         setupAccepted: false,
         fundingDigestMatches: false,
         templateDigestMatches: false,
+        timelocksOrdered: false,
         adaptorExchangeRetained: false,
         adaptorEquationsVerify: false,
         oracleMetadataMatchesTemplate: false,
