@@ -31,5 +31,6 @@ spark/obj_lazy_cdlc_slide/
 spark/obj_lazy_cdlc_tree_bound/
 spark/obj_lazy_cdlc_recombining/
 spark/obj_lazy_cdlc_compression/
+spark/obj_lazy_cdlc_liveness/
 
 site/
