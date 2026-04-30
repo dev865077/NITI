@@ -24,7 +24,8 @@ Options:
   --skip-node              Skip TypeScript build/tests/smoke transcript.
   --skip-ada               Skip Ada manifest validator build/check.
   --skip-spark             Skip SPARK proof targets.
-  --all-spark-products     Run all SPARK product proof targets, not only core.
+  --lazy-spark             Run Lazy cDLC SPARK proof targets instead of core.
+  --all-spark-products     Run all extended SPARK proof targets, not only core.
   -h, --help               Show this help.
 
 The default command is intentionally strict. Missing required tools or any
@@ -52,6 +53,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --skip-spark)
       RUN_SPARK=0
+      shift
+      ;;
+    --lazy-spark)
+      SPARK_SUITE="lazy"
       shift
       ;;
     --all-spark-products)
@@ -189,6 +194,14 @@ if [ "$RUN_SPARK" -eq 1 ]; then
       spark/cdlc_residue_proofs.gpr
       spark/cdlc_proofs.gpr
       spark/lightning_cdlc_proofs.gpr
+      spark/lazy_cdlc_window_proofs.gpr
+      spark/lazy_cdlc_edge_proofs.gpr
+      spark/lazy_cdlc_slide_proofs.gpr
+      spark/lazy_cdlc_tree_bound_proofs.gpr
+      spark/lazy_cdlc_recombining_proofs.gpr
+      spark/lazy_cdlc_compression_proofs.gpr
+      spark/lazy_cdlc_liveness_proofs.gpr
+      spark/lazy_cdlc_loan_rollover_proofs.gpr
       spark/btc_collateral_loan_proofs.gpr
       spark/covered_call_yield_note_proofs.gpr
       spark/synthetic_dollar_stable_exposure_proofs.gpr
@@ -202,6 +215,17 @@ if [ "$RUN_SPARK" -eq 1 ]; then
       spark/variance_corridor_swaps_proofs.gpr
       spark/basis_calendar_rolls_proofs.gpr
       spark/parametric_insurance_proofs.gpr
+    )
+  elif [ "$SPARK_SUITE" = "lazy" ]; then
+    SPARK_TARGETS=(
+      spark/lazy_cdlc_window_proofs.gpr
+      spark/lazy_cdlc_edge_proofs.gpr
+      spark/lazy_cdlc_slide_proofs.gpr
+      spark/lazy_cdlc_tree_bound_proofs.gpr
+      spark/lazy_cdlc_recombining_proofs.gpr
+      spark/lazy_cdlc_compression_proofs.gpr
+      spark/lazy_cdlc_liveness_proofs.gpr
+      spark/lazy_cdlc_loan_rollover_proofs.gpr
     )
   fi
 

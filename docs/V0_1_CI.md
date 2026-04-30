@@ -11,7 +11,7 @@ It runs on every proposed repository change and on pushes to `main`.
 | --- | --- | --- |
 | TypeScript deterministic harness | Build and run the deterministic protocol harnesses, including bilateral setup fixtures and the cDLC smoke path. | `npm run v0.1:verify -- --skip-ada --skip-spark` |
 | Ada manifest validator | Build the finite cDLC graph manifest validator and validate the canonical fixture. | `npm run v0.1:verify -- --skip-node --skip-spark` |
-| SPARK proof regression | Run the core cDLC and Lightning SPARK proof targets and reject `pragma Assume` in proof sources. | `scripts/run-v0.1.sh --skip-node --skip-ada` |
+| SPARK proof regression | Run the core cDLC, Lightning, and Lazy cDLC SPARK proof targets and reject `pragma Assume` in proof sources. | `scripts/run-v0.1.sh --skip-node --skip-ada`; `scripts/run-v0.1.sh --skip-node --skip-ada --lazy-spark` |
 
 The TypeScript job uploads `cdlc-smoke-transcript.json` and
 `l2-e2e-transcript.json` from the v0.1 runner artifact directory. Those
@@ -28,8 +28,8 @@ The workflow deliberately does not do the following:
 - fee-bump, CPFP, anchor, or transaction-pinning testing;
 - production wallet key storage;
 - live Lightning channel force-close or watchtower behavior;
-- full product-model SPARK proof sweep across every financial product target.
-  That sweep can be run locally with
+- full extended SPARK proof sweep across every financial product target. That
+  sweep can be run locally with
   `npm run v0.1:verify -- --all-spark-products`.
 
 Those are separate release gates. The v0.1 CI gate proves that regressions in
@@ -44,7 +44,7 @@ A green workflow means:
 - the deterministic adaptor, bilateral setup, Lightning, and cDLC smoke harnesses pass;
 - the Ada cDLC graph manifest validator builds and accepts the canonical
   manifest fixture;
-- the core cDLC and Lightning SPARK proof targets pass in CI;
+- the core cDLC, Lightning, and Lazy cDLC SPARK proof targets pass in CI;
 - the proof sources used by the gate contain no `pragma Assume`.
 
 It does not mean the software is mainnet-ready or safe for user funds.

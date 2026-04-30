@@ -176,7 +176,7 @@ Use this table as the top-level audit map.
 | TypeScript harness | [`testnet/`](testnet/) | Taproot/adaptor/oracle/RPC harnesses, manifests, public signet and regtest flows. |
 | Public signet guide | [`testnet/PUBLIC_SIGNET.md`](testnet/PUBLIC_SIGNET.md) | Funding request and public-network activation commands. |
 | Regtest guide | [`testnet/REGTEST.md`](testnet/REGTEST.md) | Local Bitcoin Core regtest setup. |
-| CI gate | [GitHub Actions](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) | Build, deterministic tests, Ada validator, core SPARK proof regression. |
+| CI gate | [GitHub Actions](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) | Build, deterministic tests, Ada validator, core and Lazy cDLC SPARK proof regression. |
 | Security notes | [`docs/SECURITY.md`](docs/SECURITY.md) | Operational boundaries and explicit non-goals. |
 
 ## Quick Start
@@ -358,6 +358,13 @@ Core proof targets:
 | `spark/cdlc_proofs.gpr` | Ada built-in modular model over `type mod 97`. |
 | `spark/lightning_cdlc_proofs.gpr` | HTLC/PTLC witness behavior, route tweaks, child activation, and channel-balance conservation in a finite model. |
 
+Lazy cDLC proof targets model bounded-window preparation, edge-local
+activation, window sliding, retained-state bounds, recombining-state
+compression, per-node compression composition, liveness fallback, and BTC loan
+rollover specialization. They are documented in
+[`docs/SPARK_TARGET_INVENTORY.md`](docs/SPARK_TARGET_INVENTORY.md) and
+[`spark/README.md`](spark/README.md).
+
 The key cDLC properties modeled are:
 
 - the oracle attestation scalar maps to the advertised attestation point;
@@ -366,9 +373,9 @@ The key cDLC properties modeled are:
 - a completed signature reveals the hidden scalar by subtraction;
 - a different oracle scalar does not complete the same bridge signature.
 
-The CI gate runs the four core targets above and rejects `pragma Assume` in the
-proof sources. The broader product proof suite is documented in
-[`spark/README.md`](spark/README.md).
+The CI gate runs the core targets, runs the Lazy cDLC target suite, and rejects
+`pragma Assume` in the proof sources. The broader product proof suite is
+documented in [`spark/README.md`](spark/README.md).
 
 Example core proof command:
 
