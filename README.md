@@ -215,6 +215,7 @@ Use this table as the top-level audit map.
 | Bilateral transcript format | [`docs/L3_BILATERAL_TRANSCRIPT_FORMAT.md`](docs/L3_BILATERAL_TRANSCRIPT_FORMAT.md) | Audit transcript structure, canonical message digests, ordering rules, and replay command. |
 | Bilateral state machine | [`docs/L3_BILATERAL_STATE_MACHINE.md`](docs/L3_BILATERAL_STATE_MACHINE.md) | Setup and execution states, transition-order rejection, fallback terminality, and replay command. |
 | Bilateral template agreement | [`docs/L3_BILATERAL_TEMPLATE_AGREEMENT.md`](docs/L3_BILATERAL_TEMPLATE_AGREEMENT.md) | Canonical transaction-template digest, participant agreement check, and critical mutation rejection. |
+| Bilateral funding validation | [`docs/L3_BILATERAL_FUNDING_VALIDATION.md`](docs/L3_BILATERAL_FUNDING_VALIDATION.md) | Funding digest agreement, role-script binding, outpoint uniqueness, dust, and fee-reserve checks. |
 | Oracle equivocation evidence | [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](docs/ORACLE_EQUIVOCATION_EVIDENCE.md) | Public evidence object and verification procedure for conflicting oracle attestations. |
 | Oracle price policy | [`docs/ORACLE_PRICE_SOURCE_POLICY.md`](docs/ORACLE_PRICE_SOURCE_POLICY.md) | Deterministic source, timestamp, aggregation, rounding, stale-price, outage, and correction policy. |
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Mapping from formal algebra claims to TypeScript/Bitcoin transaction fields. |
