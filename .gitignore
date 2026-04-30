@@ -28,5 +28,6 @@ spark/obj_parametric_insurance/
 spark/obj_lazy_cdlc_window/
 spark/obj_lazy_cdlc_edge/
 spark/obj_lazy_cdlc_slide/
+spark/obj_lazy_cdlc_tree_bound/
 
 site/
