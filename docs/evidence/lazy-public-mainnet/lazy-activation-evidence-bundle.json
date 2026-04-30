@@ -1,0 +1,334 @@
+{
+  "kind": "niti.v0_2_lazy_mainnet_activation_evidence_bundle.v1",
+  "network": "mainnet",
+  "boundary": "Mainnet Bitcoin execution with real sats, public Esplora broadcast, network acceptance by broadcast response, and observed confirmations.",
+  "generatedAt": "2026-04-30T06:07:37.330Z",
+  "executionBackend": {
+    "kind": "esplora",
+    "baseUrl": "https://mempool.space/api"
+  },
+  "sourceRevision": {
+    "gitHeadAtGeneration": "aeb729663500a44de06a197065cf3e6d0803e4aa",
+    "workingTreeStatusAtGeneration": "dirty",
+    "node": "v20.20.2"
+  },
+  "replayCommands": {
+    "fundingRequest": "npm run mainnet:cdlc-funding-request -- --plan <private-plan>",
+    "execute": "npm run mainnet:cdlc-execute -- --lazy --backend esplora --mainnet-esplora-i-understand --plan <private-plan> --funding-txid d05aa027f1e046a7deef5f28d11f7b729149293c5eb4eaaac882eaab567efee3 --funding-vout 0 --funding-value-sat 31878 --out-dir docs/evidence/lazy-public-mainnet --mainnet-broadcast-i-understand",
+    "verify": "npm run test:evidence-bundle -- --bundle docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json"
+  },
+  "bitcoinCore": {
+    "chain": "mainnet",
+    "blocks": 947246,
+    "version": "esplora",
+    "subversion": "https://mempool.space/api"
+  },
+  "fundingRequest": {
+    "address": "bc1p09tz68aq9fg7luz9nt9d0vj98h44w9kq7evszsagjtxnkzh96w8sz8xl3n",
+    "scriptPubKeyHex": "512079562d1fa02a51eff0459acad7b2453deb5716c0f6590143a892cd3b0ae5d38f",
+    "minimumValueSat": "2330",
+    "deterministicFixtureValueSat": "100000"
+  },
+  "oracle": {
+    "eventId": "niti-v0.1-parent-cdlc-smoke",
+    "activatingOutcome": "BTCUSD_ABOVE_STRIKE",
+    "wrongOutcome": "BTCUSD_BELOW_STRIKE",
+    "noncePointCompressedHex": "0212da82a6ac7a01ab868424f4ddf312ed91fb9ccbadc1319a378419a61744133a",
+    "oraclePublicCompressedHex": "029a5a1bb469646e04ae02516486fc4eb503832d3b84760a1a8cb656be008660ae",
+    "activatingAttestationPointCompressedHex": "02b7152f76007cb8cc5d7950df749621990e0d36221c9f68ca225757c84b986cc9",
+    "wrongAttestationPointCompressedHex": "035bcab314ac1c5682bf0aefbb790ffcdab1c85db0b7f6fc78499c1179c73596d3",
+    "activatingAttestationSecretHex": "beadafa65523492870385bbbd5413aa68b841ff327a62990c705d6058e088a77",
+    "activatingSignatureVerifies": true,
+    "wrongSignatureVerifies": true
+  },
+  "lazyWindow": {
+    "kind": "niti.v0_2_lazy_cdlc_window_manifest.v1",
+    "network": "mainnet",
+    "window": {
+      "k": 2,
+      "activeNodeId": "C_0",
+      "preparedNodeIds": [
+        "C_1"
+      ],
+      "retainedNodeIds": [
+        "C_0",
+        "C_1"
+      ]
+    },
+    "nodes": [
+      {
+        "id": "C_0",
+        "role": "active-parent",
+        "fundingOutpoint": {
+          "txid": "d05aa027f1e046a7deef5f28d11f7b729149293c5eb4eaaac882eaab567efee3",
+          "vout": 0,
+          "valueSat": "31878",
+          "scriptPubKeyHex": "512079562d1fa02a51eff0459acad7b2453deb5716c0f6590143a892cd3b0ae5d38f",
+          "address": "bc1p09tz68aq9fg7luz9nt9d0vj98h44w9kq7evszsagjtxnkzh96w8sz8xl3n"
+        }
+      },
+      {
+        "id": "C_1",
+        "role": "prepared-child",
+        "fundingOutpoint": {
+          "txid": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+          "vout": 0,
+          "valueSat": "30378",
+          "scriptPubKeyHex": "51205d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b2"
+        },
+        "preparedSpends": {
+          "cet": {
+            "txidNoWitness": "407711bf62ab37d80d45402905123366b45402d0032371c399c0563e7a14d047",
+            "signatureState": "adaptor-signature-not-valid-bitcoin-witness-before-child-oracle-attestation"
+          },
+          "refund": {
+            "txid": "51e4cb21650ea003282a9e4cd6faeab3ee000bf718dd0d97e6554a9c8e259281",
+            "signatureState": "complete-schnorr-signature-but-timelocked",
+            "locktime": 947390
+          }
+        }
+      }
+    ],
+    "liveEdges": [
+      {
+        "id": "E_0_x_to_1",
+        "from": "C_0",
+        "to": "C_1",
+        "oracleEventId": "niti-v0.1-parent-cdlc-smoke",
+        "activatingOutcome": "BTCUSD_ABOVE_STRIKE",
+        "wrongOutcome": "BTCUSD_BELOW_STRIKE",
+        "adaptorPointCompressedHex": "02b7152f76007cb8cc5d7950df749621990e0d36221c9f68ca225757c84b986cc9",
+        "wrongOutcomeAttestationPointCompressedHex": "035bcab314ac1c5682bf0aefbb790ffcdab1c85db0b7f6fc78499c1179c73596d3",
+        "parentCetTxidNoWitness": "2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9",
+        "bridgeTxidNoWitness": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+        "bridgeInput": {
+          "txid": "2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9",
+          "vout": 0,
+          "valueSat": "30878",
+          "scriptPubKeyHex": "5120f79a3ba3655585198e45553abef9ac46a21de1ddc892cbd654b5b96bf622502b"
+        },
+        "bridgeOutput": {
+          "txid": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+          "vout": 0,
+          "valueSat": "30378",
+          "scriptPubKeyHex": "51205d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b2"
+        }
+      }
+    ],
+    "preparationOrder": [
+      "funding-utxo-observed",
+      "parent-cet-adaptor-prepared",
+      "bridge-adaptor-prepared",
+      "child-cet-adaptor-prepared",
+      "child-refund-prepared",
+      "parent-oracle-scalar-published",
+      "parent-cet-completed",
+      "bridge-completed"
+    ],
+    "invariants": {
+      "activeNodeInWindow": true,
+      "preparedChildInWindow": true,
+      "childPreparedBeforeParentCompletion": true,
+      "bridgeAdaptorPointEqualsParentOutcomePoint": true,
+      "childSpendsPreparedBridgeOutput": true,
+      "bridgePreResolutionSignatureIsNotValidBitcoinSignature": true,
+      "wrongOutcomeScalarRejected": true
+    }
+  },
+  "explorer": {
+    "parentFunding": "https://mempool.space/tx/d05aa027f1e046a7deef5f28d11f7b729149293c5eb4eaaac882eaab567efee3",
+    "parentCet": "https://mempool.space/tx/2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9",
+    "bridge": "https://mempool.space/tx/2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af"
+  },
+  "activationPath": {
+    "parentFunding": {
+      "txid": "d05aa027f1e046a7deef5f28d11f7b729149293c5eb4eaaac882eaab567efee3",
+      "vout": 0,
+      "valueSat": "31878",
+      "confirmations": 27,
+      "scriptPubKeyHex": "512079562d1fa02a51eff0459acad7b2453deb5716c0f6590143a892cd3b0ae5d38f",
+      "address": "bc1p09tz68aq9fg7luz9nt9d0vj98h44w9kq7evszsagjtxnkzh96w8sz8xl3n",
+      "signatureState": "externally-funded-public-network-transaction",
+      "rawTx": {
+        "path": "docs/evidence/lazy-public-mainnet/public-01-parent-funding.hex",
+        "rawTxHex": "0200000000010168c7d0ae5cb70067100eb2e698f4713fdebeecec9f8dacefefad29c429f507730000000000ffffffff01867c00000000000022512079562d1fa02a51eff0459acad7b2453deb5716c0f6590143a892cd3b0ae5d38f0140a088a7aecc40f68fb57b3753d28848f9e97e52f4c61c6128d584607b1c7aa9d8f77f164f2ca21b8806af0c70567e4fb15d38a745eef19744f0e0cb30ed58bd0800000000"
+      }
+    },
+    "parentCet": {
+      "txid": "2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9",
+      "input": {
+        "txid": "d05aa027f1e046a7deef5f28d11f7b729149293c5eb4eaaac882eaab567efee3",
+        "vout": 0,
+        "valueSat": "31878",
+        "scriptPubKeyHex": "512079562d1fa02a51eff0459acad7b2453deb5716c0f6590143a892cd3b0ae5d38f"
+      },
+      "output": {
+        "vout": 0,
+        "valueSat": "30878",
+        "scriptPubKeyHex": "5120f79a3ba3655585198e45553abef9ac46a21de1ddc892cbd654b5b96bf622502b"
+      },
+      "adaptor": {
+        "signerPublicXOnlyHex": "79562d1fa02a51eff0459acad7b2453deb5716c0f6590143a892cd3b0ae5d38f",
+        "signerPublicCompressedHex": "0279562d1fa02a51eff0459acad7b2453deb5716c0f6590143a892cd3b0ae5d38f",
+        "adaptorPointCompressedHex": "02b7152f76007cb8cc5d7950df749621990e0d36221c9f68ca225757c84b986cc9",
+        "adaptedNonceXOnlyHex": "4c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df2",
+        "adaptedNonceCompressedHex": "024c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df2",
+        "preNonceCompressedHex": "02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13",
+        "adaptorSignatureScalarHex": "13bc64583fb2e247fbb858d91875a6339bbb21822295b536837bb5f02b6a1f85",
+        "verifiesAdaptor": true
+      },
+      "signatureState": "completed-schnorr-signature-after-parent-oracle-attestation",
+      "completedSignatureHex": "4c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df2d26a13fe94d62b706bf0b494edb6e0da273f41754a3bdec74a818bf5b972a9fc",
+      "rawTx": {
+        "path": "docs/evidence/lazy-public-mainnet/public-02-parent-cet.hex",
+        "rawTxHex": "02000000000101e3fe7e56abea82c8aaeab45e3c294991727b1fd1285fefdea746e0f127a05ad00000000000ffffffff019e78000000000000225120f79a3ba3655585198e45553abef9ac46a21de1ddc892cbd654b5b96bf622502b01404c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df2d26a13fe94d62b706bf0b494edb6e0da273f41754a3bdec74a818bf5b972a9fc00000000"
+      },
+      "mempoolAccept": {
+        "txid": "2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9",
+        "wtxid": "unavailable-esplora",
+        "allowed": true,
+        "backend": "esplora",
+        "note": "Esplora broadcast returned the expected txid."
+      },
+      "broadcastTxid": "2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9",
+      "confirmation": {
+        "txid": "2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9",
+        "blockHash": "00000000000000000000fbd448b62a610b877baae24bdc101382b060818344ef",
+        "blockHeight": 947247,
+        "confirmations": 1
+      }
+    },
+    "bridge": {
+      "txid": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+      "input": {
+        "txid": "2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9",
+        "vout": 0,
+        "valueSat": "30878",
+        "scriptPubKeyHex": "5120f79a3ba3655585198e45553abef9ac46a21de1ddc892cbd654b5b96bf622502b"
+      },
+      "output": {
+        "vout": 0,
+        "valueSat": "30378",
+        "scriptPubKeyHex": "51205d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b2",
+        "address": "bc1pt5ycru7d0k5yxr9rjcsthrezdvq7n8mav9tdjemjhs5rvckhwxeqq9dyf4"
+      },
+      "adaptor": {
+        "signerPublicXOnlyHex": "f79a3ba3655585198e45553abef9ac46a21de1ddc892cbd654b5b96bf622502b",
+        "signerPublicCompressedHex": "02f79a3ba3655585198e45553abef9ac46a21de1ddc892cbd654b5b96bf622502b",
+        "adaptorPointCompressedHex": "02b7152f76007cb8cc5d7950df749621990e0d36221c9f68ca225757c84b986cc9",
+        "adaptedNonceXOnlyHex": "4c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df2",
+        "adaptedNonceCompressedHex": "024c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df2",
+        "preNonceCompressedHex": "02e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13",
+        "adaptorSignatureScalarHex": "56aef864068c0bf56010529c234dd1ea9633a394c5dfb56763969b117ab12cfb",
+        "verifiesAdaptor": true,
+        "signatureState": "adaptor-signature-not-valid-bitcoin-witness-before-parent-oracle-attestation",
+        "preResolutionSignatureHex": "4c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df256aef864068c0bf56010529c234dd1ea9633a394c5dfb56763969b117ab12cfb",
+        "preResolutionSignatureVerifies": false
+      },
+      "completion": {
+        "signatureState": "completed-schnorr-signature-after-parent-oracle-attestation",
+        "completedSignatureHex": "4c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df2155ca80a5baf551dd048ae57f88f0c926708e6a13e3d3ebc6aca128a38837631",
+        "completedSignatureVerifies": true,
+        "extractedSecretHex": "beadafa65523492870385bbbd5413aa68b841ff327a62990c705d6058e088a77"
+      },
+      "wrongScalar": {
+        "attestationPointCompressedHex": "035bcab314ac1c5682bf0aefbb790ffcdab1c85db0b7f6fc78499c1179c73596d3",
+        "rejected": true
+      },
+      "rawTx": {
+        "path": "docs/evidence/lazy-public-mainnet/public-03-bridge.hex",
+        "rawTxHex": "02000000000101c97547856b93dcca2e7e2c1e9755dceeab905967626a182dd346b1580082bf2a0000000000ffffffff01aa760000000000002251205d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b201404c4b6252b53ec6552ba54bfd029526fc01d5bfc8ec553689f9dc48748d478df2155ca80a5baf551dd048ae57f88f0c926708e6a13e3d3ebc6aca128a3883763100000000"
+      },
+      "mempoolAccept": {
+        "txid": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+        "wtxid": "unavailable-esplora",
+        "allowed": true,
+        "backend": "esplora",
+        "note": "Esplora broadcast returned the expected txid."
+      },
+      "broadcastTxid": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+      "confirmation": {
+        "txid": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+        "blockHash": "0000000000000000000002132c49846a7a3e3f67aa19e03df2d9e0f684da327a",
+        "blockHeight": 947248,
+        "confirmations": 1
+      }
+    },
+    "childPreparedCet": {
+      "txidNoWitness": "407711bf62ab37d80d45402905123366b45402d0032371c399c0563e7a14d047",
+      "input": {
+        "txid": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+        "vout": 0,
+        "valueSat": "30378",
+        "scriptPubKeyHex": "51205d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b2"
+      },
+      "destinationAddress": "bc1p09tz68aq9fg7luz9nt9d0vj98h44w9kq7evszsagjtxnkzh96w8sz8xl3n",
+      "sendValueSat": "29878",
+      "feeSat": "500",
+      "adaptor": {
+        "signerPublicXOnlyHex": "5d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b2",
+        "signerPublicCompressedHex": "025d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b2",
+        "adaptorPointCompressedHex": "021db01cfc098f9220d0c7ca35ac6c69f5e7e231970f4a4ef2c08684b1ace5d93d",
+        "adaptedNonceXOnlyHex": "46aba21510f6fc18109810749a1c61feb7b0e0bdc1315c080059048a2d1ad233",
+        "adaptedNonceCompressedHex": "0246aba21510f6fc18109810749a1c61feb7b0e0bdc1315c080059048a2d1ad233",
+        "preNonceCompressedHex": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+        "adaptorSignatureScalarHex": "3e0167bc5fa1c676a3b9e1b7bb58018f498ca4c94b9c414ac76644afb0b7a7e8",
+        "verifiesAdaptor": true,
+        "signatureState": "adaptor-signature-not-valid-bitcoin-witness-before-child-oracle-attestation",
+        "preResolutionSignatureHex": "46aba21510f6fc18109810749a1c61feb7b0e0bdc1315c080059048a2d1ad2333e0167bc5fa1c676a3b9e1b7bb58018f498ca4c94b9c414ac76644afb0b7a7e8",
+        "preResolutionSignatureVerifies": false
+      },
+      "rawTx": {
+        "path": "docs/evidence/lazy-public-mainnet/public-04-child-prepared-cet-unsigned.hex",
+        "rawTxHex": "0200000001af6362e9528587eda1f3f0bde35703ff410a2ee7e6373180b7c010708cffd52b0000000000ffffffff01b67400000000000022512079562d1fa02a51eff0459acad7b2453deb5716c0f6590143a892cd3b0ae5d38f00000000"
+      }
+    },
+    "childRefund": {
+      "txid": "51e4cb21650ea003282a9e4cd6faeab3ee000bf718dd0d97e6554a9c8e259281",
+      "input": {
+        "txid": "2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af",
+        "vout": 0,
+        "valueSat": "30378",
+        "scriptPubKeyHex": "51205d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b2"
+      },
+      "output": {
+        "vout": 0,
+        "valueSat": "29878",
+        "scriptPubKeyHex": "51205d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b2"
+      },
+      "locktime": 947390,
+      "sequence": 4294967294,
+      "signatureState": "complete-schnorr-signature-but-timelocked",
+      "signatureVerifies": true,
+      "earlyMempoolAccept": {
+        "txid": "51e4cb21650ea003282a9e4cd6faeab3ee000bf718dd0d97e6554a9c8e259281",
+        "wtxid": "unavailable-esplora",
+        "allowed": false,
+        "backend": "esplora",
+        "note": "Esplora does not expose testmempoolaccept; the refund is retained as a timelocked raw transaction and is not broadcast in this run."
+      },
+      "rawTx": {
+        "path": "docs/evidence/lazy-public-mainnet/public-05-child-refund-timelocked.hex",
+        "rawTxHex": "02000000000101af6362e9528587eda1f3f0bde35703ff410a2ee7e6373180b7c010708cffd52b0000000000feffffff01b6740000000000002251205d0981f3cd7da8430ca39620bb8f226b01e99f7d6156d96772bc283662d771b20140fa294f895898177cc29d757ecb0d9036a1cd5f6d635fe0ca0792303b6686f2212343c42088d997eb75fae5928f3e488d972b0884d6a85059fbc054655bbea39bbe740e00"
+      }
+    }
+  },
+  "checks": {
+    "publicNetwork": true,
+    "fundingConfirmed": true,
+    "parentCetAccepted": true,
+    "parentCetConfirmed": true,
+    "parentWrongOutcomeRejected": true,
+    "bridgeAdaptorPreResolutionNotValidSignature": true,
+    "bridgeWrongScalarRejected": true,
+    "bridgeAccepted": true,
+    "bridgeConfirmed": true,
+    "bridgeCreatesChildFunding": true,
+    "childPreparedCetAdaptorOnly": true,
+    "childRefundEarlyRejected": true,
+    "lazyWindowK2": true,
+    "lazyChildPreparedBeforeParentCompletion": true,
+    "lazyBridgeUsesParentOraclePoint": true,
+    "lazyChildSpendsPreparedBridgeOutput": true
+  }
+}
