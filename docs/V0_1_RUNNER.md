@@ -57,15 +57,23 @@ npm run v0.1:verify -- --skip-node --skip-spark
 npm run v0.1:verify -- --skip-node --skip-ada
 ```
 
-To run every product-model SPARK target, use:
+To run every extended SPARK target, including product models and Lazy cDLC
+models, use:
 
 ```sh
 npm run v0.1:verify -- --all-spark-products
 ```
 
-The product sweep is intentionally outside the default v0.1 command because
+To run only the Lazy cDLC SPARK targets, use:
+
+```sh
+npm run v0.1:verify -- --skip-node --skip-ada --lazy-spark
+```
+
+The extended sweeps are intentionally outside the default v0.1 command because
 the v0.1 release claim is the cDLC activation primitive, not production
-readiness for every modeled financial product.
+readiness for every modeled financial product or every lazy-continuation
+protocol condition.
 
 ## CI Mapping
 
@@ -74,6 +82,7 @@ The GitHub Actions workflow invokes this runner in scoped jobs:
 - TypeScript deterministic harness job: `--skip-ada --skip-spark`
 - Ada manifest validator job: `--skip-node --skip-spark`
 - SPARK proof regression job: `--skip-node --skip-ada`
+- Lazy cDLC SPARK regression step: `--skip-node --skip-ada --lazy-spark`
 
 This keeps toolchain setup isolated while still exercising the same
 reproducibility entry point used by auditors locally.

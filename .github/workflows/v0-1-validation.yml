@@ -119,3 +119,11 @@ jobs:
           eval "$(alr printenv)"
           cd "$GITHUB_WORKSPACE"
           scripts/run-v0.1.sh --skip-node --skip-ada --artifacts-dir v0-1-spark-artifacts
+
+      - name: Run v0.1 verifier for Lazy cDLC SPARK proofs
+        run: |
+          set -euo pipefail
+          cd /tmp/niti-spark-tools
+          eval "$(alr printenv)"
+          cd "$GITHUB_WORKSPACE"
+          scripts/run-v0.1.sh --skip-node --skip-ada --lazy-spark --artifacts-dir v0-1-lazy-spark-artifacts

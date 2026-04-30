@@ -23,6 +23,7 @@ gate for `main`.
 | TypeScript deterministic harness | Covered by remote CI and local runner. | `npm run v0.1:verify -- --skip-ada --skip-spark` |
 | Ada finite graph manifest validator | Covered by remote CI and local runner. | `npm run v0.1:verify -- --skip-node --skip-spark` |
 | Core SPARK proof regression | Covered by remote CI and local runner. | `scripts/run-v0.1.sh --skip-node --skip-ada` |
+| Lazy cDLC SPARK proof sweep | Covered by remote CI and local runner as an extended suite. | `scripts/run-v0.1.sh --skip-node --skip-ada --lazy-spark` |
 | Full local v0.1 gate | Covered when Node, Ada, and SPARK dependencies are installed. | `npm run v0.1:verify` |
 | Public signet activation evidence | Committed and independently inspectable. | [`docs/evidence/public-signet/`](evidence/public-signet/) |
 | Regtest Bitcoin Core evidence | Committed and independently inspectable. | [`docs/evidence/regtest-cdlc/`](evidence/regtest-cdlc/) |
@@ -38,13 +39,20 @@ The automated v0.1 gate does not claim to cover:
 - production wallet storage or mainnet custody;
 - production Lightning channel operation;
 - product-level economic solvency;
-- the optional full SPARK sweep for every financial product model.
+- the optional full SPARK sweep for every financial product model and Lazy
+  cDLC protocol model.
 
-The product-model SPARK sweep is available as an extended local command:
+The extended SPARK sweep is available as a local command:
 
 ```sh
 npm run v0.1:verify -- --all-spark-products
 ```
 
-That extended sweep is useful for review, but it is outside the narrow v0.1
-release claim, which is the cDLC activation primitive.
+The Lazy cDLC suite can also be run without the product models:
+
+```sh
+npm run v0.1:verify -- --skip-node --skip-ada --lazy-spark
+```
+
+Those extended sweeps are useful for review, but they are outside the narrow
+v0.1 release claim, which is the cDLC activation primitive.

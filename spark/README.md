@@ -8,7 +8,7 @@ For the canonical map from proof targets to package files, object directories,
 commands, and claim families, see
 [`docs/SPARK_TARGET_INVENTORY.md`](../docs/SPARK_TARGET_INVENTORY.md).
 
-There are eighteen models:
+There are twenty-five models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -26,6 +26,34 @@ There are eighteen models:
   child paths, out-of-window descendants are not forced by the current window,
   the active node is in its own window, and one-step continuation requires
   `K >= 2` under the active-node-counting convention.
+- `lazy_cdlc_edge_algebra`: proves the edge-local activation predicate used by
+  Lazy cDLCs: a prepared edge completes under its matching oracle scalar,
+  rejects a different scalar, and remains independent of unrelated future-node
+  materialization.
+- `lazy_cdlc_slide_algebra`: proves the finite window-slide transition:
+  selected prepared live edges expose their child as the next active node,
+  boundary preparation preserves the next window, and missing selected or
+  boundary preparation selects fallback.
+- `lazy_cdlc_tree_bound_algebra`: proves conservative retained-state bounds
+  for non-recombining Lazy cDLC trees: fixed windows are bounded by eager
+  retained state under the modeled precondition, and fixed `K` keeps live
+  retained nodes independent of remaining depth.
+- `lazy_cdlc_recombining_algebra`: proves recombining-state bounds: layer
+  compression cannot increase retained state, strict reductions require
+  positive duplicate-path layers, and no-reduction identity cases remain
+  explicit.
+- `lazy_cdlc_compression_algebra`: proves per-node compression composition:
+  compressed per-node weights reduce or equal raw live state, strict reduction
+  requires positive saved weight, and no universal logarithmic compression is
+  hidden in the model.
+- `lazy_cdlc_liveness_algebra`: proves the finite timing/fallback model:
+  continuation requires both preparation and timing gates, missing gates select
+  fallback, branches are disjoint and complete, and adjacent timing gates are
+  carried inside the preparation window.
+- `lazy_cdlc_loan_rollover_algebra`: proves a BTC-loan rollover specialization
+  of the lazy model: rollover requires a prepared child state, failed gates
+  fall back, the rollover branch uses the prepared child, and fallback splits
+  posted BTC without creating or destroying collateral.
 - `lightning_cdlc_algebra`: proves the Lightning companion identities using
   Ada's built-in `type mod 97`: HTLC compatibility under an ideal injective
   hash model, PTLC point locks, HTLC route witness reuse, PTLC route tweaks,
@@ -97,6 +125,27 @@ There are eighteen models:
   preparation window, terminal outcomes do not require child preparation, valid
   in-window live edges require prepared child paths, and a one-step
   continuation window requires `K >= 2`.
+- In the Lazy cDLC edge-local model, a prepared edge completes under the
+  matching oracle scalar and rejects non-matching scalars independently of
+  unrelated future-node materialization.
+- In the Lazy cDLC slide model, a resolved prepared live edge exposes its child
+  as the next active node, boundary preparation preserves the following
+  preparation window, and missing gates force fallback.
+- In the non-recombining Lazy cDLC tree model, retained live nodes are bounded
+  by the modeled finite window and by eager retained state under the stated
+  precondition; fixed `K` separates live retained state from remaining depth.
+- In the recombining-state model, retaining recombined states never exceeds
+  retaining all path states, and strict compression requires an explicit
+  positive duplicate-path layer.
+- In the per-node compression model, compression is monotone and compositional:
+  it can reduce retained weight when saved weight is positive, but the model
+  makes no universal logarithmic-compression claim.
+- In the Lazy cDLC liveness model, continuation requires preparation and timing
+  gates; if either gate fails, fallback is selected, and the modeled branches
+  are complete and disjoint.
+- In the Lazy BTC-loan rollover model, rollover uses only a prepared child
+  loan state, failed gates select fallback, and fallback output accounting
+  conserves posted BTC collateral.
 - In the Lightning model, an oracle scalar settles an HTLC when the oracle
   precommits to its payment hash.
 - In the Lightning model, the same oracle scalar settles a point-locked PTLC.
@@ -214,6 +263,13 @@ PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools
 gnatprove -P spark/cdlc_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
+Lazy cDLC model suite:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+scripts/run-v0.1.sh --skip-node --skip-ada --lazy-spark
+```
+
 Lightning cDLC model:
 
 ```sh
@@ -310,6 +366,13 @@ Parametric insurance and event-linked note model:
 ```sh
 PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
 gnatprove -P spark/parametric_insurance_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
+```
+
+All extended SPARK targets:
+
+```sh
+PATH=/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/bin:/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH \
+scripts/run-v0.1.sh --skip-node --skip-ada --all-spark-products
 ```
 
 All accepted targets end with `0 errors, 0 warnings and 0 pragma Assume
