@@ -121,7 +121,8 @@ yet provide a production oracle service with:
 - enforced one-time nonce operations;
 - append-only attestation history;
 - price-source and timestamp policy;
-- public equivocation evidence format;
+- public equivocation evidence format, described in
+  [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md);
 - operational key management and monitoring.
 
 Remaining oracle work is summarized in the Layer 4 section of
