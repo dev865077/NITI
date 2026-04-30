@@ -3,7 +3,7 @@
 ## Abstract
 
 This paper describes a construction for Cascading Discreet Log Contracts, or
-cDLCs. A cDLC is a finite graph of ordinary Bitcoin transactions in which the
+cDLCs. A cDLC is a graph of ordinary Bitcoin transactions in which the
 attestation secret revealed by the oracle of one DLC completes adaptor
 signatures that activate another DLC. The construction requires no new opcode,
 no covenant, and no on-chain awareness of the contract graph.
@@ -16,6 +16,13 @@ The construction is native to Bitcoin in the same sense as a DLC is native to
 Bitcoin: the blockchain validates only ordinary signatures and timelocks, while
 the contract semantics are kept off-chain by pre-signed transactions and oracle
 attestations.
+
+The original, eager form of the construction pre-negotiates the reachable graph
+upfront. A lazy form instead keeps a bounded preparation window live. Because
+cDLC activation is local to a prepared edge, the full future graph does not need
+to be materialized at genesis. Lazy preparation reduces maximum live retained
+state while moving continuation safety into a bilateral liveness and fallback
+protocol.
 
 ## 1. Notation
 
@@ -331,7 +338,12 @@ Lightning state-machine behavior. Those remain implementation and protocol
 assumptions outside the machine-checked core.
 
 The Lightning extension has a separate machine-checked model described in
-Section 11.7.
+Section 11.7. Lazy graph preparation has separate finite SPARK models for
+window preparation, edge-local independence, window sliding, fallback behavior,
+tree bounds, recombining-state bounds, per-node compression composition,
+liveness gates, and BTC-loan rollover specialization. These Lazy targets prove
+modeled finite properties of the preparation-window construction; they do not
+prove a production bilateral negotiation protocol.
 
 ## 8. Refunds and Failure Modes
 
@@ -364,16 +376,111 @@ For a finite acyclic graph, the number of bridge transactions is
 |E| = sum_i active_edges(C_i).
 ```
 
-The construction does not remove the known DLC state-size problem. Numeric
+The eager construction does not remove the known DLC state-size problem. Numeric
 outcome compression, payout interpolation, and multi-oracle threshold
 attestations remain applicable to each node.
+
+### 9.1 Lazy Graph Preparation
+
+The cDLC activation equation is edge-local. For an edge
+
+```text
+e = (C_i, x, C_j),
+```
+
+the bridge `B_e` is prepared with adaptor point
+
+```text
+S_{i,x} = s_{i,x}G.
+```
+
+If the oracle later publishes `s_{i,x}`, the bridge signature completes as
+
+```text
+s = s_hat + s_{i,x} mod n.
+```
+
+This statement depends on the parent outcome, the bridge transaction, and the
+child funding output for that edge. It does not depend on unrelated future nodes
+being prepared at the same time. This locality allows lazy graph preparation.
+
+Let `K >= 2` be a preparation-window depth. At active node `C_i`, define the
+live window
+
+```text
+W_i = {C_i, C_{i+1}, ..., C_{i+K-1}}.
+```
+
+The safety invariant is:
+
+```text
+before C_i can resolve, every continuation edge from C_i that is intended
+to remain live has its child funding path prepared.
+```
+
+When `C_i` resolves to outcome `x`, the oracle scalar `s_{i,x}` completes the
+corresponding bridge, the child becomes active, and the parties attempt to
+extend the window by preparing the next boundary node. If the parties cannot
+extend the window in time, the protocol must use a prepared fallback: terminal
+settlement, refund, liquidation, unwind, or a non-roll branch.
+
+For a non-recombining tree with constant branching factor `b`, depth `D`, and
+uniform per-node preparation weight `P`, eager preparation retains
+
+```text
+EagerNodes(D) = 1 + b + b^2 + ... + b^D
+              = (b^{D+1} - 1) / (b - 1)
+
+EagerState(D) = P * EagerNodes(D).
+```
+
+Lazy preparation with fixed window depth `K` retains
+
+```text
+LazyNodes(K) = 1 + b + b^2 + ... + b^{K-1}
+             = (b^K - 1) / (b - 1)
+
+LazyState(K) = P * LazyNodes(K).
+```
+
+For fixed `K`, `LazyState(K)` is independent of total product depth `D`. The
+total lifetime work may still scale with the number of periods actually
+traversed. Lazy preparation therefore compresses maximum live retained state,
+not every cost of every product.
+
+If reachable financial states recombine, let `Sigma_h` be the set of distinct
+states reachable at distance `h` from the active node. The live-state bound is
+
+```text
+LiveState_i(K) <= sum_{h=0}^{K-1} |Sigma_h| * P_h.
+```
+
+Recombination reduces `|Sigma_h|`, payoff compression reduces `P_h`, and lazy
+preparation bounds `h` by `K`. These techniques are compatible, but
+payoff-dependent. The construction does not imply universal logarithmic
+compression for every outcome set.
+
+The repository's Lazy SPARK targets model this finite-window reasoning: edge
+activation independence, window-slide behavior, fallback selection,
+non-recombining tree bounds, recombining-state bounds, per-node compression
+composition, timing gates, and a BTC-loan rollover specialization. Their proof
+boundary is the same kind of boundary as the base algebra: they check modeled
+finite claims, not secp256k1, SHA-256, Bitcoin serialization, mempool relay,
+wallet safety, oracle operations, or a full bilateral production protocol.
 
 ## 10. Applications
 
 A cDLC can express rolling contracts, automatic re-hedging, periodic synthetic
-exposure, and conditional refinancing. A synthetic asset can be represented as
-a sequence of DLC positions whose next funding transaction is activated by the
-settlement of the previous position.
+exposure, conditional refinancing, perpetual-like rolls, and indefinite
+continuation products. A synthetic asset can be represented as a sequence of DLC
+positions whose next funding transaction is activated by the settlement of the
+previous position.
+
+With lazy preparation, an indefinite product is not represented by an infinite
+transaction graph materialized at inception. It is represented by a sequence of
+finite windows. Each period has a prepared next-state path before the current
+oracle event can force settlement. If the liveness condition fails, the contract
+does not continue indefinitely; it follows its prepared fallback.
 
 This does not eliminate oracle risk, liquidity risk, or collateral risk. It
 also does not create a global account-based token inside Bitcoin. It creates
@@ -842,15 +949,33 @@ liveness failure.
 
 ### 12.3 State, Storage, and Graph Size
 
-Every spendable child edge must be prepared before the parent outcome is known.
-Parties must retain the relevant transaction states, adaptor signatures,
-refunds, timeouts, and routing data. If this state is lost, the oracle scalar
-may become public while the child activation data is unavailable.
+Every spendable child edge in the live window must be prepared before the parent
+outcome is known. Parties must retain the relevant transaction states, adaptor
+signatures, refunds, timeouts, and routing data. If this state is lost, the
+oracle scalar may become public while the child activation data is unavailable.
 
-The paper does not solve state explosion. A large outcome tree can require many
-prepared signatures and transactions. Practical deployments need payout
-compression, state pruning, oracle decomposition, channel aggregation, or other
-engineering techniques that are outside this proof.
+Lazy preparation addresses the upfront retained-state explosion by replacing
+full graph materialization with a bounded live window. In a non-recombining tree
+with branching factor `b`, depth `D`, and per-node preparation weight `P`, eager
+preparation retains
+
+```text
+EagerState(D) = P * (1 + b + b^2 + ... + b^D)
+              = P * (b^{D+1} - 1) / (b - 1).
+```
+
+With fixed window depth `K`, lazy preparation retains
+
+```text
+LazyState(K) = P * (1 + b + b^2 + ... + b^{K-1})
+             = P * (b^K - 1) / (b - 1).
+```
+
+For fixed `K`, maximum live retained state is independent of total product depth
+`D`. This is the state-compression result. It does not remove the need for
+per-period negotiation work, state backup, oracle scheduling, timeout policy,
+or product-specific payout compression. The cumulative lifetime work may still
+scale with the number of periods actually traversed.
 
 ### 12.4 Bitcoin Policy, Fees, and Timelocks
 
@@ -906,19 +1031,33 @@ liquidation policy, legal analysis, and user-risk disclosure.
 
 ### 12.8 Scope of the Formal Claim
 
-The conservative target is a finite, acyclic graph of pre-negotiated cDLC
-states. Cyclic or indefinitely updating graphs require an additional state
-update, revocation, or channel protocol. That protocol may be possible, but it
-is not proven here.
+The conservative target has two forms.
+
+The eager form is a finite, acyclic graph of pre-negotiated cDLC states. The
+lazy form is a bounded preparation window of `K` nodes, with bilateral liveness
+requirements for extending the window and prepared fallback paths if extension
+fails.
+
+Cycles or indefinitely updating contracts are not proven as a single infinite
+pre-negotiated graph. They are treated as repeated finite-window transitions:
+the active node may roll forward only if the next window is prepared before the
+current node reaches the point where oracle attestation or timeout can force
+settlement.
 
 Therefore the precise claim is narrower than "a complete decentralized
 financial system exists." The claim is:
 
 ```text
-Under the stated cryptographic assumptions, if the parties pre-negotiate a
-valid finite cDLC graph and the oracle publishes exactly one valid outcome
-scalar, then that scalar can activate the corresponding child edge and cannot
-activate non-corresponding edges except through the stated failure assumptions.
+Under the stated cryptographic assumptions, if the parties maintain a valid
+cDLC preparation window of depth K, every live continuation edge from the active
+node has its child funding path prepared, and the oracle publishes exactly one
+valid outcome scalar, then that scalar can activate the corresponding prepared
+child edge and cannot activate non-corresponding edges except through the
+stated failure assumptions.
+
+If the parties fail to extend the window before the required liveness deadline,
+the protocol does not guarantee continuation. It must execute the prepared
+fallback branch.
 ```
 
 ## 13. Conclusion
@@ -950,12 +1089,14 @@ surface of cDLCs, but they remain extensions of the cDLC construction rather
 than a replacement for it.
 
 The result is real but bounded. The paper supports the mathematical existence
-of Cascading DLC activation under explicit assumptions. It does not remove the
-need for robust oracle operations, careful fee and timeout engineering,
-Lightning implementation work, liquidity design, collateral design, or legal
-analysis. cDLCs are therefore best understood as a new Bitcoin-native
-cascading activation primitive: strong enough to justify implementation and
-testing, but not by itself a finished financial system.
+of Cascading DLC activation under explicit assumptions and shows how lazy
+preparation compresses maximum live retained state for continuation graphs. It
+does not remove the need for robust oracle operations, bilateral liveness,
+careful fee and timeout engineering, Lightning implementation work, liquidity
+design, collateral design, or legal analysis. cDLCs are therefore best
+understood as a new Bitcoin-native cascading activation primitive: strong
+enough to justify implementation and testing, but not by itself a finished
+financial system.
 
 ## References
 
