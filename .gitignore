@@ -27,5 +27,6 @@ spark/obj_basis_calendar_rolls/
 spark/obj_parametric_insurance/
 spark/obj_lazy_cdlc_window/
 spark/obj_lazy_cdlc_edge/
+spark/obj_lazy_cdlc_slide/
 
 site/
