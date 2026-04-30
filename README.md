@@ -216,6 +216,7 @@ Use this table as the top-level audit map.
 | Bilateral template agreement | [`docs/L3_BILATERAL_TEMPLATE_AGREEMENT.md`](docs/L3_BILATERAL_TEMPLATE_AGREEMENT.md) | Canonical transaction-template digest, participant agreement check, and critical mutation rejection. |
 | Bilateral adaptor exchange | [`docs/L3_BILATERAL_ADAPTOR_EXCHANGE.md`](docs/L3_BILATERAL_ADAPTOR_EXCHANGE.md) | Alice/Bob adaptor-signature exchange, template binding, adaptor equation checks, and malformed-message rejection. |
 | Bilateral state retention | [`docs/L3_BILATERAL_STATE_RETENTION.md`](docs/L3_BILATERAL_STATE_RETENTION.md) | Per-participant retained-state schema, restart validation, bridge completion, timeout refund, and missing-state rejection. |
+| Bilateral two-process harness | [`docs/L3_BILATERAL_TWO_PROCESS.md`](docs/L3_BILATERAL_TWO_PROCESS.md) | Alice/Bob local processes, separate storage, explicit JSONL transport, and independent setup validation. |
 | Oracle equivocation evidence | [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](docs/ORACLE_EQUIVOCATION_EVIDENCE.md) | Public evidence object and verification procedure for conflicting oracle attestations. |
 | Oracle price policy | [`docs/ORACLE_PRICE_SOURCE_POLICY.md`](docs/ORACLE_PRICE_SOURCE_POLICY.md) | Deterministic source, timestamp, aggregation, rounding, stale-price, outage, and correction policy. |
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Mapping from formal algebra claims to TypeScript/Bitcoin transaction fields. |
