@@ -23,6 +23,8 @@
     "regtest:cdlc-evidence": "TMPDIR=/tmp tsx testnet/src/regtest-cdlc-evidence.ts",
     "public:cdlc-funding-request": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode funding-request",
     "public:cdlc-execute": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode execute-activation",
+    "public:lazy-cdlc-funding-request": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode funding-request --lazy",
+    "public:lazy-cdlc-execute": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode execute-activation --lazy",
     "mainnet:cdlc-plan": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode mainnet-plan",
     "mainnet:cdlc-funding-request": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode funding-request --network mainnet",
     "mainnet:cdlc-execute": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode execute-activation --network mainnet",

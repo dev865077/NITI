@@ -4,6 +4,9 @@ import path from 'node:path';
 import { Transaction } from 'bitcoinjs-lib';
 import { bytesToHex } from './bytes.js';
 
+const publicBundleKind = 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1';
+const lazyPublicBundleKind = 'niti.v0_2_lazy_public_testnet_signet_activation_evidence_bundle.v1';
+
 function stringArg(args: string[], name: string, fallback?: string): string {
   const index = args.indexOf(name);
   if (index === -1) {
@@ -137,6 +140,48 @@ function verifyActivationPath(
   };
 }
 
+function verifyLazyWindow(bundle: Record<string, any>, activation: Record<string, any>): void {
+  const oracle = assertObject(bundle.oracle, 'oracle');
+  const manifest = assertObject(bundle.lazyWindow, 'lazyWindow');
+  assert.equal(manifest.kind, 'niti.v0_2_lazy_cdlc_window_manifest.v1');
+  assert.equal(manifest.network, bundle.network);
+
+  const window = assertObject(manifest.window, 'lazyWindow.window');
+  assert.equal(window.k, 2);
+  assert.equal(window.activeNodeId, 'C_0');
+  assert.deepEqual(window.preparedNodeIds, ['C_1']);
+
+  const edges = manifest.liveEdges;
+  assert.ok(Array.isArray(edges), 'lazyWindow.liveEdges must be an array');
+  assert.equal(edges.length, 1);
+  const edge = assertObject(edges[0], 'lazyWindow.liveEdges[0]');
+  assert.equal(edge.from, 'C_0');
+  assert.equal(edge.to, 'C_1');
+  assert.equal(edge.oracleEventId, oracle.eventId);
+  assert.equal(edge.activatingOutcome, oracle.activatingOutcome);
+  assert.equal(edge.wrongOutcome, oracle.wrongOutcome);
+  assert.equal(edge.adaptorPointCompressedHex, oracle.activatingAttestationPointCompressedHex);
+  assert.equal(edge.wrongOutcomeAttestationPointCompressedHex, oracle.wrongAttestationPointCompressedHex);
+
+  const parentCet = assertObject(activation.parentCet, 'activation.parentCet');
+  const bridge = assertObject(activation.bridge, 'activation.bridge');
+  const childPreparedCet = assertObject(activation.childPreparedCet, 'activation.childPreparedCet');
+  assert.equal(edge.parentCetTxidNoWitness, parentCet.txid);
+  assert.equal(edge.bridgeTxidNoWitness, bridge.txid);
+  assert.equal(childPreparedCet.input.txid, bridge.txid);
+  assert.equal(childPreparedCet.input.vout, 0);
+  assert.equal(childPreparedCet.input.valueSat, bridge.output.valueSat);
+
+  const invariants = assertObject(manifest.invariants, 'lazyWindow.invariants');
+  assert.equal(invariants.activeNodeInWindow, true);
+  assert.equal(invariants.preparedChildInWindow, true);
+  assert.equal(invariants.childPreparedBeforeParentCompletion, true);
+  assert.equal(invariants.bridgeAdaptorPointEqualsParentOutcomePoint, true);
+  assert.equal(invariants.childSpendsPreparedBridgeOutput, true);
+  assert.equal(invariants.bridgePreResolutionSignatureIsNotValidBitcoinSignature, true);
+  assert.equal(invariants.wrongOutcomeScalarRejected, true);
+}
+
 function verifyRegtestBundle(repoRoot: string, bundle: Record<string, any>): number {
   assert.equal(bundle.kind, 'niti.v0_1_testnet_signet_tx_evidence_bundle.v1');
   assert.equal(bundle.issue, 132);
@@ -179,15 +224,21 @@ function verifyRegtestBundle(repoRoot: string, bundle: Record<string, any>): num
 }
 
 function verifyPublicBundle(repoRoot: string, bundle: Record<string, any>): number {
-  assert.equal(bundle.kind, 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1');
-  assert.equal(bundle.issue, 153);
-  assert.equal(bundle.parentEpic, 56);
+  assert.ok([publicBundleKind, lazyPublicBundleKind].includes(bundle.kind));
+  if (bundle.kind === publicBundleKind) {
+    assert.equal(bundle.issue, 153);
+    assert.equal(bundle.parentEpic, 56);
+  }
   assert.ok(['signet', 'testnet', 'testnet4'].includes(bundle.network));
-  assert.match(bundle.boundary, /Public signet\/testnet execution/);
+  assert.match(bundle.boundary, /Public signet\/testnet/);
   assert.match(bundle.boundary, /not regtest mining/);
   assertAllChecks(bundle);
   const activation = assertObject(bundle.activationPath, 'activationPath');
-  return verifyActivationPath(repoRoot, activation).transactionCount;
+  const result = verifyActivationPath(repoRoot, activation);
+  if (bundle.kind === lazyPublicBundleKind) {
+    verifyLazyWindow(bundle, activation);
+  }
+  return result.transactionCount;
 }
 
 function main(): void {
@@ -199,7 +250,7 @@ function main(): void {
   const repoRoot = process.cwd();
   const bundle = assertObject(JSON.parse(fs.readFileSync(bundlePath, 'utf8')), 'bundle');
   const checkedTransactions =
-    bundle.kind === 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1'
+    [publicBundleKind, lazyPublicBundleKind].includes(bundle.kind)
       ? verifyPublicBundle(repoRoot, bundle)
       : verifyRegtestBundle(repoRoot, bundle);
 

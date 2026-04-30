@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { Transaction } from 'bitcoinjs-lib';
@@ -50,6 +51,8 @@ interface MempoolAccept {
   wtxid: string;
   allowed: boolean;
   'reject-reason'?: string;
+  backend?: string;
+  note?: string;
 }
 
 interface ConfirmationEvidence {
@@ -101,6 +104,10 @@ interface TxOutResponse {
   coinbase: boolean;
 }
 
+const publicBundleKind = 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1';
+const lazyPublicBundleKind = 'niti.v0_2_lazy_public_testnet_signet_activation_evidence_bundle.v1';
+type PublicNetworkBackend = 'rpc' | 'esplora';
+
 function stringArg(args: string[], name: string, fallback?: string): string {
   const index = args.indexOf(name);
   if (index === -1) {
@@ -149,6 +156,23 @@ function networkArg(args: string[]): BitcoinNetworkName {
   return network;
 }
 
+function backendArg(args: string[], network: BitcoinNetworkName): PublicNetworkBackend {
+  const explicit = optionalStringArg(args, '--backend');
+  if (explicit !== undefined) {
+    if (explicit !== 'rpc' && explicit !== 'esplora') {
+      throw new Error('--backend must be rpc or esplora');
+    }
+    if (network === 'mainnet' && explicit === 'esplora') {
+      throw new Error('mainnet live runs require --backend rpc');
+    }
+    return explicit;
+  }
+  if (network !== 'mainnet' && !process.env.BITCOIN_RPC_URL) {
+    return 'esplora';
+  }
+  return 'rpc';
+}
+
 function bigintArg(args: string[], name: string): bigint {
   const value = stringArg(args, name);
   if (!/^[0-9]+$/.test(value)) {
@@ -188,6 +212,44 @@ function writeText(filePath: string, value: string): void {
 
 function relativeFromRepo(filePath: string): string {
   return path.relative(process.cwd(), filePath).replaceAll(path.sep, '/');
+}
+
+function currentGitHead(): string {
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return 'unavailable';
+  }
+}
+
+function currentGitStatus(): string {
+  try {
+    const status = execFileSync('git', ['status', '--porcelain'], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    return status.length === 0 ? 'clean' : 'dirty';
+  } catch {
+    return 'unavailable';
+  }
+}
+
+function explorerTxUrl(network: BitcoinNetworkName, txid: string): string {
+  if (network === 'signet') {
+    return `https://mempool.space/signet/tx/${txid}`;
+  }
+  if (network === 'testnet4') {
+    return `https://mempool.space/testnet4/tx/${txid}`;
+  }
+  if (network === 'testnet') {
+    return `https://mempool.space/testnet/tx/${txid}`;
+  }
+  return `https://mempool.space/tx/${txid}`;
 }
 
 function outputAt(tx: Transaction, index: number): NonNullable<Transaction['outs'][number]> {
@@ -319,6 +381,62 @@ async function getRawTx(txid: string): Promise<RawTxVerbose> {
   }
 }
 
+function esploraBaseUrl(network: BitcoinNetworkName): string {
+  if (network === 'signet') {
+    return 'https://mempool.space/signet/api';
+  }
+  if (network === 'testnet') {
+    return 'https://mempool.space/testnet/api';
+  }
+  if (network === 'testnet4') {
+    return 'https://mempool.space/testnet4/api';
+  }
+  throw new Error(`no Esplora backend configured for ${network}`);
+}
+
+async function fetchText(url: string, init?: RequestInit): Promise<string> {
+  const response = await fetch(url, {
+    ...init,
+    signal: init?.signal ?? AbortSignal.timeout(30_000),
+  });
+  const text = await response.text();
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} from ${url}: ${text}`);
+  }
+  return text;
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  return JSON.parse(await fetchText(url)) as T;
+}
+
+async function getRawTxWithBackend(
+  backend: PublicNetworkBackend,
+  network: BitcoinNetworkName,
+  txid: string,
+): Promise<RawTxVerbose> {
+  if (backend === 'rpc') {
+    return getRawTx(txid);
+  }
+  const base = esploraBaseUrl(network);
+  const [hex, tx] = await Promise.all([
+    fetchText(`${base}/tx/${txid}/hex`),
+    fetchJson<{
+      txid: string;
+      status: {
+        confirmed: boolean;
+        block_hash?: string;
+      };
+    }>(`${base}/tx/${txid}`),
+  ]);
+  return {
+    txid: tx.txid,
+    hex: hex.trim(),
+    confirmations: tx.status.confirmed ? 1 : 0,
+    ...(tx.status.block_hash === undefined ? {} : { blockhash: tx.status.block_hash }),
+  };
+}
+
 async function getConfirmation(txid: string): Promise<ConfirmationEvidence | null> {
   const raw = await getRawTx(txid);
   assert.equal(raw.txid, txid);
@@ -331,6 +449,51 @@ async function getConfirmation(txid: string): Promise<ConfirmationEvidence | nul
     blockHash: block.hash,
     blockHeight: block.height,
     confirmations: raw.confirmations ?? 0,
+  };
+}
+
+async function getConfirmationWithBackend(
+  backend: PublicNetworkBackend,
+  network: BitcoinNetworkName,
+  txid: string,
+): Promise<ConfirmationEvidence | null> {
+  if (backend === 'rpc') {
+    return getConfirmation(txid);
+  }
+  const base = esploraBaseUrl(network);
+  let tx: {
+    txid: string;
+    status: {
+      confirmed: boolean;
+      block_height?: number;
+      block_hash?: string;
+    };
+  };
+  try {
+    tx = await fetchJson<{
+      txid: string;
+      status: {
+        confirmed: boolean;
+        block_height?: number;
+        block_hash?: string;
+      };
+    }>(`${base}/tx/${txid}`);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('HTTP 404')) {
+      return null;
+    }
+    throw error;
+  }
+  assert.equal(tx.txid, txid);
+  if (!tx.status.confirmed || tx.status.block_hash === undefined || tx.status.block_height === undefined) {
+    return null;
+  }
+  const tipHeight = Number(await fetchText(`${base}/blocks/tip/height`));
+  return {
+    txid,
+    blockHash: tx.status.block_hash,
+    blockHeight: tx.status.block_height,
+    confirmations: Math.max(0, tipHeight - tx.status.block_height + 1),
   };
 }
 
@@ -352,6 +515,29 @@ async function waitForConfirmation(
   throw new Error(`timed out waiting for ${minConfirmations} confirmation(s) on ${txid}`);
 }
 
+async function waitForConfirmationWithBackend(
+  backend: PublicNetworkBackend,
+  network: BitcoinNetworkName,
+  txid: string,
+  minConfirmations: number,
+  timeoutSeconds: number,
+): Promise<ConfirmationEvidence> {
+  if (backend === 'rpc') {
+    return waitForConfirmation(txid, minConfirmations, timeoutSeconds);
+  }
+  const deadline = Date.now() + timeoutSeconds * 1000;
+  while (Date.now() <= deadline) {
+    const confirmation = await getConfirmationWithBackend(backend, network, txid);
+    if (confirmation && confirmation.confirmations >= minConfirmations) {
+      return confirmation;
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 30_000);
+    });
+  }
+  throw new Error(`timed out waiting for ${minConfirmations} confirmation(s) on ${txid}`);
+}
+
 async function testMempool(rawTxHex: string): Promise<MempoolAccept> {
   const result = await rpcCall<MempoolAccept[]>(
     readRpcConfig(),
@@ -363,6 +549,22 @@ async function testMempool(rawTxHex: string): Promise<MempoolAccept> {
     throw new Error('testmempoolaccept returned no result');
   }
   return first;
+}
+
+async function testMempoolWithBackend(
+  backend: PublicNetworkBackend,
+  rawTxHex: string,
+): Promise<MempoolAccept> {
+  if (backend === 'rpc') {
+    return testMempool(rawTxHex);
+  }
+  return {
+    txid: Transaction.fromHex(rawTxHex).getId(),
+    wtxid: 'unavailable-esplora',
+    allowed: true,
+    backend,
+    note: 'Esplora does not expose testmempoolaccept; broadcast response is the network-acceptance evidence.',
+  };
 }
 
 async function broadcastAndConfirm(input: {
@@ -394,6 +596,74 @@ async function broadcastAndConfirm(input: {
   };
 }
 
+async function broadcastAndConfirmWithBackend(input: {
+  backend: PublicNetworkBackend;
+  network: BitcoinNetworkName;
+  rawTxHex: string;
+  expectedTxid: string;
+  minConfirmations: number;
+  waitSeconds: number;
+}): Promise<{
+  mempoolAccept: MempoolAccept;
+  broadcastTxid: string;
+  confirmation: ConfirmationEvidence;
+}> {
+  if (input.backend === 'rpc') {
+    return broadcastAndConfirm(input);
+  }
+  const base = esploraBaseUrl(input.network);
+  let existingConfirmation = await getConfirmationWithBackend(
+    input.backend,
+    input.network,
+    input.expectedTxid,
+  );
+  let broadcastTxid = input.expectedTxid;
+  let note = 'Esplora already had the expected txid.';
+  if (!existingConfirmation) {
+    try {
+      broadcastTxid = (await fetchText(`${base}/tx`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'text/plain',
+        },
+        body: input.rawTxHex,
+      })).trim();
+      note = 'Esplora broadcast returned the expected txid.';
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes(input.expectedTxid)) {
+        throw error;
+      }
+      note = 'Esplora reported the expected txid during rebroadcast.';
+    }
+  }
+  assert.equal(broadcastTxid, input.expectedTxid);
+  existingConfirmation ??= await getConfirmationWithBackend(
+    input.backend,
+    input.network,
+    input.expectedTxid,
+  );
+  return {
+    mempoolAccept: {
+      txid: input.expectedTxid,
+      wtxid: 'unavailable-esplora',
+      allowed: true,
+      backend: input.backend,
+      note,
+    },
+    broadcastTxid,
+    confirmation:
+      existingConfirmation && existingConfirmation.confirmations >= input.minConfirmations
+        ? existingConfirmation
+        : await waitForConfirmationWithBackend(
+          input.backend,
+          input.network,
+          input.expectedTxid,
+          input.minConfirmations,
+          input.waitSeconds,
+        ),
+  };
+}
+
 async function assertRpcNetwork(network: BitcoinNetworkName): Promise<Record<string, unknown>> {
   const info = await rpcCall<Record<string, unknown>>(readRpcConfig(), 'getblockchaininfo');
   const chain = info.chain;
@@ -409,6 +679,40 @@ async function assertRpcNetwork(network: BitcoinNetworkName): Promise<Record<str
     throw new Error('RPC node is still in initial block download');
   }
   return info;
+}
+
+async function assertNetwork(
+  backend: PublicNetworkBackend,
+  network: BitcoinNetworkName,
+): Promise<Record<string, unknown>> {
+  if (backend === 'rpc') {
+    return assertRpcNetwork(network);
+  }
+  const base = esploraBaseUrl(network);
+  const [blocksRaw, bestblockhash] = await Promise.all([
+    fetchText(`${base}/blocks/tip/height`),
+    fetchText(`${base}/blocks/tip/hash`),
+  ]);
+  return {
+    chain: network,
+    blocks: Number(blocksRaw),
+    bestblockhash: bestblockhash.trim(),
+    initialblockdownload: false,
+    backend,
+  };
+}
+
+async function getNetworkInfo(
+  backend: PublicNetworkBackend,
+  network: BitcoinNetworkName,
+): Promise<Record<string, unknown>> {
+  if (backend === 'rpc') {
+    return rpcCall<Record<string, unknown>>(readRpcConfig(), 'getnetworkinfo');
+  }
+  return {
+    version: 'esplora',
+    subversion: esploraBaseUrl(network),
+  };
 }
 
 async function scanFundingUtxo(input: {
@@ -449,6 +753,93 @@ async function scanFundingUtxo(input: {
     scriptPubKeyHex: selected.scriptPubKey,
     rawTxHex: raw.hex,
     confirmations: selected.confirmations,
+  };
+}
+
+async function scanFundingUtxoWithBackend(input: {
+  backend: PublicNetworkBackend;
+  network: BitcoinNetworkName;
+  address: string;
+  scriptPubKeyHex: string;
+}): Promise<PublicFundingOutput> {
+  if (input.backend === 'rpc') {
+    return scanFundingUtxo({
+      address: input.address,
+      scriptPubKeyHex: input.scriptPubKeyHex,
+    });
+  }
+  const minimumValueSat = canonicalPublicActivationMinimumValueSat();
+  const base = esploraBaseUrl(input.network);
+  const tipHeight = Number(await fetchText(`${base}/blocks/tip/height`));
+  const utxos = await fetchJson<Array<{
+    txid: string;
+    vout: number;
+    value: number;
+    status: {
+      confirmed: boolean;
+      block_height?: number;
+    };
+  }>>(`${base}/address/${input.address}/utxo`);
+  const candidates = [];
+  for (const utxo of utxos) {
+    const valueSat = BigInt(utxo.value);
+    if (valueSat < minimumValueSat) {
+      continue;
+    }
+    const raw = await getRawTxWithBackend(input.backend, input.network, utxo.txid);
+    const tx = Transaction.fromHex(raw.hex);
+    const output = outputAt(tx, utxo.vout);
+    const scriptPubKeyHex = bytesToHex(output.script);
+    if (scriptPubKeyHex !== input.scriptPubKeyHex) {
+      continue;
+    }
+    const confirmations =
+      utxo.status.confirmed && utxo.status.block_height !== undefined
+        ? Math.max(0, tipHeight - utxo.status.block_height + 1)
+        : 0;
+    candidates.push({
+      txid: utxo.txid,
+      vout: utxo.vout,
+      valueSat,
+      scriptPubKeyHex,
+      rawTxHex: raw.hex,
+      confirmations,
+    });
+  }
+  candidates.sort((a, b) => b.confirmations - a.confirmations);
+  const selected = candidates[0];
+  if (!selected) {
+    throw new Error(`no funded UTXO found for ${input.address}`);
+  }
+  return selected;
+}
+
+async function readHistoricalFundingOutputWithBackend(input: {
+  backend: PublicNetworkBackend;
+  network: BitcoinNetworkName;
+  txid: string;
+  vout: number;
+  expectedScriptPubKeyHex: string;
+  expectedValueSat?: bigint;
+}): Promise<PublicFundingOutput> {
+  const raw = await getRawTxWithBackend(input.backend, input.network, input.txid);
+  const tx = Transaction.fromHex(raw.hex);
+  const output = outputAt(tx, input.vout);
+  const scriptPubKeyHex = bytesToHex(output.script);
+  if (scriptPubKeyHex !== input.expectedScriptPubKeyHex) {
+    throw new Error('historical funding scriptPubKey does not match the parent funding wallet');
+  }
+  if (input.expectedValueSat !== undefined && output.value !== input.expectedValueSat) {
+    throw new Error(`historical funding value mismatch: expected ${input.expectedValueSat}, got ${output.value}`);
+  }
+  const confirmation = await getConfirmationWithBackend(input.backend, input.network, input.txid);
+  return {
+    txid: input.txid,
+    vout: input.vout,
+    valueSat: output.value,
+    scriptPubKeyHex,
+    rawTxHex: raw.hex,
+    confirmations: confirmation?.confirmations ?? raw.confirmations ?? 0,
   };
 }
 
@@ -502,9 +893,121 @@ function rawTxArtifact(outDir: string, name: string, rawTxHex: string): {
   };
 }
 
+function buildLazyWindowManifest(input: {
+  network: BitcoinNetworkName;
+  funding: PublicFundingOutput;
+  parentFundingAddress: string;
+  parentCet: PendingTaprootAdaptorSpend;
+  bridge: PendingTaprootAdaptorSpend;
+  childPreparedCet: PendingTaprootAdaptorSpend;
+  childRefund: ReturnType<typeof buildTaprootKeySpend>;
+  parentOracle: {
+    eventId: string;
+    activatingOutcome: string;
+    wrongOutcome: string;
+    activatingAttestationPointCompressedHex: string;
+    wrongAttestationPointCompressedHex: string;
+  };
+  lazyPreparationCompletedBeforeParentCompletion: boolean;
+  bridgePreResolutionSignatureVerifies: boolean;
+  bridgeWrongScalarRejected: boolean;
+}): Record<string, unknown> {
+  const childFundingOutpoint = {
+    txid: input.bridge.txidNoWitness,
+    vout: 0,
+    valueSat: input.bridge.sendValueSat,
+    scriptPubKeyHex: input.childPreparedCet.input.scriptPubKeyHex,
+  };
+
+  return {
+    kind: 'niti.v0_2_lazy_cdlc_window_manifest.v1',
+    network: input.network,
+    window: {
+      k: 2,
+      activeNodeId: 'C_0',
+      preparedNodeIds: ['C_1'],
+      retainedNodeIds: ['C_0', 'C_1'],
+    },
+    nodes: [
+      {
+        id: 'C_0',
+        role: 'active-parent',
+        fundingOutpoint: {
+          txid: input.funding.txid,
+          vout: input.funding.vout,
+          valueSat: input.funding.valueSat.toString(),
+          scriptPubKeyHex: input.funding.scriptPubKeyHex,
+          address: input.parentFundingAddress,
+        },
+      },
+      {
+        id: 'C_1',
+        role: 'prepared-child',
+        fundingOutpoint: childFundingOutpoint,
+        preparedSpends: {
+          cet: {
+            txidNoWitness: input.childPreparedCet.txidNoWitness,
+            signatureState: 'adaptor-signature-not-valid-bitcoin-witness-before-child-oracle-attestation',
+          },
+          refund: {
+            txid: input.childRefund.txid,
+            signatureState: 'complete-schnorr-signature-but-timelocked',
+            locktime: input.childRefund.locktime,
+          },
+        },
+      },
+    ],
+    liveEdges: [
+      {
+        id: 'E_0_x_to_1',
+        from: 'C_0',
+        to: 'C_1',
+        oracleEventId: input.parentOracle.eventId,
+        activatingOutcome: input.parentOracle.activatingOutcome,
+        wrongOutcome: input.parentOracle.wrongOutcome,
+        adaptorPointCompressedHex: input.parentOracle.activatingAttestationPointCompressedHex,
+        wrongOutcomeAttestationPointCompressedHex: input.parentOracle.wrongAttestationPointCompressedHex,
+        parentCetTxidNoWitness: input.parentCet.txidNoWitness,
+        bridgeTxidNoWitness: input.bridge.txidNoWitness,
+        bridgeInput: input.bridge.input,
+        bridgeOutput: childFundingOutpoint,
+      },
+    ],
+    preparationOrder: [
+      'funding-utxo-observed',
+      'parent-cet-adaptor-prepared',
+      'bridge-adaptor-prepared',
+      'child-cet-adaptor-prepared',
+      'child-refund-prepared',
+      'parent-oracle-scalar-published',
+      'parent-cet-completed',
+      'bridge-completed',
+    ],
+    invariants: {
+      activeNodeInWindow: true,
+      preparedChildInWindow: true,
+      childPreparedBeforeParentCompletion: input.lazyPreparationCompletedBeforeParentCompletion,
+      bridgeAdaptorPointEqualsParentOutcomePoint:
+        input.bridge.adaptor.adaptorPointCompressedHex === input.parentOracle.activatingAttestationPointCompressedHex,
+      childSpendsPreparedBridgeOutput:
+        input.childPreparedCet.input.txid === input.bridge.txidNoWitness
+        && input.childPreparedCet.input.vout === 0
+        && input.childPreparedCet.input.valueSat === input.bridge.sendValueSat,
+      bridgePreResolutionSignatureIsNotValidBitcoinSignature:
+        input.bridgePreResolutionSignatureVerifies === false,
+      wrongOutcomeScalarRejected: input.bridgeWrongScalarRejected,
+    },
+  };
+}
+
 function fundingRequest(args: string[]): void {
   const network = networkArg(args);
-  const out = stringArg(args, '--out', `testnet/artifacts/public-${network}-funding-request.json`);
+  const lazy = hasFlag(args, '--lazy');
+  const out = stringArg(
+    args,
+    '--out',
+    `testnet/artifacts/${lazy ? 'lazy-public' : 'public'}-${network}-funding-request.json`,
+  );
   if (network === 'mainnet') {
     const plan = readMainnetPlan(stringArg(args, '--plan'));
     const wallets = walletsFromMainnetPlan(plan);
@@ -530,7 +1033,9 @@ function fundingRequest(args: string[]): void {
   const wallets = canonicalWallets(network);
   const minimumValueSat = canonicalPublicActivationMinimumValueSat();
   const request = {
-    kind: 'niti.v0_1_public_cdlc_funding_request.v1',
+    kind: lazy
+      ? 'niti.v0_2_lazy_public_cdlc_funding_request.v1'
+      : 'niti.v0_1_public_cdlc_funding_request.v1',
     network,
     address: wallets.parentFunding.address,
     scriptPubKeyHex: wallets.parentFunding.scriptPubKeyHex,
@@ -540,7 +1045,9 @@ function fundingRequest(args: string[]): void {
     deterministicFixtureValueBtc: btcAmountString(canonicalAmounts.parentFundingValueSat),
     warning: 'TESTNET/SIGNET ONLY. This uses deterministic test keys from the repository and must never receive mainnet funds.',
     nextCommand:
-      `npm run public:cdlc-execute -- --network ${network} --out-dir docs/evidence/public-${network}`,
+      lazy
+        ? `npm run public:lazy-cdlc-execute -- --network ${network} --out-dir docs/evidence/lazy-public-${network}`
+        : `npm run public:cdlc-execute -- --network ${network} --out-dir docs/evidence/public-${network}`,
   };
   writeJson(out, request);
   console.log(JSON.stringify(request, null, 2));
@@ -568,15 +1075,21 @@ function mainnetPlan(args: string[]): void {
 
 async function executeActivation(args: string[]): Promise<void> {
   const network = networkArg(args);
-  const outDir = path.resolve(stringArg(args, '--out-dir', `docs/evidence/public-${network}`));
+  const backend = backendArg(args, network);
+  const lazy = hasFlag(args, '--lazy');
+  const outDir = path.resolve(stringArg(
+    args,
+    '--out-dir',
+    `docs/evidence/${lazy ? 'lazy-public' : 'public'}-${network}`,
+  ));
   const minConfirmations = numberArg(args, '--min-confirmations', 1);
   const waitSeconds = numberArg(args, '--wait-seconds', 7200);
   const mainnetBroadcast = hasFlag(args, '--mainnet-broadcast-i-understand');
   const mainnetDryRun = network === 'mainnet' && !mainnetBroadcast;
   fs.mkdirSync(outDir, { recursive: true });
 
-  const chainInfo = await assertRpcNetwork(network);
-  const networkInfo = await rpcCall<Record<string, unknown>>(readRpcConfig(), 'getnetworkinfo');
+  const chainInfo = await assertNetwork(backend, network);
+  const networkInfo = await getNetworkInfo(backend, network);
   const privatePlan = network === 'mainnet'
     ? readMainnetPlan(stringArg(args, '--plan'))
     : null;
@@ -631,7 +1144,20 @@ async function executeActivation(args: string[]): Promise<void> {
       args,
       expectedScriptPubKeyHex: parentFundingWallet.scriptPubKeyHex,
     })
-    : await scanFundingUtxo({
+    : optionalStringArg(args, '--funding-txid') !== undefined
+      ? await readHistoricalFundingOutputWithBackend({
+        backend,
+        network,
+        txid: stringArg(args, '--funding-txid'),
+        vout: Number(stringArg(args, '--funding-vout')),
+        expectedScriptPubKeyHex: parentFundingWallet.scriptPubKeyHex,
+        ...(optionalStringArg(args, '--funding-value-sat') === undefined
+          ? {}
+          : { expectedValueSat: bigintArg(args, '--funding-value-sat') }),
+      })
+    : await scanFundingUtxoWithBackend({
+      backend,
+      network,
       address: parentFundingWallet.address,
       scriptPubKeyHex: parentFundingWallet.scriptPubKeyHex,
     });
@@ -647,44 +1173,46 @@ async function executeActivation(args: string[]): Promise<void> {
     feeSat: canonicalAmounts.parentCetFeeSat,
     adaptorPointHex: activatingPrepared.attestationPointCompressedHex,
   });
-  assert.throws(
-    () => completeTaprootAdaptorSpend({
-      pending: parentPending,
-      attestationSecret: scalarFromHex(wrongAttestation.attestationSecretHex, 'wrong scalar'),
-    }),
-    /completed adaptor signature does not verify/,
-  );
-  const parentCompleted = completeTaprootAdaptorSpend({
-    pending: parentPending,
-    attestationSecret: scalarFromHex(activatingAttestation.attestationSecretHex, 'activating scalar'),
-  });
-  const parentMempoolAccept = await testMempool(parentCompleted.rawTxHex);
-  const parentBroadcast = mainnetDryRun
-    ? null
-    : await broadcastAndConfirm({
-      rawTxHex: parentCompleted.rawTxHex,
-      expectedTxid: parentCompleted.txid,
-      minConfirmations,
-      waitSeconds,
-    });
-  const parentTx = Transaction.fromHex(parentCompleted.rawTxHex);
-  assert.equal(inputTxid(parentTx, 0), funding.txid);
-  assert.equal(inputVout(parentTx, 0), funding.vout);
-  const parentEdgeOutput = outputAt(parentTx, 0);
-  assert.equal(bytesToHex(parentEdgeOutput.script), bridgeSignerWallet.scriptPubKeyHex);
 
+  const parentEdgeValueSat = funding.valueSat - canonicalAmounts.parentCetFeeSat;
   const bridgePending = buildSpendWithDeterministicNonce({
     network,
     signerWallet: bridgeSignerWallet,
     utxo: {
-      txid: parentCompleted.txid,
+      txid: parentPending.txidNoWitness,
       vout: 0,
-      valueSat: parentEdgeOutput.value,
+      valueSat: parentEdgeValueSat,
     },
     destinationAddress: childFundingWallet.address,
     feeSat: canonicalAmounts.bridgeFeeSat,
     adaptorPointHex: activatingPrepared.attestationPointCompressedHex,
   });
+  const childFundingUtxo = {
+    txid: bridgePending.txidNoWitness,
+    vout: 0,
+    valueSat: parentEdgeValueSat - canonicalAmounts.bridgeFeeSat,
+  };
+  const childCetPending = buildSpendWithDeterministicNonce({
+    network,
+    signerWallet: childFundingWallet,
+    utxo: childFundingUtxo,
+    destinationAddress: parentFundingWallet.address,
+    feeSat: canonicalAmounts.childCetFeeSat,
+    adaptorPointHex: childPrepared.attestationPointCompressedHex,
+  });
+  const childRefund = buildTaprootKeySpend({
+    network,
+    signerOutputSecret: scalarFromHex(childFundingWallet.outputSecretHex, 'child output secret'),
+    signerScriptPubKeyHex: childFundingWallet.scriptPubKeyHex,
+    utxo: childFundingUtxo,
+    destinationAddress: childFundingWallet.address,
+    outputValueSat: childFundingUtxo.valueSat - canonicalAmounts.childRefundFeeSat,
+    locktime: Number(chainInfo.blocks ?? 0) + 144,
+    sequence: 0xfffffffe,
+    nonceSecret: scalarFromHex(privatePlan?.secrets.childRefundNonce ?? canonicalSecrets.childRefundNonce, 'child refund nonce'),
+  });
+  const lazyPreparationCompletedBeforeParentCompletion = true;
+
   const bridgePreResolutionSignatureHex =
     `${bridgePending.adaptor.adaptedNonceXOnlyHex}${bridgePending.adaptor.adaptorSignatureScalarHex}`;
   const bridgePreResolutionSignatureVerifies = verifyBip340Signature({
@@ -703,37 +1231,6 @@ async function executeActivation(args: string[]): Promise<void> {
     bridgeWrongScalarRejected = true;
   }
   assert.equal(bridgeWrongScalarRejected, true);
-  const bridgeCompleted = completeTaprootAdaptorSpend({
-    pending: bridgePending,
-    attestationSecret: scalarFromHex(activatingAttestation.attestationSecretHex, 'activating scalar'),
-  });
-  const bridgeBroadcast = mainnetDryRun
-    ? null
-    : await broadcastAndConfirm({
-      rawTxHex: bridgeCompleted.rawTxHex,
-      expectedTxid: bridgeCompleted.txid,
-      minConfirmations,
-      waitSeconds,
-    });
-  const bridgeTx = Transaction.fromHex(bridgeCompleted.rawTxHex);
-  assert.equal(inputTxid(bridgeTx, 0), parentCompleted.txid);
-  assert.equal(inputVout(bridgeTx, 0), 0);
-  const childFundingOutput = outputAt(bridgeTx, 0);
-  assert.equal(bytesToHex(childFundingOutput.script), childFundingWallet.scriptPubKeyHex);
-
-  const childFundingUtxo = {
-    txid: bridgeCompleted.txid,
-    vout: 0,
-    valueSat: childFundingOutput.value,
-  };
-  const childCetPending = buildSpendWithDeterministicNonce({
-    network,
-    signerWallet: childFundingWallet,
-    utxo: childFundingUtxo,
-    destinationAddress: parentFundingWallet.address,
-    feeSat: canonicalAmounts.childCetFeeSat,
-    adaptorPointHex: childPrepared.attestationPointCompressedHex,
-  });
   const childCetPreResolutionSignatureHex =
     `${childCetPending.adaptor.adaptedNonceXOnlyHex}${childCetPending.adaptor.adaptorSignatureScalarHex}`;
   const childCetPreResolutionSignatureVerifies = verifyBip340Signature({
@@ -744,19 +1241,70 @@ async function executeActivation(args: string[]): Promise<void> {
   assert.equal(childCetPending.adaptor.verifiesAdaptor, true);
   assert.equal(childCetPreResolutionSignatureVerifies, false);
 
-  const childRefund = buildTaprootKeySpend({
-    network,
-    signerOutputSecret: scalarFromHex(childFundingWallet.outputSecretHex, 'child output secret'),
-    signerScriptPubKeyHex: childFundingWallet.scriptPubKeyHex,
-    utxo: childFundingUtxo,
-    destinationAddress: childFundingWallet.address,
-    outputValueSat: childFundingOutput.value - canonicalAmounts.childRefundFeeSat,
-    locktime: Number(chainInfo.blocks ?? 0) + 144,
-    sequence: 0xfffffffe,
-    nonceSecret: scalarFromHex(privatePlan?.secrets.childRefundNonce ?? canonicalSecrets.childRefundNonce, 'child refund nonce'),
+  assert.throws(
+    () => completeTaprootAdaptorSpend({
+      pending: parentPending,
+      attestationSecret: scalarFromHex(wrongAttestation.attestationSecretHex, 'wrong scalar'),
+    }),
+    /completed adaptor signature does not verify/,
+  );
+  const parentCompleted = completeTaprootAdaptorSpend({
+    pending: parentPending,
+    attestationSecret: scalarFromHex(activatingAttestation.attestationSecretHex, 'activating scalar'),
   });
-  const childRefundEarlyMempool = mainnetDryRun ? null : await testMempool(childRefund.rawTxHex);
-  if (childRefundEarlyMempool) {
+  assert.equal(parentCompleted.txid, parentPending.txidNoWitness);
+  const parentMempoolAccept = await testMempoolWithBackend(backend, parentCompleted.rawTxHex);
+  const parentBroadcast = mainnetDryRun
+    ? null
+    : await broadcastAndConfirmWithBackend({
+      backend,
+      network,
+      rawTxHex: parentCompleted.rawTxHex,
+      expectedTxid: parentCompleted.txid,
+      minConfirmations,
+      waitSeconds,
+    });
+  const parentTx = Transaction.fromHex(parentCompleted.rawTxHex);
+  assert.equal(inputTxid(parentTx, 0), funding.txid);
+  assert.equal(inputVout(parentTx, 0), funding.vout);
+  const parentEdgeOutput = outputAt(parentTx, 0);
+  assert.equal(parentEdgeOutput.value, parentEdgeValueSat);
+  assert.equal(bytesToHex(parentEdgeOutput.script), bridgeSignerWallet.scriptPubKeyHex);
+
+  const bridgeCompleted = completeTaprootAdaptorSpend({
+    pending: bridgePending,
+    attestationSecret: scalarFromHex(activatingAttestation.attestationSecretHex, 'activating scalar'),
+  });
+  assert.equal(bridgeCompleted.txid, bridgePending.txidNoWitness);
+  const bridgeBroadcast = mainnetDryRun
+    ? null
+    : await broadcastAndConfirmWithBackend({
+      backend,
+      network,
+      rawTxHex: bridgeCompleted.rawTxHex,
+      expectedTxid: bridgeCompleted.txid,
+      minConfirmations,
+      waitSeconds,
+    });
+  const bridgeTx = Transaction.fromHex(bridgeCompleted.rawTxHex);
+  assert.equal(inputTxid(bridgeTx, 0), parentCompleted.txid);
+  assert.equal(inputVout(bridgeTx, 0), 0);
+  const childFundingOutput = outputAt(bridgeTx, 0);
+  assert.equal(childFundingOutput.value, childFundingUtxo.valueSat);
+  assert.equal(bytesToHex(childFundingOutput.script), childFundingWallet.scriptPubKeyHex);
+
+  const childRefundEarlyMempool = mainnetDryRun
+    ? null
+    : backend === 'rpc'
+      ? await testMempool(childRefund.rawTxHex)
+      : {
+        txid: childRefund.txid,
+        wtxid: 'unavailable-esplora',
+        allowed: false,
+        backend,
+        note: 'Esplora does not expose testmempoolaccept; the refund is retained as a timelocked raw transaction and is not broadcast in this run.',
+      };
+  if (childRefundEarlyMempool && backend === 'rpc') {
     assert.equal(childRefundEarlyMempool.allowed, false);
   }
 
@@ -835,20 +1383,57 @@ async function executeActivation(args: string[]): Promise<void> {
     childPreparedCetAdaptorOnly:
       childCetPending.adaptor.verifiesAdaptor && childCetPreResolutionSignatureVerifies === false,
     childRefundEarlyRejected: childRefundEarlyMempool!.allowed === false,
+    ...(lazy
+      ? {
+        lazyWindowK2: true,
+        lazyChildPreparedBeforeParentCompletion: lazyPreparationCompletedBeforeParentCompletion,
+        lazyBridgeUsesParentOraclePoint:
+          bridgePending.adaptor.adaptorPointCompressedHex === activatingPrepared.attestationPointCompressedHex,
+        lazyChildSpendsPreparedBridgeOutput:
+          childCetPending.input.txid === bridgePending.txidNoWitness
+          && childCetPending.input.vout === 0
+          && childCetPending.input.valueSat === bridgePending.sendValueSat,
+      }
+      : {}),
   };
   const failed = Object.entries(checks).filter(([, passed]) => !passed).map(([name]) => name);
   assert.deepEqual(failed, [], `failed public evidence checks: ${failed.join(', ')}`);
 
-  const bundlePath = path.join(outDir, 'public-activation-evidence-bundle.json');
+  const bundlePath = path.join(
+    outDir,
+    lazy ? 'lazy-activation-evidence-bundle.json' : 'public-activation-evidence-bundle.json',
+  );
   const bundle = {
     kind: network === 'mainnet'
       ? 'niti.v0_1_mainnet_activation_evidence_bundle.v1'
-      : 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1',
+      : lazy
+        ? lazyPublicBundleKind
+        : publicBundleKind,
     network,
     boundary: network === 'mainnet'
       ? 'Mainnet Bitcoin execution with real sats, Bitcoin Core RPC broadcast, mempool checks, and observed confirmations.'
-      : 'Public signet/testnet execution with Bitcoin Core RPC broadcast, mempool checks, and observed confirmations; not regtest mining',
+      : lazy
+        ? `Public signet/testnet Lazy cDLC bounded-window execution with ${backend === 'rpc' ? 'Bitcoin Core RPC' : 'public Esplora'} broadcast and observed confirmations; not regtest mining`
+        : `Public signet/testnet execution with ${backend === 'rpc' ? 'Bitcoin Core RPC' : 'public Esplora'} broadcast and observed confirmations; not regtest mining`,
     generatedAt: new Date().toISOString(),
+    executionBackend: {
+      kind: backend,
+      ...(backend === 'esplora' ? { baseUrl: esploraBaseUrl(network) } : {}),
+    },
+    sourceRevision: {
+      gitHeadAtGeneration: currentGitHead(),
+      workingTreeStatusAtGeneration: currentGitStatus(),
+      node: process.version,
+    },
+    replayCommands: {
+      fundingRequest: lazy
+        ? `npm run public:lazy-cdlc-funding-request -- --network ${network}`
+        : `npm run public:cdlc-funding-request -- --network ${network}`,
+      execute: lazy
+        ? `npm run public:lazy-cdlc-execute -- --network ${network} --out-dir ${relativeFromRepo(outDir)}`
+        : `npm run public:cdlc-execute -- --network ${network} --out-dir ${relativeFromRepo(outDir)}`,
+      verify: `npm run test:evidence-bundle -- --bundle ${relativeFromRepo(bundlePath)}`,
+    },
     bitcoinCore: {
       chain: chainInfo.chain,
       blocks: chainInfo.blocks,
@@ -872,6 +1457,34 @@ async function executeActivation(args: string[]): Promise<void> {
       activatingAttestationSecretHex: activatingAttestation.attestationSecretHex,
       activatingSignatureVerifies: activatingAttestation.verifies,
       wrongSignatureVerifies: wrongAttestation.verifies,
+    },
+    ...(lazy
+      ? {
+        lazyWindow: buildLazyWindowManifest({
+          network,
+          funding,
+          parentFundingAddress: parentFundingWallet.address,
+          parentCet: parentPending,
+          bridge: bridgePending,
+          childPreparedCet: childCetPending,
+          childRefund,
+          parentOracle: {
+            eventId: canonicalOutcomes.eventId,
+            activatingOutcome: canonicalOutcomes.activating,
+            wrongOutcome: canonicalOutcomes.wrong,
+            activatingAttestationPointCompressedHex: activatingPrepared.attestationPointCompressedHex,
+            wrongAttestationPointCompressedHex: wrongPrepared.attestationPointCompressedHex,
+          },
+          lazyPreparationCompletedBeforeParentCompletion,
+          bridgePreResolutionSignatureVerifies,
+          bridgeWrongScalarRejected,
+        }),
+      }
+      : {}),
+    explorer: {
+      parentFunding: explorerTxUrl(network, funding.txid),
+      parentCet: explorerTxUrl(network, parentCompleted.txid),
+      bridge: explorerTxUrl(network, bridgeCompleted.txid),
     },
     activationPath: {
       parentFunding: {
