@@ -84,8 +84,10 @@ message validation exists in
 transcript format is defined in
 [`docs/L3_BILATERAL_TRANSCRIPT_FORMAT.md`](L3_BILATERAL_TRANSCRIPT_FORMAT.md).
 The deterministic setup state machine is defined in
-[`docs/L3_BILATERAL_STATE_MACHINE.md`](L3_BILATERAL_STATE_MACHINE.md). Funding
-validation, adaptor exchange, and two-process execution remain open.
+[`docs/L3_BILATERAL_STATE_MACHINE.md`](L3_BILATERAL_STATE_MACHINE.md).
+Deterministic transaction-template agreement is defined in
+[`docs/L3_BILATERAL_TEMPLATE_AGREEMENT.md`](L3_BILATERAL_TEMPLATE_AGREEMENT.md).
+Funding validation, adaptor exchange, and two-process execution remain open.
 
 Oracle equivocation evidence is defined in
 [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md).
