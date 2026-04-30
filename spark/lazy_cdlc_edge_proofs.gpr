@@ -1,6 +1,9 @@
 project Lazy_Cdlc_Edge_Proofs is
+   Spark_Include := external
+     ("SPARK_INCLUDE_DIR",
+      "/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/include/spark");
    for Source_Dirs use
-     ("src", "/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/include/spark");
+     ("src", Spark_Include);
    for Source_Files use
      ("lazy_cdlc_edge_algebra.ads",
       "lazy_cdlc_edge_algebra.adb");
@@ -10,6 +13,6 @@ project Lazy_Cdlc_Edge_Proofs is
       for Switches ("Ada") use
         ("-gnata",
          "-gnat2022",
-         "-I/opt/gnat-fsf/tools/gnatprove-x86_64-linux-15.1.0-1/include/spark");
+         "-I" & Spark_Include);
    end Compiler;
 end Lazy_Cdlc_Edge_Proofs;
