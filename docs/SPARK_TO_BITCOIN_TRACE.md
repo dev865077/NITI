@@ -3,6 +3,9 @@
 This document maps the formally modeled cDLC algebra to the concrete Bitcoin
 operations exercised by the v0.1 deterministic harness.
 
+For the current Lazy cDLC compression status, public `K = 2` evidence, and
+Lazy proof boundary, see [`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md).
+
 It is intentionally narrow. The SPARK targets prove algebraic obligations over
 finite or symbolic models. The TypeScript harness applies the same equations to
 BIP340-style oracle attestations, Taproot sighashes, adaptor signatures, and
@@ -41,7 +44,8 @@ gnatprove -P spark/cdlc_residue_proofs.gpr --level=4 --prover=cvc5,z3,altergo --
 gnatprove -P spark/cdlc_proofs.gpr --level=4 --prover=cvc5,z3,altergo --timeout=20 --report=all
 ```
 
-CI runs the core cDLC targets plus the Lightning target in
+CI runs the core cDLC targets, the Lightning target, and the Lazy cDLC proof
+suite in
 [`.github/workflows/v0-1-validation.yml`](../.github/workflows/v0-1-validation.yml).
 
 ## Object Correspondence
@@ -124,7 +128,7 @@ The following remain assumptions or separate release gates:
 - Bitcoin Core mempool policy, fee bumping, and confirmation;
 - oracle liveness, nonce uniqueness, and non-equivocation;
 - bilateral negotiation, state retention, and production key management;
-- public testnet/signet broadcast evidence;
+- fresh public broadcast evidence for newly generated runs;
 - complete financial-product solvency or regulatory analysis.
 
 ## Reviewer Checklist

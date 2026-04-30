@@ -1,5 +1,10 @@
 # v0.1 Limitations For Technical Diligence
 
+This is the historical v0.1 limitation boundary. The current repository also
+contains Lazy cDLC compression models and a dust-sized Lazy mainnet activation
+artifact. See [`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md) for the current
+Lazy status.
+
 This document is written for technical and commercial diligence. It is not
 legal advice, regulatory advice, an offer document, or a production risk
 disclosure.
@@ -22,7 +27,7 @@ Everything below defines the boundary around that result.
 | Bilateral protocol | Not complete. The current evidence is not a production two-party DLC negotiation protocol. |
 | Oracle layer | Not production. The scalar relation is exercised, but audit history, price-source policy, and equivocation monitoring remain open gates. |
 | Economic stress | Not complete. Financial payoff models exist, but historical stress replay and solvency reporting remain open Layer 5 gates. |
-| Mainnet readiness | Not claimed. Do not use with mainnet funds. |
+| Mainnet readiness | Not claimed. A later dust-sized mainnet artifact demonstrates mechanics only; do not use with production funds. |
 
 ## What v0.1 Proves
 
@@ -198,8 +203,9 @@ Open constraints include:
 
 ### Mainnet Readiness
 
-v0.1 is not mainnet-ready. Do not use this repository with mainnet funds. The
-test keys and harness flows are for signet, testnet, and regtest only.
+v0.1 is not mainnet-ready. A later guarded, dust-sized mainnet run demonstrates
+mechanical activation, but it does not make the repository production-ready.
+Do not use this repository with production funds.
 
 ## Claim Control
 
@@ -228,12 +234,14 @@ Forbidden claims:
 | [`docs/V0_1_TECHNICAL_DEMO.md`](V0_1_TECHNICAL_DEMO.md) | Presenter/reviewer demo script. |
 | [`docs/SPARK_TO_BITCOIN_TRACE.md`](SPARK_TO_BITCOIN_TRACE.md) | Mapping from formal equations to harness objects. |
 | [`docs/evidence/public-signet/`](evidence/public-signet/) | Public signet activation artifacts. |
+| [`docs/LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md) | Current Lazy compression status and proof boundary. |
 | [`docs/SECURITY.md`](SECURITY.md) | Security notes and explicit non-goals. |
 
 ## Diligence Conclusion
 
-The current evidence supports a serious technical prototype claim: the cDLC
+The v0.1 evidence supports a serious technical prototype claim: the cDLC
 activation primitive exists and has been demonstrated on public signet for one
-path. It does not yet support claims about production financial
+path. The later Lazy evidence strengthens the execution and scaling story, but
+the repository still does not support claims about production financial
 operations, broad product-market readiness, mainnet safety, or user-fund
 custody.

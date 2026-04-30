@@ -13,6 +13,10 @@ The core result is narrow: a DLC oracle attestation scalar revealed by a parent
 contract can also complete adaptor signatures on a bridge transaction that
 funds the next contract.
 
+The current scaling result is Lazy cDLC preparation: because activation safety
+is local to a prepared edge, the full future graph does not need to be retained
+at genesis.
+
 The project is not production software. It contains a dust-sized mainnet
 activation run, but it is not custody software, wallet software, or a financial
 product release.
@@ -46,15 +50,44 @@ another proof of the basic activation primitive; it is protocol hardening:
 bilateral negotiation, oracle auditability, economic stress, wallet UX,
 fee/reorg policy, and external review.
 
+## Lazy cDLC Compression
+
+Lazy cDLCs are the current NITI path for making deep cDLC graphs practical.
+The compression is live-state compression, not a claim that every product cost
+disappears.
+
+For a non-recombining graph with branching factor `b` and depth `D`, eager
+preparation may require retaining:
+
+```text
+EagerNodes(D) = 1 + b + b^2 + ... + b^D
+```
+
+With a Lazy preparation window of depth `K`, retained live state is bounded by:
+
+```text
+LazyNodes(K) = 1 + b + b^2 + ... + b^(K-1)
+```
+
+For fixed `K`, the live retained state is independent of total product depth
+`D`. Lifetime negotiation work may still grow with the number of periods
+actually traversed, and per-node compression remains payoff-dependent.
+
+The SPARK/Ada Lazy proof suite models finite-window preparation, edge-local
+activation independence, window sliding, retained-state bounds, recombining
+state, per-node compression composition, liveness fallback, and a BTC loan
+rollover specialization. See [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md).
+
 ## Contents
 
 - [Current State](#current-state)
+- [Lazy cDLC Compression](#lazy-cdlc-compression)
 - [Reproducibility Status](#reproducibility-status)
 - [Precise Claim](#precise-claim)
 - [How cDLC Cascading Works](#how-cdlc-cascading-works)
 - [Evidence Map](#evidence-map)
 - [Quick Start](#quick-start)
-- [Reproduce The v0.1 Evidence](#reproduce-the-v01-evidence)
+- [Reproduce Evidence](#reproduce-evidence)
 - [Run The Technical Demo](#run-the-technical-demo)
 - [Repository Map](#repository-map)
 - [Formal Models](#formal-models)
@@ -79,8 +112,9 @@ validated by
 | Remote v0.1 CI gate | Passing for the recorded `main` baseline. | [`v0.1 validation`](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) |
 | Local full gate | Reproducible with `npm run v0.1:verify` when Node, Ada, and SPARK toolchains are installed. | [`docs/V0_1_RUNNER.md`](docs/V0_1_RUNNER.md) |
 | Public signet activation | Committed public evidence exists for one parent -> bridge -> child funding path. | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) |
+| Lazy SPARK compression suite | Finite Lazy models cover bounded windows, edge-local independence, retained-state bounds, recombination, compression composition, liveness fallback, and loan rollover. | [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md) |
 | Lazy mainnet activation | A dust-sized `K = 2` Lazy path is committed with Bitcoin mainnet confirmations for parent CET and bridge. | [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/) |
-| Manual or experimental surfaces | Fresh public signet broadcast, faucet funding, production wallet behavior, fee-bump policy, and product-level SPARK sweeps remain explicit manual or extended steps. | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) |
+| Manual or experimental surfaces | Fresh public broadcasts, faucet funding, production wallet behavior, fee-bump policy, and product-level SPARK sweeps remain explicit manual or extended steps. | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) |
 
 ## Precise Claim
 
@@ -154,6 +188,7 @@ Use this table as the top-level audit map.
 | Primary whitepaper | [`WHITEPAPER.md`](WHITEPAPER.md) | cDLC construction, security claims, Lightning extension, and limitations. |
 | Protocol summary | [`docs/PROTOCOL.md`](docs/PROTOCOL.md) | Compact protocol description: oracle, adaptor, bridge, Lightning, graph discipline. |
 | Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet architecture. |
+| Lazy cDLC status | [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md) | Live-state compression claim, proof boundary, public evidence, and remaining work. |
 | Public signet activation bundle | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) | Funded public signet parent CET, bridge confirmation, child funding output, raw tx files, verifier log. |
 | Lazy public testnet bundle | [`docs/evidence/lazy-public-testnet/`](docs/evidence/lazy-public-testnet/) | Public Bitcoin testnet Lazy `K = 2` parent CET, bridge confirmation, child funding output, raw tx files, and Lazy window manifest. |
 | Lazy public mainnet bundle | [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/) | Dust-sized Bitcoin mainnet Lazy `K = 2` parent CET, bridge confirmation, child funding output, raw tx files, and Lazy window manifest. |
@@ -194,7 +229,8 @@ Prerequisites:
 - `npm`.
 - Optional: GNAT/GPRbuild for the Ada manifest validator.
 - Optional: SPARK/GNATprove for formal proof runs.
-- Optional: Bitcoin Core 31+ for regtest or public signet/testnet work.
+- Optional: Bitcoin Core 31+ for regtest, public signet/testnet, or guarded
+  mainnet work.
 - Optional: LND for Lightning hold-invoice experiments.
 
 Install dependencies and run the local deterministic suite:
@@ -211,11 +247,18 @@ Run the core cDLC smoke path directly:
 npm run test:cdlc-smoke
 ```
 
-Verify the public signet evidence bundle:
+Verify the historical public signet evidence bundle:
 
 ```sh
 npm run test:evidence-bundle -- \
   --bundle docs/evidence/public-signet/public-activation-evidence-bundle.json
+```
+
+Verify the current Lazy mainnet evidence bundle:
+
+```sh
+npm run test:evidence-bundle -- \
+  --bundle docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json
 ```
 
 Run the full local v0.1 gate:
@@ -224,10 +267,30 @@ Run the full local v0.1 gate:
 npm run v0.1:verify
 ```
 
+Run the Lazy SPARK suite directly:
+
+```sh
+npm run v0.1:verify -- --skip-node --skip-ada --lazy-spark
+```
+
 The full GitHub Actions gate is documented in
 [`docs/V0_1_CI.md`](docs/V0_1_CI.md).
 
-## Reproduce The v0.1 Evidence
+## Reproduce Evidence
+
+### Current Lazy Mainnet Evidence
+
+The strongest committed public Bitcoin artifact is the Lazy `K = 2` mainnet
+bundle:
+
+```sh
+npm run test:evidence-bundle -- \
+  --bundle docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json
+```
+
+This verifies raw transaction files, parent-to-bridge continuity,
+bridge-to-child funding continuity, signature-state boundaries, wrong-scalar
+rejection, and the Lazy window manifest.
 
 ### Deterministic Local Evidence
 
@@ -266,7 +329,7 @@ npm run regtest:stop
 Committed regtest evidence lives in
 [`docs/evidence/regtest-cdlc/`](docs/evidence/regtest-cdlc/).
 
-### Public Signet Evidence
+### Historical Public Signet Evidence
 
 The current public signet run is already committed. To verify it:
 
@@ -295,9 +358,9 @@ printed by this repository.
 
 ## Run The Technical Demo
 
-The technical demo wraps the public signet evidence verifier and prints the
-parent funding, parent CET, bridge, child funding, wrong-scalar rejection, and
-timelock boundary from committed artifacts:
+The historical v0.1 technical demo wraps the public signet evidence verifier
+and prints the parent funding, parent CET, bridge, child funding, wrong-scalar
+rejection, and timelock boundary from committed artifacts:
 
 ```sh
 npm run demo:v0.1
@@ -318,6 +381,7 @@ presenter and reviewer script.
 .github/workflows/
   v0-1-validation.yml        Remote v0.1 validation gate
 docs/
+  LAZY_CDLC_STATUS.md        Lazy compression status and proof boundary
   evidence/public-signet/    Public signet parent CET -> bridge evidence
   evidence/lazy-public-testnet/
                               Lazy public testnet parent CET -> bridge evidence
@@ -489,10 +553,12 @@ Start with these files, in this order:
 
 1. [`README.md`](README.md) for current state and boundaries.
 2. [`WHITEPAPER.md`](WHITEPAPER.md) for the construction and claims.
-3. [`docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json`](docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json) for the strongest public Bitcoin execution artifact.
-4. [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) for proof-to-implementation mapping.
-5. [`spark/README.md`](spark/README.md) for formal proof scope.
-6. [`testnet/PUBLIC_SIGNET.md`](testnet/PUBLIC_SIGNET.md),
+3. [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md) for the current
+   Lazy compression claim and proof boundary.
+4. [`docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json`](docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json) for the strongest public Bitcoin execution artifact.
+5. [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) for proof-to-implementation mapping.
+6. [`spark/README.md`](spark/README.md) for formal proof scope.
+7. [`testnet/PUBLIC_SIGNET.md`](testnet/PUBLIC_SIGNET.md),
    [`testnet/MAINNET_LIVE_RUN.md`](testnet/MAINNET_LIVE_RUN.md), and
    [`testnet/REGTEST.md`](testnet/REGTEST.md) for operational replay.
 
@@ -563,14 +629,16 @@ state is:
 2. Bitcoin Core regtest broadcast/confirmation evidence: done.
 3. Public signet/testnet parent CET -> bridge -> child funding evidence: done.
 4. Dust-sized mainnet parent CET -> bridge -> child funding evidence: done.
-5. Bilateral protocol transcript with two independent participants: role
+5. Lazy cDLC compression proof suite and public `K = 2` runs: done for the
+   modeled finite claims and the mechanical activation evidence.
+6. Bilateral protocol transcript with two independent participants: role
    separation fixtures and setup schema exist; funding validation and adaptor
    exchange remain the next major gaps.
-6. Auditable oracle layer with announcement, nonce commitment, attestation
+7. Auditable oracle layer with announcement, nonce commitment, attestation
    verification, and history: next major gap.
-7. Economic stress simulations for collateral, liquidation, timelocks, and
+8. Economic stress simulations for collateral, liquidation, timelocks, and
    recovery behavior: next major gap.
-8. Wallet, Lightning, oracle, and product integrations: future work after
+9. Wallet, Lightning, oracle, and product integrations: future work after
    review.
 
 ## License

@@ -18,10 +18,9 @@ Status: done.
 - Broadcast on testnet/signet.
 - Record txid and raw transaction artifacts.
 
-Status: Bitcoin Core regtest broadcast and confirmation evidence exists in
-[`docs/evidence/regtest-cdlc`](evidence/regtest-cdlc). Public
-testnet/signet broadcast tooling exists, and fresh runs still require synced
-RPC and funding configuration.
+Status: done. Bitcoin Core regtest evidence exists in
+[`docs/evidence/regtest-cdlc`](evidence/regtest-cdlc), and public signet
+activation evidence exists in [`docs/evidence/public-signet`](evidence/public-signet).
 
 ## Phase 2: Parent CET To Bridge
 
@@ -31,8 +30,8 @@ RPC and funding configuration.
 - Complete bridge witness from parent oracle attestation.
 - Record deterministic parent and bridge confirmation transcripts.
 
-Status: deterministic regtest-equivalent path done; public testnet/signet
-broadcast remains an explicit later artifact.
+Status: done for the single-path primitive. Deterministic/regtest artifacts and
+public signet/testnet Lazy artifacts are committed.
 
 ## Phase 2A: Lightning Channel Edge Prototype
 
@@ -55,11 +54,27 @@ broadcast remains an explicit later artifact.
 Status: deterministic child funding, prepared child CET/refund, and parent-edge
 timeout refund evidence done.
 
+## Phase 3A: Lazy cDLC Compression
+
+- Prove finite-window preparation requirements.
+- Prove edge-local activation independence from unrelated future materialization.
+- Prove window-slide and fallback selection.
+- Prove non-recombining retained-state bounds.
+- Prove recombining-state and per-node compression composition bounds.
+- Specialize the Lazy model to BTC loan rollover.
+- Demonstrate a Lazy `K = 2` path on public signet, public testnet, and
+  dust-sized mainnet.
+
+Status: done for the modeled finite claims and the single-path public evidence.
+The result is live-state compression, not a production liveness guarantee. See
+[`docs/LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md).
+
 ## Phase 4: Multi-Party And Multi-Oracle
 
 - Add bilateral negotiation transcript.
 - Add oracle announcement schema.
 - Add threshold/multi-oracle outcome attestations.
+- Add Lazy window synchronization, backup, abort, and recovery policy.
 - Add fee bump and timeout policies.
 
 Status: Alice/Bob role separation fixtures exist in
@@ -74,4 +89,6 @@ validation, adaptor exchange, and two-process execution remain open.
 - Protocol test vectors.
 - Reproducible builds.
 - Minimal wallet integration.
-- Public testnet demo.
+- Public Lazy demo package.
+- Historical and adversarial economic stress reports for the first product
+  candidates.

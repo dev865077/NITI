@@ -1,11 +1,15 @@
 # Security Notes
 
-NITI is research software. It is not mainnet-ready.
+NITI is research software. It is not production-ready.
 
-## Do Not Use Mainnet Funds
+## Do Not Use Production Funds
 
-The testnet harness prints and stores testnet secrets when requested. Never reuse
-generated testnet keys on mainnet.
+The repository contains a guarded dust-sized mainnet activation run. That run is
+evidence of mechanical cDLC activation, not evidence of custody safety, wallet
+safety, product safety, or fee-policy hardening.
+
+Do not use this repository with production funds. Do not reuse generated test
+keys or harness keys for production custody.
 
 The Lightning harness can call live LND REST endpoints. Commands that create,
 pay, settle, or cancel invoices require `--allow-live-lnd`. Use it only with
@@ -13,7 +17,10 @@ regtest, signet, or testnet nodes.
 
 ## Broadcast Safety
 
-The CLI refuses to broadcast unless `--allow-broadcast` is explicitly provided.
+Mainnet broadcast paths require explicit acknowledgement flags. The guarded
+Esplora path requires `--mainnet-esplora-i-understand`, and mainnet broadcast
+requires `--mainnet-broadcast-i-understand`.
+
 Mutating Lightning commands refuse to call LND unless `--allow-live-lnd` is
 explicitly provided.
 
@@ -25,6 +32,10 @@ The current harness tests:
 - adaptor signature verification;
 - completion of a Taproot key-path witness after attestation;
 - extraction of the hidden scalar from a completed signature;
+- parent CET -> bridge -> child funding activation;
+- Lazy `K = 2` public-network activation evidence;
+- finite Lazy window, edge-locality, compression, liveness fallback, and loan
+  rollover models in SPARK/Ada;
 - finite graph manifest validation in Ada;
 - LND hold-invoice artifacts for the Lightning HTLC extension;
 - offline Lightning mock settlement using the oracle attestation scalar.
@@ -34,7 +45,7 @@ The current harness tests:
 - production key storage;
 - multi-party negotiation;
 - full DLC state machines;
-- full parent CET -> bridge -> child funding graph construction;
+- production Lazy window synchronization and recovery;
 - production Lightning channel state-machine safety;
 - route liquidity, force-close, and watchtower behavior;
 - CPFP/anchor fee strategy;

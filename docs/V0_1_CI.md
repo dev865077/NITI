@@ -1,5 +1,9 @@
 # v0.1 CI Gate
 
+This page records the historical v0.1 CI gate. The same workflow now also
+includes the Lazy cDLC proof regression used by the current Lazy status; see
+[`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md).
+
 The `v0.1 validation` GitHub Actions workflow is the remote release gate for
 the narrow v0.1 claim.
 

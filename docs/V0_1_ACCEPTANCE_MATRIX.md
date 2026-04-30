@@ -1,5 +1,9 @@
 # v0.1 Testnet Acceptance Matrix
 
+This matrix records the historical v0.1 testnet acceptance boundary. The
+current repository status includes Lazy cDLC compression proofs and dust-sized
+Lazy mainnet evidence; see [`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md).
+
 This matrix is the release contract for NITI v0.1 + testnet. It keeps the
 release claim narrow:
 

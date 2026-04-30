@@ -5,10 +5,11 @@ NITI is split into three layers.
 ## 1. Research Layer
 
 The research layer contains the primary cDLC whitepaper, the legacy NITI draft,
-and the focused cDLC technical note:
+the Lazy cDLC research note, and the focused cDLC technical note:
 
 - [`WHITEPAPER.md`](../WHITEPAPER.md)
 - [`LEGACY-WHITEPAPER.md`](../LEGACY-WHITEPAPER.md)
+- [`research/lazy-cdlcs-v0.2.md`](../research/lazy-cdlcs-v0.2.md)
 - [`research/cdlc-technical-note.md`](../research/cdlc-technical-note.md)
 - [`research/cdlc-algebra-check.ts`](../research/cdlc-algebra-check.ts)
 
@@ -24,6 +25,17 @@ The base cDLC edge is a Bitcoin bridge transaction. The whitepaper later
 describes how the same scalar can witness a Lightning-style channel condition
 without changing the core adaptor algebra.
 
+The Lazy research line adds the scaling discipline:
+
+```text
+EagerNodes(D) = 1 + b + b^2 + ... + b^D
+LazyNodes(K) = 1 + b + b^2 + ... + b^(K-1)
+```
+
+The claim is that live retained state can be bounded by a preparation window
+because activation is local to prepared edges. See
+[`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md).
+
 ## 2. Proof Layer
 
 The proof layer is in [`spark/`](../spark/). It contains SPARK/Ada models for
@@ -34,6 +46,15 @@ Accepted proof targets:
 - `cdlc_integer_proofs.gpr`
 - `cdlc_residue_proofs.gpr`
 - `cdlc_proofs.gpr`
+- `lightning_cdlc_proofs.gpr`
+- `lazy_cdlc_window_proofs.gpr`
+- `lazy_cdlc_edge_proofs.gpr`
+- `lazy_cdlc_slide_proofs.gpr`
+- `lazy_cdlc_tree_bound_proofs.gpr`
+- `lazy_cdlc_recombining_proofs.gpr`
+- `lazy_cdlc_compression_proofs.gpr`
+- `lazy_cdlc_liveness_proofs.gpr`
+- `lazy_cdlc_loan_rollover_proofs.gpr`
 
 The built-in Ada `type mod 97` model now includes explicit ghost lemmas for the
 modular sum rotation and cancellation properties that GNATprove does not infer
@@ -61,18 +82,18 @@ TypeScript is used where the Bitcoin ecosystem has mature libraries:
 
 ## Current End-To-End Primitive
 
-The current end-to-end test builds a Taproot key-path spend and makes its
-signature conditional on an oracle attestation scalar.
+The current end-to-end primitive builds a Taproot key-path activation path and
+makes its signatures conditional on oracle attestation scalars.
 
 ```text
-funded Taproot UTXO
-  -> unsigned spend
-  -> adaptor signature under S_x
+parent funding
+  -> parent CET
   -> oracle publishes s_x
-  -> completed Schnorr witness
-  -> raw transaction ready for broadcast
+  -> bridge completed with s_x
+  -> child funding output
 ```
 
-This is the smallest Bitcoin-facing validation of the cDLC activation primitive.
-The Lightning channel mode is specified in the primary whitepaper but is not yet
-implemented in the testnet harness.
+The committed evidence includes deterministic/regtest artifacts, public
+signet/testnet Lazy runs, and a dust-sized Bitcoin mainnet Lazy run. The
+Lightning channel mode is specified and modeled, but production channel support
+is outside the current harness boundary.
