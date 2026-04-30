@@ -87,9 +87,11 @@ The deterministic setup state machine is defined in
 [`docs/L3_BILATERAL_STATE_MACHINE.md`](L3_BILATERAL_STATE_MACHINE.md).
 Deterministic transaction-template agreement is defined in
 [`docs/L3_BILATERAL_TEMPLATE_AGREEMENT.md`](L3_BILATERAL_TEMPLATE_AGREEMENT.md).
-validation is defined in
+Funding validation is defined in
 [`docs/L3_BILATERAL_FUNDING_VALIDATION.md`](L3_BILATERAL_FUNDING_VALIDATION.md).
-Adaptor exchange and two-process execution remain open.
+Deterministic adaptor-signature exchange is defined in
+[`docs/L3_BILATERAL_ADAPTOR_EXCHANGE.md`](L3_BILATERAL_ADAPTOR_EXCHANGE.md).
+Two-process execution remains open.
 
 Oracle equivocation evidence is defined in
 [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md).
