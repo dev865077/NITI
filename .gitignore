@@ -30,5 +30,6 @@ spark/obj_lazy_cdlc_edge/
 spark/obj_lazy_cdlc_slide/
 spark/obj_lazy_cdlc_tree_bound/
 spark/obj_lazy_cdlc_recombining/
+spark/obj_lazy_cdlc_compression/
 
 site/
