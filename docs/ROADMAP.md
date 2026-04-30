@@ -95,6 +95,8 @@ Per-participant retained state is defined in
 [`docs/L3_BILATERAL_STATE_RETENTION.md`](L3_BILATERAL_STATE_RETENTION.md).
 Two-process local execution is defined in
 [`docs/L3_BILATERAL_TWO_PROCESS.md`](L3_BILATERAL_TWO_PROCESS.md).
+Restart and partial-loss recovery behavior is defined in
+[`docs/L3_BILATERAL_RESTART_RECOVERY.md`](L3_BILATERAL_RESTART_RECOVERY.md).
 
 Oracle equivocation evidence is defined in
 [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md).
