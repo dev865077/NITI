@@ -6,6 +6,8 @@ import { bytesToHex } from './bytes.js';
 
 const publicBundleKind = 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1';
 const lazyPublicBundleKind = 'niti.v0_2_lazy_public_testnet_signet_activation_evidence_bundle.v1';
+const mainnetBundleKind = 'niti.v0_1_mainnet_activation_evidence_bundle.v1';
+const lazyMainnetBundleKind = 'niti.v0_2_lazy_mainnet_activation_evidence_bundle.v1';
 
 function stringArg(args: string[], name: string, fallback?: string): string {
   const index = args.indexOf(name);
@@ -241,6 +243,19 @@ function verifyPublicBundle(repoRoot: string, bundle: Record<string, any>): numb
   return result.transactionCount;
 }
 
+function verifyMainnetBundle(repoRoot: string, bundle: Record<string, any>): number {
+  assert.ok([mainnetBundleKind, lazyMainnetBundleKind].includes(bundle.kind));
+  assert.equal(bundle.network, 'mainnet');
+  assert.match(bundle.boundary, /Mainnet Bitcoin execution/);
+  assertAllChecks(bundle);
+  const activation = assertObject(bundle.activationPath, 'activationPath');
+  const result = verifyActivationPath(repoRoot, activation);
+  if (bundle.kind === lazyMainnetBundleKind) {
+    verifyLazyWindow(bundle, activation);
+  }
+  return result.transactionCount;
+}
+
 function main(): void {
   const bundlePath = stringArg(
     process.argv.slice(2),
@@ -252,6 +267,8 @@ function main(): void {
   const checkedTransactions =
     [publicBundleKind, lazyPublicBundleKind].includes(bundle.kind)
       ? verifyPublicBundle(repoRoot, bundle)
+      : [mainnetBundleKind, lazyMainnetBundleKind].includes(bundle.kind)
+        ? verifyMainnetBundle(repoRoot, bundle)
       : verifyRegtestBundle(repoRoot, bundle);
 
   console.log(JSON.stringify({

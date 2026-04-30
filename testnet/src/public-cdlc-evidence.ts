@@ -162,8 +162,12 @@ function backendArg(args: string[], network: BitcoinNetworkName): PublicNetworkB
     if (explicit !== 'rpc' && explicit !== 'esplora') {
       throw new Error('--backend must be rpc or esplora');
     }
-    if (network === 'mainnet' && explicit === 'esplora') {
-      throw new Error('mainnet live runs require --backend rpc');
+    if (
+      network === 'mainnet'
+      && explicit === 'esplora'
+      && !hasFlag(args, '--mainnet-esplora-i-understand')
+    ) {
+      throw new Error('mainnet Esplora backend requires --mainnet-esplora-i-understand');
     }
     return explicit;
   }
@@ -382,6 +386,9 @@ async function getRawTx(txid: string): Promise<RawTxVerbose> {
 }
 
 function esploraBaseUrl(network: BitcoinNetworkName): string {
+  if (network === 'mainnet') {
+    return 'https://mempool.space/api';
+  }
   if (network === 'signet') {
     return 'https://mempool.space/signet/api';
   }
@@ -881,6 +888,57 @@ async function readExplicitFundingUtxo(input: {
   };
 }
 
+async function readExplicitFundingUtxoWithBackend(input: {
+  backend: PublicNetworkBackend;
+  network: BitcoinNetworkName;
+  args: string[];
+  expectedScriptPubKeyHex: string;
+}): Promise<PublicFundingOutput> {
+  if (input.backend === 'rpc') {
+    return readExplicitFundingUtxo({
+      args: input.args,
+      expectedScriptPubKeyHex: input.expectedScriptPubKeyHex,
+    });
+  }
+
+  const txid = stringArg(input.args, '--funding-txid');
+  const voutRaw = Number(stringArg(input.args, '--funding-vout'));
+  if (!Number.isInteger(voutRaw) || voutRaw < 0) {
+    throw new Error('--funding-vout must be a non-negative integer');
+  }
+  const vout = voutRaw;
+  const expectedValueSat = bigintArg(input.args, '--funding-value-sat');
+  const raw = await getRawTxWithBackend(input.backend, input.network, txid);
+  const tx = Transaction.fromHex(raw.hex);
+  const output = outputAt(tx, vout);
+  const scriptPubKeyHex = bytesToHex(output.script);
+  if (scriptPubKeyHex !== input.expectedScriptPubKeyHex) {
+    throw new Error('funding scriptPubKey does not match the mainnet live-run parent funding wallet');
+  }
+  if (output.value !== expectedValueSat) {
+    throw new Error(`funding value mismatch: expected ${expectedValueSat}, got ${output.value}`);
+  }
+
+  const base = esploraBaseUrl(input.network);
+  const outspend = await fetchJson<{
+    spent: boolean;
+    txid?: string;
+    vin?: number;
+  }>(`${base}/tx/${txid}/outspend/${vout}`);
+  if (outspend.spent) {
+    throw new Error(`funding outpoint is already spent: ${txid}:${vout}`);
+  }
+  const confirmation = await getConfirmationWithBackend(input.backend, input.network, txid);
+  return {
+    txid,
+    vout,
+    valueSat: output.value,
+    scriptPubKeyHex,
+    rawTxHex: raw.hex,
+    confirmations: confirmation?.confirmations ?? raw.confirmations ?? 0,
+  };
+}
+
 function rawTxArtifact(outDir: string, name: string, rawTxHex: string): {
   path: string;
   rawTxHex: string;
@@ -1140,7 +1198,9 @@ async function executeActivation(args: string[]): Promise<void> {
   });
 
   const funding = network === 'mainnet'
-    ? await readExplicitFundingUtxo({
+    ? await readExplicitFundingUtxoWithBackend({
+      backend,
+      network,
       args,
       expectedScriptPubKeyHex: parentFundingWallet.scriptPubKeyHex,
     })
@@ -1253,7 +1313,16 @@ async function executeActivation(args: string[]): Promise<void> {
     attestationSecret: scalarFromHex(activatingAttestation.attestationSecretHex, 'activating scalar'),
   });
   assert.equal(parentCompleted.txid, parentPending.txidNoWitness);
-  const parentMempoolAccept = await testMempoolWithBackend(backend, parentCompleted.rawTxHex);
+  const parentMempoolAccept =
+    mainnetDryRun && backend === 'esplora'
+      ? {
+        txid: parentCompleted.txid,
+        wtxid: 'unavailable-esplora',
+        allowed: false,
+        backend,
+        note: 'Esplora does not expose transaction preflight; dry-run mode builds the transaction but does not claim mempool acceptance.',
+      }
+      : await testMempoolWithBackend(backend, parentCompleted.rawTxHex);
   const parentBroadcast = mainnetDryRun
     ? null
     : await broadcastAndConfirmWithBackend({
@@ -1319,7 +1388,9 @@ async function executeActivation(args: string[]): Promise<void> {
     const dryRunBundle = {
       kind: 'niti.v0_1_mainnet_cdlc_dry_run_bundle.v1',
       network,
-      boundary: 'Mainnet dry-run: real funded outpoint is verified, transactions are built, parent CET is checked with testmempoolaccept, and no transaction is broadcast.',
+      boundary: backend === 'rpc'
+        ? 'Mainnet dry-run: real funded outpoint is verified, transactions are built, parent CET is checked with testmempoolaccept, and no transaction is broadcast.'
+        : 'Mainnet dry-run: real funded outpoint is verified through public Esplora, transactions are built locally, and no transaction is broadcast.',
       generatedAt: new Date().toISOString(),
       broadcast: false,
       broadcastRequiresFlag: '--mainnet-broadcast-i-understand',
@@ -1405,13 +1476,15 @@ async function executeActivation(args: string[]): Promise<void> {
   );
   const bundle = {
     kind: network === 'mainnet'
-      ? 'niti.v0_1_mainnet_activation_evidence_bundle.v1'
+      ? lazy
+        ? 'niti.v0_2_lazy_mainnet_activation_evidence_bundle.v1'
+        : 'niti.v0_1_mainnet_activation_evidence_bundle.v1'
       : lazy
         ? lazyPublicBundleKind
         : publicBundleKind,
     network,
     boundary: network === 'mainnet'
-      ? 'Mainnet Bitcoin execution with real sats, Bitcoin Core RPC broadcast, mempool checks, and observed confirmations.'
+      ? `Mainnet Bitcoin execution with real sats, ${backend === 'rpc' ? 'Bitcoin Core RPC' : 'public Esplora'} broadcast, ${backend === 'rpc' ? 'mempool preflight checks' : 'network acceptance by broadcast response'}, and observed confirmations.`
       : lazy
         ? `Public signet/testnet Lazy cDLC bounded-window execution with ${backend === 'rpc' ? 'Bitcoin Core RPC' : 'public Esplora'} broadcast and observed confirmations; not regtest mining`
         : `Public signet/testnet execution with ${backend === 'rpc' ? 'Bitcoin Core RPC' : 'public Esplora'} broadcast and observed confirmations; not regtest mining`,
@@ -1426,10 +1499,25 @@ async function executeActivation(args: string[]): Promise<void> {
       node: process.version,
     },
     replayCommands: {
-      fundingRequest: lazy
+      fundingRequest: network === 'mainnet'
+        ? 'npm run mainnet:cdlc-funding-request -- --plan <private-plan>'
+        : lazy
         ? `npm run public:lazy-cdlc-funding-request -- --network ${network}`
         : `npm run public:cdlc-funding-request -- --network ${network}`,
-      execute: lazy
+      execute: network === 'mainnet'
+        ? [
+          'npm run mainnet:cdlc-execute --',
+          lazy ? '--lazy' : '',
+          `--backend ${backend}`,
+          backend === 'esplora' ? '--mainnet-esplora-i-understand' : '',
+          '--plan <private-plan>',
+          `--funding-txid ${funding.txid}`,
+          `--funding-vout ${funding.vout}`,
+          `--funding-value-sat ${funding.valueSat.toString()}`,
+          `--out-dir ${relativeFromRepo(outDir)}`,
+          '--mainnet-broadcast-i-understand',
+        ].filter((part) => part.length > 0).join(' ')
+        : lazy
         ? `npm run public:lazy-cdlc-execute -- --network ${network} --out-dir ${relativeFromRepo(outDir)}`
         : `npm run public:cdlc-execute -- --network ${network} --out-dir ${relativeFromRepo(outDir)}`,
       verify: `npm run test:evidence-bundle -- --bundle ${relativeFromRepo(bundlePath)}`,

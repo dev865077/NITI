@@ -2,9 +2,9 @@
 
 [![v0.1 validation](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml/badge.svg)](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml)
 ![Status](https://img.shields.io/badge/status-research%20prototype-orange)
-![Evidence](https://img.shields.io/badge/evidence-public%20signet%20verified-brightgreen)
+![Evidence](https://img.shields.io/badge/evidence-public%20Bitcoin%20verified-brightgreen)
 ![License](https://img.shields.io/badge/license-ISC-blue)
-![Network](https://img.shields.io/badge/network-signet%2Fregtest%2Ftestnet-lightgrey)
+![Network](https://img.shields.io/badge/network-signet%2Ftestnet%2Fmainnet-lightgrey)
 
 NITI is a research and implementation workspace for Cascading Discreet Log Contracts,
 or cDLCs.
@@ -13,34 +13,36 @@ The core result is narrow: a DLC oracle attestation scalar revealed by a parent
 contract can also complete adaptor signatures on a bridge transaction that
 funds the next contract.
 
-The project is not production software. Do not use it with mainnet funds.
+The project is not production software. It contains a dust-sized mainnet
+activation run, but it is not custody software, wallet software, or a financial
+product release.
 
 ## Current State
 
-NITI now has public signet evidence for a single cDLC activation path:
+NITI now has public Bitcoin evidence for a single cDLC activation path:
 
 ```text
-public signet funding
+public funding
   -> parent CET confirmed
   -> oracle scalar completes bridge adaptor signature
   -> bridge confirmed
   -> child funding output exists
 ```
 
-The funded public signet run was merged in
-[`docs/evidence/public-signet/`](docs/evidence/public-signet/).
+The strongest committed execution artifact is the dust-sized Lazy mainnet run
+in [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/).
+It demonstrates a `K = 2` bounded preparation window on Bitcoin mainnet:
 
 | Item | Value |
 | --- | --- |
-| Funding output | [`65d17c3c...b9db2490:0`](https://mempool.space/signet/tx/65d17c3ccddb83733030995a7b1c59796beb4e4012b5706caa4ab6abb9db2490), `10,000 sats` |
-| Parent CET | [`b6d80069...93b9838c`](https://mempool.space/signet/tx/b6d800695fa61219bdf7de10a4b97e0efae0bf974283293284aa40e893b9838c), signet block `302040` |
-| Bridge | [`6b0c1951...0f8042cc`](https://mempool.space/signet/tx/6b0c1951480aa62914ed38ca3629666d4d37033b2dabf9f424ffb7450f8042cc), signet block `302041` |
-| Child funding output | `6b0c1951480aa62914ed38ca3629666d4d37033b2dabf9f424ffb7450f8042cc:0`, `8,500 sats` |
-| Evidence bundle | [`public-activation-evidence-bundle.json`](docs/evidence/public-signet/public-activation-evidence-bundle.json) |
-| Verifier log | [`public-verifier.log`](docs/evidence/public-signet/public-verifier.log) |
+| Funding output | [`d05aa027...67efee3:0`](https://mempool.space/tx/d05aa027f1e046a7deef5f28d11f7b729149293c5eb4eaaac882eaab567efee3), `31,878 sats` |
+| Parent CET | [`2abf8200...54775c9`](https://mempool.space/tx/2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9), mainnet block `947247` |
+| Bridge | [`2bd5ff8c...e96263af`](https://mempool.space/tx/2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af), mainnet block `947248` |
+| Child funding output | `2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af:0`, `30,378 sats` |
+| Evidence bundle | [`lazy-activation-evidence-bundle.json`](docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json) |
 
-The Layer 2 public signet milestone is complete. The remaining major work is
-not another proof of the basic activation primitive; it is protocol hardening:
+This is still a technical prototype result. The remaining major work is not
+another proof of the basic activation primitive; it is protocol hardening:
 bilateral negotiation, oracle auditability, economic stress, wallet UX,
 fee/reorg policy, and external review.
 
@@ -77,6 +79,7 @@ validated by
 | Remote v0.1 CI gate | Passing for the recorded `main` baseline. | [`v0.1 validation`](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) |
 | Local full gate | Reproducible with `npm run v0.1:verify` when Node, Ada, and SPARK toolchains are installed. | [`docs/V0_1_RUNNER.md`](docs/V0_1_RUNNER.md) |
 | Public signet activation | Committed public evidence exists for one parent -> bridge -> child funding path. | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) |
+| Lazy mainnet activation | A dust-sized `K = 2` Lazy path is committed with Bitcoin mainnet confirmations for parent CET and bridge. | [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/) |
 | Manual or experimental surfaces | Fresh public signet broadcast, faucet funding, production wallet behavior, fee-bump policy, and product-level SPARK sweeps remain explicit manual or extended steps. | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) |
 
 ## Precise Claim
@@ -89,13 +92,14 @@ The conservative claim supported by the current repository is:
 > transaction into child funding, while a non-corresponding oracle scalar fails
 > to activate that bridge.
 
-This claim is supported at three execution layers:
+This claim is supported by four evidence layers:
 
 | Layer | Status |
 | --- | --- |
 | Formal algebra | SPARK/Ada models prove the core adaptor/oracle equations in finite models with no `pragma Assume` in the proof sources. |
 | Deterministic/regtest evidence | Local deterministic transcripts and Bitcoin Core regtest broadcast/confirmation evidence are committed. |
 | Public signet evidence | A funded parent output, parent CET, bridge, and child funding output were broadcast and confirmed on public signet. |
+| Dust mainnet evidence | A Lazy bounded-window parent CET and bridge were broadcast and confirmed on Bitcoin mainnet with a small controlled UTXO. |
 
 NITI does not claim:
 
@@ -152,6 +156,7 @@ Use this table as the top-level audit map.
 | Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet architecture. |
 | Public signet activation bundle | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) | Funded public signet parent CET, bridge confirmation, child funding output, raw tx files, verifier log. |
 | Lazy public testnet bundle | [`docs/evidence/lazy-public-testnet/`](docs/evidence/lazy-public-testnet/) | Public Bitcoin testnet Lazy `K = 2` parent CET, bridge confirmation, child funding output, raw tx files, and Lazy window manifest. |
+| Lazy public mainnet bundle | [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/) | Dust-sized Bitcoin mainnet Lazy `K = 2` parent CET, bridge confirmation, child funding output, raw tx files, and Lazy window manifest. |
 | v0.1 technical demo script | [`docs/V0_1_TECHNICAL_DEMO.md`](docs/V0_1_TECHNICAL_DEMO.md), [`scripts/demo-v0.1.sh`](scripts/demo-v0.1.sh) | Reproducible demo sequence from public signet artifacts, with explicit claim boundaries. |
 | v0.1 reproducibility status | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) | Current CI, local runner, public evidence, and manual/experimental boundaries. |
 | External auditor quickstart | [`docs/AUDITOR_QUICKSTART.md`](docs/AUDITOR_QUICKSTART.md) | Minimal reviewer path with dependencies, commands, expected outputs, troubleshooting, and a committed demo transcript. |
@@ -176,6 +181,7 @@ Use this table as the top-level audit map.
 | SPARK/Ada models | [`spark/`](spark/) | Formal algebra, Lightning witness models, and finite financial accounting models. |
 | TypeScript harness | [`testnet/`](testnet/) | Taproot/adaptor/oracle/RPC harnesses, manifests, public signet and regtest flows. |
 | Public signet guide | [`testnet/PUBLIC_SIGNET.md`](testnet/PUBLIC_SIGNET.md) | Funding request and public-network activation commands. |
+| Mainnet live-run guide | [`testnet/MAINNET_LIVE_RUN.md`](testnet/MAINNET_LIVE_RUN.md) | Dust-sized mainnet activation workflow and claim boundary. |
 | Regtest guide | [`testnet/REGTEST.md`](testnet/REGTEST.md) | Local Bitcoin Core regtest setup. |
 | CI gate | [GitHub Actions](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) | Build, deterministic tests, Ada validator, core and Lazy cDLC SPARK proof regression. |
 | Security notes | [`docs/SECURITY.md`](docs/SECURITY.md) | Operational boundaries and explicit non-goals. |
@@ -315,6 +321,8 @@ docs/
   evidence/public-signet/    Public signet parent CET -> bridge evidence
   evidence/lazy-public-testnet/
                               Lazy public testnet parent CET -> bridge evidence
+  evidence/lazy-public-mainnet/
+                              Dust-sized Lazy mainnet parent CET -> bridge evidence
   evidence/regtest-cdlc/ Bitcoin Core regtest tx evidence bundle
   ARCHITECTURE.md            Research/proof/testnet architecture
   PROTOCOL.md                cDLC protocol summary
@@ -339,6 +347,7 @@ testnet/
   examples/                  Canonical manifests
   LIGHTNING.md               Lightning hold-invoice harness
   PUBLIC_SIGNET.md           Public signet/testnet workflow
+  MAINNET_LIVE_RUN.md        Dust-sized mainnet activation workflow
   REGTEST.md                 Deterministic Bitcoin Core regtest guide
 WHITEPAPER.md                Primary cDLC whitepaper
 LEGACY-WHITEPAPER.md         Historical NITI draft
@@ -480,10 +489,12 @@ Start with these files, in this order:
 
 1. [`README.md`](README.md) for current state and boundaries.
 2. [`WHITEPAPER.md`](WHITEPAPER.md) for the construction and claims.
-3. [`docs/evidence/public-signet/public-activation-evidence-bundle.json`](docs/evidence/public-signet/public-activation-evidence-bundle.json) for the strongest Bitcoin execution artifact.
+3. [`docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json`](docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json) for the strongest public Bitcoin execution artifact.
 4. [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) for proof-to-implementation mapping.
 5. [`spark/README.md`](spark/README.md) for formal proof scope.
-6. [`testnet/PUBLIC_SIGNET.md`](testnet/PUBLIC_SIGNET.md) and [`testnet/REGTEST.md`](testnet/REGTEST.md) for operational replay.
+6. [`testnet/PUBLIC_SIGNET.md`](testnet/PUBLIC_SIGNET.md),
+   [`testnet/MAINNET_LIVE_RUN.md`](testnet/MAINNET_LIVE_RUN.md), and
+   [`testnet/REGTEST.md`](testnet/REGTEST.md) for operational replay.
 
 High-signal commands:
 
@@ -491,16 +502,17 @@ High-signal commands:
 npm run build
 npm test
 npm run test:evidence-bundle -- \
-  --bundle docs/evidence/public-signet/public-activation-evidence-bundle.json
+  --bundle docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json
 npm run v0.1:verify
 ```
 
 Do not infer more than the artifacts prove:
 
-- Public signet evidence proves the single-path activation can be materialized
-  as real Bitcoin transactions on a public test network.
-- It does not prove production bilateral negotiation, mainnet fee safety,
-  oracle operations, wallet security, route liquidity, or product solvency.
+- Public Bitcoin evidence proves the single-path activation can be materialized
+  as real Bitcoin transactions, including one dust-sized mainnet path.
+- It does not prove production bilateral negotiation, production mainnet fee
+  safety, oracle operations, wallet security, route liquidity, or product
+  solvency.
 - The deterministic keys in the harness are public test keys.
 - Every new substantive change should preserve the evidence boundary and add
   validation proportional to the risk.
@@ -517,7 +529,10 @@ production gap rather than re-proving the already demonstrated activation path:
 
 ## Security Boundary
 
-Do not use this repository with mainnet funds.
+Do not use this repository with production mainnet funds.
+
+The committed mainnet run used a small controlled UTXO to demonstrate mechanics.
+That does not make the repository safe for custody, users, or products.
 
 The current code and proofs do not cover:
 
@@ -546,15 +561,16 @@ state is:
 
 1. Core cDLC algebra and deterministic harness: done.
 2. Bitcoin Core regtest broadcast/confirmation evidence: done.
-3. Public signet parent CET -> bridge -> child funding evidence: done.
-4. Bilateral protocol transcript with two independent participants: role
+3. Public signet/testnet parent CET -> bridge -> child funding evidence: done.
+4. Dust-sized mainnet parent CET -> bridge -> child funding evidence: done.
+5. Bilateral protocol transcript with two independent participants: role
    separation fixtures and setup schema exist; funding validation and adaptor
    exchange remain the next major gaps.
-5. Auditable oracle layer with announcement, nonce commitment, attestation
+6. Auditable oracle layer with announcement, nonce commitment, attestation
    verification, and history: next major gap.
-6. Economic stress simulations for collateral, liquidation, timelocks, and
+7. Economic stress simulations for collateral, liquidation, timelocks, and
    recovery behavior: next major gap.
-7. Wallet, Lightning, oracle, and product integrations: future work after
+8. Wallet, Lightning, oracle, and product integrations: future work after
    review.
 
 ## License

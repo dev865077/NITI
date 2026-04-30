@@ -75,9 +75,29 @@ assert.equal(fundingRequest.network, 'mainnet');
 assert.match(fundingRequest.address, /^bc1p/);
 assert.equal(fundingRequest.minimumValueSat, '2330');
 
+const refusedMainnetEsplora = run([
+  '--mode',
+  'execute-activation',
+  '--network',
+  'mainnet',
+  '--backend',
+  'esplora',
+  '--plan',
+  privatePlanPath,
+  '--funding-txid',
+  '00'.repeat(32),
+  '--funding-vout',
+  '0',
+  '--funding-value-sat',
+  '2330',
+]);
+assert.notEqual(refusedMainnetEsplora.status, 0);
+assert.match(String(refusedMainnetEsplora.stderr), /--mainnet-esplora-i-understand/);
+
 console.log(JSON.stringify({
   mainnetNetworkResolved: true,
   mainnetAddressPrefix: fundingRequest.address.slice(0, 4),
   deterministicMainnetFundingRefused: true,
   privatePlanGenerated: true,
+  mainnetEsploraRequiresExplicitFlag: true,
 }, null, 2));
