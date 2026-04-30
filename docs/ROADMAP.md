@@ -83,7 +83,9 @@ message validation exists in
 [`docs/L3_BILATERAL_SETUP_SCHEMA.md`](L3_BILATERAL_SETUP_SCHEMA.md). The audit
 transcript format is defined in
 [`docs/L3_BILATERAL_TRANSCRIPT_FORMAT.md`](L3_BILATERAL_TRANSCRIPT_FORMAT.md).
-Funding validation, adaptor exchange, and two-process execution remain open.
+The deterministic setup state machine is defined in
+[`docs/L3_BILATERAL_STATE_MACHINE.md`](L3_BILATERAL_STATE_MACHINE.md). Funding
+validation, adaptor exchange, and two-process execution remain open.
 
 Oracle equivocation evidence is defined in
 [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md).
