@@ -80,6 +80,48 @@ The command:
 8. prepares child CET and child refund transactions;
 9. records raw tx files, txids, block hashes, and signature-state boundaries.
 
+## Lazy Bounded-Window Run
+
+The Lazy runner uses the same public-network path, but records an explicit
+`K = 2` preparation window:
+
+```text
+C_0 active parent
+C_1 prepared child
+edge E_0_x_to_1
+```
+
+Before the parent CET is completed with the oracle scalar, the runner prepares:
+
+- the parent CET adaptor spend;
+- the bridge adaptor spend from `C_0` to `C_1`;
+- the child CET adaptor spend;
+- the child timelocked refund.
+
+Then the parent oracle scalar completes both the parent CET and the bridge
+signature. The bundle records the Lazy window manifest and checks that the
+child prepared spend consumes the bridge output identified before bridge
+witness completion.
+
+```sh
+npm run public:lazy-cdlc-funding-request -- \
+  --network signet \
+  --out testnet/artifacts/lazy-public-signet-funding-request.json
+
+npm run public:lazy-cdlc-execute -- \
+  --network signet \
+  --out-dir docs/evidence/lazy-public-signet \
+  --min-confirmations 1 \
+  --wait-seconds 7200
+```
+
+The Lazy evidence bundle is verified with the same verifier:
+
+```sh
+npm run test:evidence-bundle -- \
+  --bundle docs/evidence/lazy-public-signet/lazy-activation-evidence-bundle.json
+```
+
 ## 4. Verify Bundle
 
 ```sh
