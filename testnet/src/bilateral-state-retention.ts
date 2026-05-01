@@ -117,6 +117,7 @@ export interface BilateralRetainedStateValidation {
     templateDigestMatches: boolean;
     timelocksOrdered: boolean;
     adaptorExchangeRetained: boolean;
+    adaptorPacketsMatchTemplate: boolean;
     adaptorEquationsVerify: boolean;
     oracleMetadataMatchesTemplate: boolean;
     deadlinesMatchTemplate: boolean;
@@ -356,6 +357,24 @@ function verifyPacketEquation(packet: BilateralAdaptorSignaturePacket): boolean 
   return left.equals(right);
 }
 
+function adaptorPacketsMatchTemplate(state: BilateralParticipantRetainedState): boolean {
+  const template = state.retainedArtifacts.transactionTemplate;
+  const expected = {
+    parent_cet: template.parentCet,
+    bridge: template.bridge,
+    child_cet: template.childCet,
+  } as const;
+  return bilateralAdaptorNoncePurposes.every((purpose) => {
+    const packet = packetForPurpose(state, purpose);
+    const expectedTemplate = expected[purpose];
+    return Boolean(packet)
+      && packet!.templateId === expectedTemplate.id
+      && packet!.unsignedTxid === expectedTemplate.unsignedTxid
+      && packet!.sighashHex === expectedTemplate.sighashHex
+      && packet!.adaptorPointCompressedHex === expectedTemplate.adaptorPointCompressedHex;
+  });
+}
+
 function publicStateContainsNoPrivateScalars(state: BilateralParticipantRetainedState): boolean {
   const text = JSON.stringify(state);
   const wallets = canonicalWallets(canonicalNetwork);
@@ -424,6 +443,7 @@ function validateRetainedStateOrThrow(
     adaptorExchangeRetained: exchange.sessionIdHex === state.sessionIdHex
       && exchange.templateDigestHex === state.templateDigestHex
       && bilateralAdaptorNoncePurposes.every((purpose) => packetPurposes.has(purpose)),
+    adaptorPacketsMatchTemplate: adaptorPacketsMatchTemplate(state),
     adaptorEquationsVerify: packets.length === bilateralAdaptorNoncePurposes.length
       && packets.every(verifyPacketEquation),
     oracleMetadataMatchesTemplate: metadata.parentAttestationPointCompressedHex
@@ -471,6 +491,7 @@ export function validateBilateralRetainedState(
         templateDigestMatches: false,
         timelocksOrdered: false,
         adaptorExchangeRetained: false,
+        adaptorPacketsMatchTemplate: false,
         adaptorEquationsVerify: false,
         oracleMetadataMatchesTemplate: false,
         deadlinesMatchTemplate: false,
