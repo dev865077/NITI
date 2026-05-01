@@ -133,6 +133,16 @@ Committed transcript:
 
 - [`docs/evidence/auditor-quickstart/demo-v0.1.log`](evidence/auditor-quickstart/demo-v0.1.log)
 
+Readable transcript:
+
+- [`docs/V0_1_EXECUTION_TRANSCRIPT.md`](V0_1_EXECUTION_TRANSCRIPT.md)
+
+Adversarial failure matrix:
+
+```sh
+npm run test:adversarial-failure-matrix
+```
+
 ## 6. Optional Fresh Public Run
 
 A fresh public signet run is useful for live demonstration but is not required

@@ -37,6 +37,7 @@ The supported Layer 3 claim is:
 | Malformed input rejection | [`L3_BILATERAL_MALFORMED_COUNTERPARTY.md`](L3_BILATERAL_MALFORMED_COUNTERPARTY.md) | `npm run test:bilateral-malformed-counterparty` | Satisfied | Deterministic invalid messages, not anti-DoS policy. |
 | Settlement execution | [`L3_BILATERAL_SETTLEMENT_EXECUTION.md`](L3_BILATERAL_SETTLEMENT_EXECUTION.md) | `npm run test:bilateral-settlement-execution` | Satisfied | Local completion from retained state, not public broadcast. |
 | Wrong-path replay rejection | [`L3_BILATERAL_WRONG_PATH_REPLAY.md`](L3_BILATERAL_WRONG_PATH_REPLAY.md) | `npm run test:bilateral-wrong-path-replay` | Satisfied | Deterministic replay matrix, not a full adversarial network model. |
+| Adversarial failure matrix | [`V0_1_ADVERSARIAL_FAILURE_MATRIX.md`](V0_1_ADVERSARIAL_FAILURE_MATRIX.md) | `npm run test:adversarial-failure-matrix` | Satisfied | Deterministic failure injection, not a production network adversary model. |
 | CI artifact package | [`L3_CI_ARTIFACT_GATE.md`](L3_CI_ARTIFACT_GATE.md) | `npm run test:layer3` | Satisfied | CI JSON artifacts, not production deployment evidence. |
 
 ## One-Command Gate
@@ -56,7 +57,9 @@ exist and all required checks pass.
 After this closeout, it is accurate to say that Layer 3 has deterministic,
 reproducible, CI-artifacted evidence for the current research prototype's
 bilateral setup, validation, retained-state recovery, settlement execution, and
-wrong-path rejection behavior.
+wrong-path rejection behavior. The adversarial matrix additionally checks that
+wrong scalars, replayed signatures, oracle withholding, fee-spike, and
+compressed-timeout scenarios fail closed in the deterministic model.
 
 ## Forbidden Claims
 

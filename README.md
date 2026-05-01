@@ -194,6 +194,8 @@ Use this table as the top-level audit map.
 | Lazy bilateral public testnet bundle | [`docs/evidence/lazy-bilateral-public-testnet/`](docs/evidence/lazy-bilateral-public-testnet/) | Public Bitcoin testnet Lazy `K = 2` run with holder evidence: Alice, Bob, and watchtower holders each complete the same broadcast bridge from the retained prepared edge package. |
 | Lazy public mainnet bundle | [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/) | Dust-sized Bitcoin mainnet Lazy `K = 2` parent CET, bridge confirmation, child funding output, raw tx files, and Lazy window manifest. |
 | v0.1 technical demo script | [`docs/V0_1_TECHNICAL_DEMO.md`](docs/V0_1_TECHNICAL_DEMO.md), [`scripts/demo-v0.1.sh`](scripts/demo-v0.1.sh) | Reproducible demo sequence from public signet artifacts, with explicit claim boundaries. |
+| v0.1 written transcript | [`docs/V0_1_EXECUTION_TRANSCRIPT.md`](docs/V0_1_EXECUTION_TRANSCRIPT.md) | Readable command path through proof checks, oracle attestation, parent execution, bridge completion, child funding, negative cases, and economic-stress entry points. |
+| v0.1 adversarial failure matrix | [`docs/V0_1_ADVERSARIAL_FAILURE_MATRIX.md`](docs/V0_1_ADVERSARIAL_FAILURE_MATRIX.md), [`testnet/src/adversarial-failure-matrix-test.ts`](testnet/src/adversarial-failure-matrix-test.ts) | Wrong scalar, random scalar, different-event scalar, mismatched-oracle scalar, bridge-sighash replay, oracle withholding, fee-spike, and compressed-timeout failure injection. |
 | v0.1 reproducibility status | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) | Current CI, local runner, public evidence, and manual/experimental boundaries. |
 | External auditor quickstart | [`docs/AUDITOR_QUICKSTART.md`](docs/AUDITOR_QUICKSTART.md) | Minimal reviewer path with dependencies, commands, expected outputs, troubleshooting, and a committed demo transcript. |
 | v0.1 limitations document | [`docs/V0_1_LIMITATIONS.md`](docs/V0_1_LIMITATIONS.md) | Technical diligence boundary for oracle, fee, liquidity, collateral, state retention, bilateral protocol, Lightning, and mainnet readiness. |
@@ -275,6 +277,12 @@ Verify the current Lazy mainnet evidence bundle:
 ```sh
 npm run test:evidence-bundle -- \
   --bundle docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json
+```
+
+Run the adversarial failure matrix:
+
+```sh
+npm run test:adversarial-failure-matrix
 ```
 
 Run the full local v0.1 gate:
