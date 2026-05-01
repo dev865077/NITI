@@ -1,10 +1,10 @@
-# NITI v0.1 Release Notes Draft
+# NITI v0.1 Release Notes
 
-These are historical v0.1 notes. The current repository also contains Lazy
-cDLC compression models and dust-sized Lazy mainnet activation evidence. See
+The current repository contains cDLC activation evidence, Lazy cDLC compression
+models, and dust-sized Lazy mainnet activation evidence. See
 [`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md) for the current project status.
 
-This draft states the v0.1 technical result without overclaiming.
+These notes state the v0.1 technical result without overclaiming.
 
 These notes are not investor pitch copy, legal analysis, regulatory analysis,
 or production user documentation.
@@ -12,13 +12,13 @@ or production user documentation.
 ## Release Name
 
 ```text
-NITI v0.1: public signet cDLC activation evidence
+NITI v0.1: cDLC activation research prototype
 ```
 
 ## Release Claim
 
-NITI v0.1 demonstrates technical existence of a Cascading DLC activation
-path:
+NITI v0.1 demonstrates technical existence of a Cascading DLC activation path
+under documented assumptions:
 
 ```text
 parent DLC outcome
@@ -29,19 +29,25 @@ parent DLC outcome
   -> prepared child funding output exists
 ```
 
-The public evidence bundle records that a non-corresponding oracle scalar does
-not activate the bridge.
+The committed evidence records that a non-corresponding oracle scalar does not
+activate the bridge.
+
+The canonical allowed language is maintained in
+[`docs/V0_1_CLAIM_LOCK.md`](V0_1_CLAIM_LOCK.md).
 
 ## What Is Included
 
-- Public signet parent funding, parent CET, bridge transaction, and child
-  funding output evidence.
+- Public signet, public testnet, dust-sized mainnet, and regtest parent ->
+  bridge -> child evidence.
 - Deterministic local cDLC smoke harness.
 - Bitcoin Core regtest transaction evidence bundle.
 - Public evidence bundle verifier.
 - External auditor quickstart.
 - Technical demo script.
 - v0.1 limitations document.
+- v0.1 release-candidate manifest and fresh-clone audit path.
+- v0.1 semantic trace and bilateral transcript.
+- Lazy holder activation evidence for Alice, Bob, and watchtower holders.
 - SPARK/Ada proof regression for the core cDLC and Lightning finite models in
   CI.
 - Ada manifest validator for finite cDLC graph metadata.
@@ -50,15 +56,19 @@ not activate the bridge.
 
 The following claims are permitted for v0.1:
 
-- NITI demonstrates one public signet parent -> bridge -> child cDLC activation
-  path.
+- NITI demonstrates reproducible parent -> bridge -> child cDLC activation
+  paths in deterministic, regtest, and committed public-network artifacts.
 - The bridge signature is incomplete before the selected oracle scalar is
   known.
 - The selected oracle scalar completes the bridge signature.
 - A wrong outcome scalar is rejected by the bridge signature check in the
   committed evidence.
-- The public signet run confirms both the parent CET and bridge transaction.
+- The committed public-network artifacts include confirmed parent CET and bridge
+  transactions.
 - The child funding output exists as the bridge output in the public evidence.
+- A retained prepared-edge package lets Alice, Bob, or a watchtower holder
+  complete the same bridge after oracle attestation in the lazy holder
+  evidence.
 - The core adaptor/oracle equations are modeled in SPARK/Ada and regression
   checked in CI.
 - v0.1 is a research prototype suitable for technical review and further
@@ -101,10 +111,17 @@ v0.1 depends on the following assumptions.
 Before publishing or presenting v0.1, reviewers should verify:
 
 - [`docs/evidence/public-signet/public-activation-evidence-bundle.json`](evidence/public-signet/public-activation-evidence-bundle.json)
+- [`docs/evidence/lazy-bilateral-public-signet/lazy-activation-evidence-bundle.json`](evidence/lazy-bilateral-public-signet/lazy-activation-evidence-bundle.json)
+- [`docs/evidence/lazy-bilateral-public-testnet/lazy-activation-evidence-bundle.json`](evidence/lazy-bilateral-public-testnet/lazy-activation-evidence-bundle.json)
+- [`docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json`](evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json)
 - [`docs/AUDITOR_QUICKSTART.md`](AUDITOR_QUICKSTART.md)
 - [`docs/V0_1_TECHNICAL_DEMO.md`](V0_1_TECHNICAL_DEMO.md)
 - [`docs/V0_1_LIMITATIONS.md`](V0_1_LIMITATIONS.md)
 - [`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md)
+- [`docs/V0_1_RELEASE_CANDIDATE.md`](V0_1_RELEASE_CANDIDATE.md)
+- [`docs/V0_1_RC1_MANIFEST.md`](V0_1_RC1_MANIFEST.md)
+- [`docs/V0_1_CLAIM_LOCK.md`](V0_1_CLAIM_LOCK.md)
+- [`docs/V0_1_FRESH_CLONE_AUDIT.md`](V0_1_FRESH_CLONE_AUDIT.md)
 - current GitHub Actions `v0.1 validation` status for the release commit
 
 Minimum local command:
@@ -123,8 +140,8 @@ npm run demo:v0.1 -- --full-local-gate
 
 Before approving v0.1 language, check:
 
-1. The phrase "public signet" or equivalent test-network boundary is present
-   wherever the transaction evidence is described.
+1. Public signet, public testnet, dust-sized mainnet, deterministic, or regtest
+   boundary language is present wherever transaction evidence is described.
 2. The release does not say or imply mainnet readiness.
 3. The release does not say or imply user-fund safety.
 4. The release does not describe NITI as a complete financial product.
@@ -144,14 +161,15 @@ Before approving v0.1 language, check:
 Use this conservative summary:
 
 > NITI v0.1 demonstrates a Cascading DLC activation primitive on public
-> signet: a parent DLC oracle scalar completes a bridge signature and funds a
-> prepared child path, while the wrong outcome scalar is rejected. This is
-> technical existence evidence for the primitive, not mainnet readiness or a
-> complete financial product.
+> signet/testnet, dust-sized mainnet, regtest, and deterministic evidence: a
+> parent DLC oracle scalar completes a bridge signature and funds a prepared
+> child path, while wrong outcome scalars are rejected. This is technical
+> existence evidence for the primitive, not production readiness or a complete
+> financial product.
 
 ## Release Boundary
 
 The release is acceptable only as a technical prototype milestone. A later
-release must separately close or waive the bilateral protocol, oracle
-auditability, economic stress, adversarial behavior, fee/reorg policy, and
-final go/no-go checklist gates before stronger claims are made.
+release must separately close production transport, production wallet UX,
+oracle operations, economic stress, adversarial review, fee/reorg policy, and
+mainnet custody gates before stronger claims are made.

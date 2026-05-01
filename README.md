@@ -186,7 +186,7 @@ Use this table as the top-level audit map.
 
 | Evidence | Where | What it supports |
 | --- | --- | --- |
-| Primary whitepaper | [`WHITEPAPER.md`](WHITEPAPER.md) | cDLC construction, security claims, Lightning extension, and limitations. |
+| Primary whitepaper | [Cascading Discreet Log Contracts (cDLCs).pdf](<Cascading Discreet Log Contracts (cDLCs).pdf>) | cDLC construction, security claims, Lightning extension, and limitations. |
 | Protocol summary | [`docs/PROTOCOL.md`](docs/PROTOCOL.md) | Compact protocol description: oracle, adaptor, bridge, Lightning, graph discipline. |
 | Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet architecture. |
 | Lazy cDLC status | [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md) | Live-state compression claim, proof boundary, public evidence, and remaining work. |
@@ -195,13 +195,18 @@ Use this table as the top-level audit map.
 | Lazy bilateral public signet bundle | [`docs/evidence/lazy-bilateral-public-signet/`](docs/evidence/lazy-bilateral-public-signet/) | Public Bitcoin signet Lazy `K = 2` run with holder evidence: Alice, Bob, and watchtower holders each complete the same broadcast bridge from the retained prepared edge package. |
 | Lazy bilateral public testnet bundle | [`docs/evidence/lazy-bilateral-public-testnet/`](docs/evidence/lazy-bilateral-public-testnet/) | Public Bitcoin testnet Lazy `K = 2` run with holder evidence: Alice, Bob, and watchtower holders each complete the same broadcast bridge from the retained prepared edge package. |
 | Lazy public mainnet bundle | [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/) | Dust-sized Bitcoin mainnet Lazy `K = 2` parent CET, bridge confirmation, child funding output, raw tx files, and Lazy window manifest. |
+| v0.1 release candidate | [`docs/V0_1_RELEASE_CANDIDATE.md`](docs/V0_1_RELEASE_CANDIDATE.md), [`docs/V0_1_RC1_MANIFEST.md`](docs/V0_1_RC1_MANIFEST.md) | Release-candidate gates, non-negotiable failure criteria, evidence surface, deterministic fixtures, and required commands. |
+| v0.1 claim lock | [`docs/V0_1_CLAIM_LOCK.md`](docs/V0_1_CLAIM_LOCK.md) | Allowed claim, required qualifiers, forbidden claims, and evidence categories. |
+| v0.1 fresh-clone audit | [`docs/V0_1_FRESH_CLONE_AUDIT.md`](docs/V0_1_FRESH_CLONE_AUDIT.md) | Clean checkout reproduction path for local, CI-backed, and public-document gates. |
+| v0.1 semantic trace | [`docs/V0_1_SEMANTIC_TRACE.md`](docs/V0_1_SEMANTIC_TRACE.md) | Oracle scalar path, parent-bridge-child state map, negative-path coverage, and proof-to-engineering boundary. |
+| v0.1 bilateral transcript | [`docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md`](docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md) | Human-readable Alice/Bob setup, validation, adaptor exchange, retained state, settlement, and wrong-path replay trace. |
 | v0.1 technical demo script | [`docs/V0_1_TECHNICAL_DEMO.md`](docs/V0_1_TECHNICAL_DEMO.md), [`scripts/demo-v0.1.sh`](scripts/demo-v0.1.sh) | Reproducible demo sequence from public signet artifacts, with explicit claim boundaries. |
 | v0.1 written transcript | [`docs/V0_1_EXECUTION_TRANSCRIPT.md`](docs/V0_1_EXECUTION_TRANSCRIPT.md) | Readable command path through proof checks, oracle attestation, parent execution, bridge completion, child funding, negative cases, and economic-stress entry points. |
 | v0.1 adversarial failure matrix | [`docs/V0_1_ADVERSARIAL_FAILURE_MATRIX.md`](docs/V0_1_ADVERSARIAL_FAILURE_MATRIX.md), [`testnet/src/adversarial-failure-matrix-test.ts`](testnet/src/adversarial-failure-matrix-test.ts) | Wrong scalar, random scalar, different-event scalar, mismatched-oracle scalar, bridge-sighash replay, oracle withholding, fee-spike, and compressed-timeout failure injection. |
 | v0.1 reproducibility status | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) | Current CI, local runner, public evidence, and manual/experimental boundaries. |
 | External auditor quickstart | [`docs/AUDITOR_QUICKSTART.md`](docs/AUDITOR_QUICKSTART.md) | Minimal reviewer path with dependencies, commands, expected outputs, troubleshooting, and a committed demo transcript. |
 | v0.1 limitations document | [`docs/V0_1_LIMITATIONS.md`](docs/V0_1_LIMITATIONS.md) | Technical diligence boundary for oracle, fee, liquidity, collateral, state retention, bilateral protocol, Lightning, and mainnet readiness. |
-| v0.1 release notes draft | [`docs/V0_1_RELEASE_NOTES.md`](docs/V0_1_RELEASE_NOTES.md) | Allowed/forbidden release claims, residual assumptions, and anti-overclaim reviewer checklist. |
+| v0.1 release notes | [`docs/V0_1_RELEASE_NOTES.md`](docs/V0_1_RELEASE_NOTES.md) | Allowed/forbidden release claims, residual assumptions, and anti-overclaim reviewer checklist. |
 | SPARK target inventory | [`docs/SPARK_TARGET_INVENTORY.md`](docs/SPARK_TARGET_INVENTORY.md) | Canonical map from SPARK targets to package files, object directories, commands, and claim families. |
 | Regtest Bitcoin Core bundle | [`docs/evidence/regtest-cdlc/`](docs/evidence/regtest-cdlc/) | Controlled Bitcoin Core regtest RPC broadcast, mempool checks, confirmations, raw tx files, timeout path. |
 | Deterministic Layer 2 closeout | [`docs/L2_DETERMINISTIC_CLOSEOUT.md`](docs/L2_DETERMINISTIC_CLOSEOUT.md) | Deterministic Layer 2 evidence, component status, and residual risks. |
@@ -420,6 +425,12 @@ docs/
   SECURITY.md                Safety boundary and non-goals
   SPARK_TO_BITCOIN_TRACE.md  Formal-to-Bitcoin traceability
   V0_1_ACCEPTANCE_MATRIX.md  Release claim and evidence matrix
+  V0_1_RELEASE_CANDIDATE.md  v0.1 release-candidate closeout gates
+  V0_1_RC1_MANIFEST.md       v0.1 release-candidate evidence manifest
+  V0_1_CLAIM_LOCK.md         Allowed and forbidden v0.1 claim language
+  V0_1_SEMANTIC_TRACE.md     Oracle scalar and state-transition trace
+  V0_1_BILATERAL_E2E_TRANSCRIPT.md Alice/Bob bilateral transcript
+  V0_1_FRESH_CLONE_AUDIT.md  Clean checkout reproduction path
   V0_1_CI.md                 CI gate documentation
   V0_1_RUNNER.md             One-command local v0.1 verification
   L2_*.md                    Layer 2 deterministic scenario and evidence docs
@@ -438,7 +449,8 @@ testnet/
   PUBLIC_SIGNET.md           Public signet/testnet workflow
   MAINNET_LIVE_RUN.md        Dust-sized mainnet activation workflow
   REGTEST.md                 Deterministic Bitcoin Core regtest guide
-WHITEPAPER.md                Primary cDLC whitepaper
+Cascading Discreet Log Contracts (cDLCs).pdf
+                             Primary cDLC whitepaper
 ```
 
 The local `site/` directory is ignored by Git and is not part of the GitHub
@@ -576,7 +588,7 @@ oracle quality, collateral availability, legal enforceability, or user safety.
 Start with these files, in this order:
 
 1. [`README.md`](README.md) for current state and boundaries.
-2. [`WHITEPAPER.md`](WHITEPAPER.md) for the construction and claims.
+2. [Cascading Discreet Log Contracts (cDLCs).pdf](<Cascading Discreet Log Contracts (cDLCs).pdf>) for the construction and claims.
 3. [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md) for the current
    Lazy compression claim and proof boundary.
 4. [`docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json`](docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json) for the strongest public Bitcoin execution artifact.

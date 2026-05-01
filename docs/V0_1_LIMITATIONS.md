@@ -1,6 +1,6 @@
 # v0.1 Limitations For Technical Diligence
 
-This is the historical v0.1 limitation boundary. The current repository also
+This is the v0.1 technical-prototype limitation boundary. The current repository also
 contains Lazy cDLC compression models and a dust-sized Lazy mainnet activation
 artifact. See [`LAZY_CDLC_STATUS.md`](LAZY_CDLC_STATUS.md) for the current
 Lazy status.
@@ -24,9 +24,9 @@ Everything below defines the boundary around that result.
 | Formal adaptor algebra | Proved in SPARK/Ada finite models for the modeled equations. |
 | Bitcoin execution evidence | Demonstrated through deterministic harnesses, regtest evidence, and one public signet activation bundle. |
 | Public network claim | Public signet evidence exists for one parent -> bridge -> child funding path. |
-| Bilateral protocol | Not complete. The current evidence is not a production two-party DLC negotiation protocol. |
-| Oracle layer | Not production. The scalar relation is exercised, but audit history, price-source policy, and equivocation monitoring remain open gates. |
-| Economic stress | Not complete. Financial payoff models exist, but historical stress replay and solvency reporting remain open Layer 5 gates. |
+| Bilateral protocol | Deterministic Alice/Bob harness exists. It is not production transport, wallet UX, custody, or backup infrastructure. |
+| Oracle layer | Not production. The scalar relation is exercised, and source/equivocation boundaries are documented, but production oracle operations remain out of scope. |
+| Economic stress | Outside the v0.1 activation claim. Financial payoff models exist, but historical stress replay and solvency reporting remain product work. |
 | Mainnet readiness | Not claimed. A later dust-sized mainnet artifact demonstrates mechanics only; do not use with production funds. |
 
 ## What v0.1 Proves
@@ -168,8 +168,8 @@ Production collateral design still needs:
 - gap-risk treatment;
 - historical and adversarial stress testing.
 
-Layer 5 economic stress work remains open in
-[`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md).
+Economic stress work remains outside the v0.1 activation claim and is tracked
+as product-level diligence, not as proof of the activation primitive.
 
 ### State Retention
 
@@ -188,13 +188,14 @@ v0.1 does not yet provide production backup, recovery, or state synchronization.
 
 ### Bilateral Protocol
 
-The current public signet evidence is not a complete bilateral DLC
-negotiation. It does not yet demonstrate two independent participants
-negotiating, exchanging and validating messages, persisting state, and
-recovering from malformed counterparty messages.
+The Layer 3 harness demonstrates a deterministic Alice/Bob protocol path:
+role separation, setup validation, template agreement, funding validation,
+adaptor exchange, retained state, restart recovery, malformed-message
+rejection, settlement execution, and wrong-path replay rejection.
 
-Layer 3 work remains open in
-[`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md).
+This does not make the repository a production two-party DLC wallet. Network
+transport, interactive wallet UX, custody operations, production backups, and
+live counterparty availability are outside v0.1.
 
 ### Lightning
 
@@ -219,8 +220,10 @@ Do not use this repository with production funds.
 
 Allowed claim:
 
-> NITI v0.1 demonstrates technical existence of a Cascading DLC activation
-> path on public signet under documented assumptions.
+> NITI v0.1 demonstrates a reproducible Cascading DLC activation path under
+> documented assumptions: the selected oracle scalar completes the prepared
+> bridge path, and non-corresponding scalars fail closed in the deterministic
+> harness.
 
 Forbidden claims:
 
@@ -237,7 +240,10 @@ Forbidden claims:
 
 | Evidence | Use |
 | --- | --- |
-| [`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md) | Release contract and open gates. |
+| [`docs/V0_1_ACCEPTANCE_MATRIX.md`](V0_1_ACCEPTANCE_MATRIX.md) | Release contract and boundary gates. |
+| [`docs/V0_1_CLAIM_LOCK.md`](V0_1_CLAIM_LOCK.md) | Allowed claim, required qualifiers, and non-claims. |
+| [`docs/V0_1_SEMANTIC_TRACE.md`](V0_1_SEMANTIC_TRACE.md) | Scalar path, state map, negative paths, and proof boundary. |
+| [`docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md`](V0_1_BILATERAL_E2E_TRANSCRIPT.md) | Deterministic Alice/Bob protocol transcript. |
 | [`docs/AUDITOR_QUICKSTART.md`](AUDITOR_QUICKSTART.md) | External reproduction path. |
 | [`docs/V0_1_TECHNICAL_DEMO.md`](V0_1_TECHNICAL_DEMO.md) | Presenter/reviewer demo script. |
 | [`docs/SPARK_TO_BITCOIN_TRACE.md`](SPARK_TO_BITCOIN_TRACE.md) | Mapping from formal equations to harness objects. |
@@ -248,8 +254,9 @@ Forbidden claims:
 ## Diligence Conclusion
 
 The v0.1 evidence supports a serious technical prototype claim: the cDLC
-activation primitive exists and has been demonstrated on public signet for one
-path. The later Lazy evidence strengthens the execution and scaling story, but
-the repository still does not support claims about production financial
-operations, broad product-market readiness, mainnet safety, or user-fund
-custody.
+activation primitive exists, the selected oracle scalar completes a prepared
+bridge path, wrong activation scalars fail closed in deterministic tests, and
+public Bitcoin evidence exists for bounded examples. The Lazy evidence
+strengthens the execution and scaling story, but the repository still does not
+support claims about production financial operations, broad product-market
+readiness, mainnet safety, or user-fund custody.
