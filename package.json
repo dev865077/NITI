@@ -50,6 +50,7 @@
     "mainnet:cdlc-execute": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode execute-activation --network mainnet",
     "demo:v0.1": "bash scripts/demo-v0.1.sh",
     "v0.1:verify": "bash scripts/run-v0.1.sh",
+    "spark:prove-all": "bash scripts/run-gnatprove-all.sh",
     "regtest:start": "bash scripts/regtest-env.sh start",
     "regtest:stop": "bash scripts/regtest-env.sh stop",
     "regtest:info": "bash scripts/regtest-env.sh info",
