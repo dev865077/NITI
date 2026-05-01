@@ -12,8 +12,8 @@ The claim under review is narrow:
 > run.
 
 This quickstart does not certify production mainnet readiness, production
-custody, solvency, bilateral protocol completeness, or production oracle
-quality.
+custody, solvency, production bilateral transport or wallet completeness, or
+production oracle quality.
 
 ## Dependency Profiles
 
@@ -35,6 +35,15 @@ Expected result:
 
 - dependencies install without modifying committed sources;
 - no Bitcoin Core node is required for the artifact audit path.
+
+Release-candidate map:
+
+- [`docs/V0_1_RELEASE_CANDIDATE.md`](V0_1_RELEASE_CANDIDATE.md)
+- [`docs/V0_1_RC1_MANIFEST.md`](V0_1_RC1_MANIFEST.md)
+- [`docs/V0_1_CLAIM_LOCK.md`](V0_1_CLAIM_LOCK.md)
+- [`docs/V0_1_FRESH_CLONE_AUDIT.md`](V0_1_FRESH_CLONE_AUDIT.md)
+- [`docs/V0_1_SEMANTIC_TRACE.md`](V0_1_SEMANTIC_TRACE.md)
+- [`docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md`](V0_1_BILATERAL_E2E_TRANSCRIPT.md)
 
 ## 2. Verify The Lazy Mainnet Evidence
 
@@ -136,6 +145,7 @@ Committed transcript:
 Readable transcript:
 
 - [`docs/V0_1_EXECUTION_TRANSCRIPT.md`](V0_1_EXECUTION_TRANSCRIPT.md)
+- [`docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md`](V0_1_BILATERAL_E2E_TRANSCRIPT.md)
 
 Adversarial failure matrix:
 

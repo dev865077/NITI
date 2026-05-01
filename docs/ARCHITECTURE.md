@@ -6,7 +6,7 @@ NITI is split into three layers.
 
 The research layer is anchored by the primary cDLC whitepaper:
 
-- [`WHITEPAPER.md`](../WHITEPAPER.md)
+- [Cascading Discreet Log Contracts (cDLCs).pdf](<../Cascading Discreet Log Contracts (cDLCs).pdf>)
 - [`research/cdlc-algebra-check.ts`](../research/cdlc-algebra-check.ts)
 
 It defines the core equation:
