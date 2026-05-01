@@ -114,3 +114,25 @@ The command verifies that:
 This establishes a setup-message contract for the next Layer 3 work: funding
 input validation, bilateral adaptor exchange, state retention, process
 isolation, and restart recovery.
+
+## Lazy Activation Holder Test
+
+Prepared edge activation is intentionally separated from future bilateral
+negotiation. Once the bridge adaptor signatures for an edge have been exchanged
+and retained, activation after oracle attestation does not require Alice and
+Bob to be online at the same time.
+
+The holder test exercises that boundary:
+
+```sh
+npm run test:bilateral-lazy-activation
+```
+
+It builds a deterministic prepared bridge package, copies it to Alice, Bob, and
+a watchtower holder, and verifies that each holder can complete the same bridge
+after the oracle publishes the matching scalar. The same test rejects a wrong
+outcome scalar and rejects activation when no prepared edge package is present.
+
+This proves the harness-level claim that prepared-edge activation is
+non-interactive. It does not prove future-window negotiation or production
+backup; those remain separate Layer 3 protocol obligations.

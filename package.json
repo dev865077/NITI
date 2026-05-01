@@ -10,10 +10,11 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run test:offline && npm run test:bilateral-roles && npm run test:bilateral-setup-schema && npm run test:bilateral-state-machine && npm run test:bilateral-template-agreement && npm run test:bilateral-funding-validation && npm run test:bilateral-adaptor-exchange && npm run test:bilateral-state-retention && npm run test:bilateral-two-process && npm run test:bilateral-restart-recovery && npm run test:bilateral-malformed-counterparty && npm run test:bilateral-settlement-execution && npm run test:bilateral-wrong-path-replay && npm run test:mainnet-guards && npm run test:lightning && npm run test:cdlc-smoke && npm run test:evidence-bundle",
+    "test": "npm run test:offline && npm run test:bilateral-roles && npm run test:bilateral-setup-schema && npm run test:bilateral-lazy-activation && npm run test:bilateral-state-machine && npm run test:bilateral-template-agreement && npm run test:bilateral-funding-validation && npm run test:bilateral-adaptor-exchange && npm run test:bilateral-state-retention && npm run test:bilateral-two-process && npm run test:bilateral-restart-recovery && npm run test:bilateral-malformed-counterparty && npm run test:bilateral-settlement-execution && npm run test:bilateral-wrong-path-replay && npm run test:mainnet-guards && npm run test:lightning && npm run test:cdlc-smoke && npm run test:evidence-bundle",
     "test:offline": "TMPDIR=/tmp tsx testnet/src/offline-test.ts",
     "test:bilateral-roles": "TMPDIR=/tmp tsx testnet/src/bilateral-roles-test.ts",
     "test:bilateral-setup-schema": "TMPDIR=/tmp tsx testnet/src/bilateral-setup-schema-test.ts",
+    "test:bilateral-lazy-activation": "TMPDIR=/tmp tsx testnet/src/bilateral-lazy-activation-test.ts",
     "test:bilateral-state-machine": "TMPDIR=/tmp tsx testnet/src/bilateral-state-machine-test.ts",
     "test:bilateral-template-agreement": "TMPDIR=/tmp tsx testnet/src/bilateral-template-agreement-test.ts",
     "test:bilateral-funding-validation": "TMPDIR=/tmp tsx testnet/src/bilateral-funding-validation-test.ts",

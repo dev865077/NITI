@@ -17,7 +17,7 @@ Usage: scripts/run-v0.1.sh [options]
 Run the reproducible v0.1 verification gate:
   - TypeScript deterministic harness and cDLC smoke transcript
   - Ada finite cDLC manifest validator
-  - SPARK core proof targets, with pragma Assume rejected
+  - SPARK core and lazy-window proof targets, with pragma Assume rejected
 
 Options:
   --artifacts-dir DIR       Write logs and transcripts to DIR.
@@ -185,6 +185,7 @@ if [ "$RUN_SPARK" -eq 1 ]; then
     spark/cdlc_integer_proofs.gpr
     spark/cdlc_residue_proofs.gpr
     spark/cdlc_proofs.gpr
+    spark/lazy_cdlc_window_proofs.gpr
     spark/lightning_cdlc_proofs.gpr
   )
 
@@ -193,6 +194,7 @@ if [ "$RUN_SPARK" -eq 1 ]; then
       spark/cdlc_integer_proofs.gpr
       spark/cdlc_residue_proofs.gpr
       spark/cdlc_proofs.gpr
+      spark/lazy_cdlc_window_proofs.gpr
       spark/lightning_cdlc_proofs.gpr
       spark/lazy_cdlc_window_proofs.gpr
       spark/lazy_cdlc_edge_proofs.gpr

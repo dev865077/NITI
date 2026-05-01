@@ -178,6 +178,12 @@ relevant adaptors, transaction templates, refund paths, or child-state
 metadata, the oracle scalar may become public while the party cannot execute
 the intended continuation.
 
+For a prepared edge, activation after oracle attestation is non-interactive:
+Alice, Bob, a watchtower, or another delegated holder can complete the bridge
+from the retained edge package. v0.1 now tests that holder-level property. This
+does not allow a holder to create an unprepared edge or alter a child contract;
+it only completes signatures that were previously authorized.
+
 v0.1 does not yet provide production backup, recovery, or state synchronization.
 
 ### Bilateral Protocol
