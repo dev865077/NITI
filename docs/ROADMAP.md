@@ -3,7 +3,6 @@
 ## Phase 0: Algebra And Harness
 
 - Primary cDLC whitepaper with Lightning extension.
-- cDLC technical note.
 - SPARK/Ada proof models.
 - Taproot adaptor spend test harness.
 - Ada manifest validator.

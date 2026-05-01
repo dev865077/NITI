@@ -93,7 +93,7 @@ rollover specialization. See [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.
 - [Formal Models](#formal-models)
 - [Bitcoin Harnesses](#bitcoin-harnesses)
 - [Financial Product Models](#financial-product-models)
-- [For AI Agents](#for-ai-agents)
+- [Review Path](#review-path)
 - [Security Boundary](#security-boundary)
 - [License](#license)
 
@@ -414,7 +414,6 @@ docs/
   V0_1_RUNNER.md             One-command local v0.1 verification
   L2_*.md                    Layer 2 deterministic scenario and evidence docs
 research/
-  cdlc-technical-note.md     Focused cDLC algebra note
   cdlc-algebra-check.ts      TypeScript algebra sanity check
   *-math.md                  Financial product math specifications
 spark/
@@ -430,7 +429,6 @@ testnet/
   MAINNET_LIVE_RUN.md        Dust-sized mainnet activation workflow
   REGTEST.md                 Deterministic Bitcoin Core regtest guide
 WHITEPAPER.md                Primary cDLC whitepaper
-LEGACY-WHITEPAPER.md         Historical NITI draft
 ```
 
 The local `site/` directory is ignored by Git and is not part of the GitHub
@@ -563,7 +561,7 @@ The boundary is important: these models prove internal accounting identities
 under stated assumptions. They do not prove market liquidity, fair pricing,
 oracle quality, collateral availability, legal enforceability, or user safety.
 
-## For AI Agents
+## Review Path
 
 Start with these files, in this order:
 

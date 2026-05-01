@@ -1,8 +1,8 @@
 # cDLC SPARK Proofs
 
 This directory contains SPARK models of the core adaptor algebra used in the
-cDLC technical note and in the primary cDLC whitepaper, plus finite financial
-product models that prove cDLC settlement accounting over integer units.
+primary cDLC whitepaper, plus finite financial product models that prove cDLC
+settlement accounting over integer units.
 
 For the canonical map from proof targets to package files, object directories,
 commands, and claim families, see
