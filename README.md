@@ -198,6 +198,9 @@ Use this table as the top-level audit map.
 | v0.1 release candidate | [`docs/V0_1_RELEASE_CANDIDATE.md`](docs/V0_1_RELEASE_CANDIDATE.md), [`docs/V0_1_RC1_MANIFEST.md`](docs/V0_1_RC1_MANIFEST.md) | Release-candidate gates, non-negotiable failure criteria, evidence surface, deterministic fixtures, and required commands. |
 | v0.1 claim lock | [`docs/V0_1_CLAIM_LOCK.md`](docs/V0_1_CLAIM_LOCK.md) | Allowed claim, required qualifiers, forbidden claims, and evidence categories. |
 | v0.1 fresh-clone audit | [`docs/V0_1_FRESH_CLONE_AUDIT.md`](docs/V0_1_FRESH_CLONE_AUDIT.md) | Clean checkout reproduction path for local, CI-backed, and public-document gates. |
+| v0.1 fixture manifest | [`docs/V0_1_FIXTURE_MANIFEST.md`](docs/V0_1_FIXTURE_MANIFEST.md) | Deterministic fixture sources, expected artifact kinds, stable public artifact paths, and negative cases. |
+| v0.1 artifact archive | [`docs/V0_1_ARTIFACT_ARCHIVE.md`](docs/V0_1_ARTIFACT_ARCHIVE.md) | Committed public artifacts, generated local artifacts, CI artifacts, and redaction rules. |
+| v0.1 go/no-go | [`docs/V0_1_GO_NO_GO.md`](docs/V0_1_GO_NO_GO.md) | Final tag gate, required commands, evidence documents, and residual boundaries. |
 | v0.1 semantic trace | [`docs/V0_1_SEMANTIC_TRACE.md`](docs/V0_1_SEMANTIC_TRACE.md) | Oracle scalar path, parent-bridge-child state map, negative-path coverage, and proof-to-engineering boundary. |
 | v0.1 bilateral transcript | [`docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md`](docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md) | Human-readable Alice/Bob setup, validation, adaptor exchange, retained state, settlement, and wrong-path replay trace. |
 | v0.1 technical demo script | [`docs/V0_1_TECHNICAL_DEMO.md`](docs/V0_1_TECHNICAL_DEMO.md), [`scripts/demo-v0.1.sh`](scripts/demo-v0.1.sh) | Reproducible demo sequence from public signet artifacts, with explicit claim boundaries. |
@@ -428,6 +431,9 @@ docs/
   V0_1_RELEASE_CANDIDATE.md  v0.1 release-candidate closeout gates
   V0_1_RC1_MANIFEST.md       v0.1 release-candidate evidence manifest
   V0_1_CLAIM_LOCK.md         Allowed and forbidden v0.1 claim language
+  V0_1_FIXTURE_MANIFEST.md   Deterministic fixture and expected-output manifest
+  V0_1_ARTIFACT_ARCHIVE.md   Durable artifact and CI log map
+  V0_1_GO_NO_GO.md           v0.1 release tag gate
   V0_1_SEMANTIC_TRACE.md     Oracle scalar and state-transition trace
   V0_1_BILATERAL_E2E_TRANSCRIPT.md Alice/Bob bilateral transcript
   V0_1_FRESH_CLONE_AUDIT.md  Clean checkout reproduction path

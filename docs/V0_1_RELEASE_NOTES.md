@@ -46,6 +46,7 @@ The canonical allowed language is maintained in
 - Technical demo script.
 - v0.1 limitations document.
 - v0.1 release-candidate manifest and fresh-clone audit path.
+- v0.1 fixture manifest, artifact archive, and go/no-go gate.
 - v0.1 semantic trace and bilateral transcript.
 - Lazy holder activation evidence for Alice, Bob, and watchtower holders.
 - SPARK/Ada proof regression for the core cDLC and Lightning finite models in
@@ -122,6 +123,9 @@ Before publishing or presenting v0.1, reviewers should verify:
 - [`docs/V0_1_RC1_MANIFEST.md`](V0_1_RC1_MANIFEST.md)
 - [`docs/V0_1_CLAIM_LOCK.md`](V0_1_CLAIM_LOCK.md)
 - [`docs/V0_1_FRESH_CLONE_AUDIT.md`](V0_1_FRESH_CLONE_AUDIT.md)
+- [`docs/V0_1_FIXTURE_MANIFEST.md`](V0_1_FIXTURE_MANIFEST.md)
+- [`docs/V0_1_ARTIFACT_ARCHIVE.md`](V0_1_ARTIFACT_ARCHIVE.md)
+- [`docs/V0_1_GO_NO_GO.md`](V0_1_GO_NO_GO.md)
 - current GitHub Actions `v0.1 validation` status for the release commit
 
 Minimum local command:

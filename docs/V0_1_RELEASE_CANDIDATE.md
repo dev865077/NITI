@@ -14,6 +14,9 @@ required gates in `docs/V0_1_RC1_MANIFEST.md` pass for the release commit.
 | Claim lock | Public language uses only the allowed claim and required qualifiers. | `docs/V0_1_CLAIM_LOCK.md` |
 | Fresh-clone audit | Clean checkout path is documented and reproducible. | `docs/V0_1_FRESH_CLONE_AUDIT.md` |
 | Manifest | Candidate evidence surface is versioned. | `docs/V0_1_RC1_MANIFEST.md` |
+| Fixture manifest | Deterministic fixture sources and expected artifact kinds are documented. | `docs/V0_1_FIXTURE_MANIFEST.md` |
+| Artifact archive | Durable committed artifacts, local artifacts, CI artifacts, and redaction rules are documented. | `docs/V0_1_ARTIFACT_ARCHIVE.md` |
+| Go/no-go | Tag readiness, required gates, and residual boundaries are documented. | `docs/V0_1_GO_NO_GO.md` |
 | Semantic trace | Oracle scalar, bridge signature, state map, and proof boundary are connected. | `docs/V0_1_SEMANTIC_TRACE.md` |
 | Bilateral transcript | Alice/Bob deterministic protocol path and holder-level lazy activation are readable and reproducible. | `docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md` |
 | Adversarial behavior | Wrong scalar, replay, withholding, fee, timeout, state-loss, and malformed-counterparty paths fail closed. | `docs/V0_1_ADVERSARIAL_FAILURE_MATRIX.md` |
