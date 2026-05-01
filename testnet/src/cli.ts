@@ -27,6 +27,10 @@ import {
   verifyOracleAttestation,
 } from './oracle-audit.js';
 import {
+  monitorOracleHistory,
+  verifyOracleHistoryLog,
+} from './oracle-history.js';
+import {
   LndRestClient,
   attestLightningOracle,
   createHoldInvoiceArtifact,
@@ -150,6 +154,8 @@ Commands:
   oracle:verify-announcement --announcement file.json [--out file.json]
   oracle:attestation-envelope --announcement file.json --outcome <text> --oracle-secret-hex <hex> --nonce-secret-hex <hex> [--out file.json]
   oracle:verify-attestation --announcement file.json --attestation file.json [--out file.json]
+  oracle:history:verify --history file.json [--out file.json]
+  oracle:history:monitor --history file.json [--out file.json]
   cdlc:parent-funding --network testnet4 [--out funding.json] [--raw-out funding.hex]
   taproot:prepare --network testnet4 --signer-output-secret-hex <hex> --signer-script-pubkey-hex <hex> --utxo-txid <txid> --utxo-vout <n> --utxo-value-sat <sat> --destination <addr> --fee-sat <sat> --adaptor-point-hex <compressed> [--out pending.json]
   taproot:complete --pending pending.json --attestation-secret-hex <hex> [--out completed.json] [--raw-out tx.hex]
@@ -285,6 +291,24 @@ async function main(): Promise<void> {
       announcement: readJsonFile<unknown>(stringArg(args, 'announcement')),
       attestation: readJsonFile<unknown>(stringArg(args, 'attestation')),
     });
+    writeOrPrint(args, result);
+    if (!result.ok) {
+      process.exit(1);
+    }
+    return;
+  }
+
+  if (command === 'oracle:history:verify') {
+    const result = verifyOracleHistoryLog(readJsonFile<unknown>(stringArg(args, 'history')));
+    writeOrPrint(args, result);
+    if (!result.ok) {
+      process.exit(1);
+    }
+    return;
+  }
+
+  if (command === 'oracle:history:monitor') {
+    const result = monitorOracleHistory(readJsonFile<unknown>(stringArg(args, 'history')));
     writeOrPrint(args, result);
     if (!result.ok) {
       process.exit(1);
