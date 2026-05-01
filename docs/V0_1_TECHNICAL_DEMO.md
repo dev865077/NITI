@@ -29,6 +29,9 @@ npm ci
 npm run demo:v0.1
 ```
 
+A written transcript of the same review path is available in
+[`V0_1_EXECUTION_TRANSCRIPT.md`](V0_1_EXECUTION_TRANSCRIPT.md).
+
 Full local gate mode additionally runs the v0.1 verifier, including the local
 deterministic harness, Ada manifest validator, and configured SPARK targets:
 
