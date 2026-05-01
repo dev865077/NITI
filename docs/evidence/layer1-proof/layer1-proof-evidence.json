@@ -1,0 +1,33 @@
+{
+  "kind": "niti.layer1_proof_evidence_bundle.v1",
+  "claimSummary": "In the modeled scalar arithmetic, the oracle attestation scalar for a selected DLC outcome completes the corresponding prepared adaptor signature, and a non-corresponding modeled scalar does not complete that signature.",
+  "whitepaper": "Cascading Discreet Log Contracts (cDLCs).pdf",
+  "proofBoundary": "docs/FORMAL_PROOF_BOUNDARY.md",
+  "proofTargetInventory": "docs/SPARK_TARGET_INVENTORY.md",
+  "formalToBitcoinTrace": "docs/SPARK_TO_BITCOIN_TRACE.md",
+  "runner": "scripts/run-gnatprove-all.sh",
+  "reproductionCommands": [
+    "npm run spark:prove-all -- --artifacts-dir testnet/artifacts/layer1-proof",
+    "cat testnet/artifacts/layer1-proof/summary.json",
+    "cat testnet/artifacts/layer1-proof/spark-proof-shortcut-scan.log"
+  ],
+  "expectedChecks": {
+    "targetCount": 25,
+    "status": "passed",
+    "pragmaAssumeRejected": true,
+    "assertFalseRejected": true,
+    "warningsRejected": true,
+    "unprovedObligationsRejected": true
+  },
+  "explicitExclusions": [
+    "secp256k1 implementation correctness",
+    "BIP340 implementation correctness",
+    "SHA-256 security",
+    "Bitcoin transaction serialization and sighash implementation correctness",
+    "Bitcoin Core mempool relay and fee policy",
+    "oracle truth, liveness, key custody, and source quality",
+    "wallet state retention and production backups",
+    "production Lightning channel behavior",
+    "market liquidity, solvency, legal enforceability, and user-fund safety"
+  ]
+}
