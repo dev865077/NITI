@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run test:offline && npm run test:bilateral-roles && npm run test:bilateral-setup-schema && npm run test:bilateral-state-machine && npm run test:bilateral-template-agreement && npm run test:bilateral-funding-validation && npm run test:bilateral-adaptor-exchange && npm run test:bilateral-state-retention && npm run test:bilateral-two-process && npm run test:bilateral-restart-recovery && npm run test:bilateral-malformed-counterparty && npm run test:bilateral-settlement-execution && npm run test:mainnet-guards && npm run test:lightning && npm run test:cdlc-smoke && npm run test:evidence-bundle",
+    "test": "npm run test:offline && npm run test:bilateral-roles && npm run test:bilateral-setup-schema && npm run test:bilateral-state-machine && npm run test:bilateral-template-agreement && npm run test:bilateral-funding-validation && npm run test:bilateral-adaptor-exchange && npm run test:bilateral-state-retention && npm run test:bilateral-two-process && npm run test:bilateral-restart-recovery && npm run test:bilateral-malformed-counterparty && npm run test:bilateral-settlement-execution && npm run test:bilateral-wrong-path-replay && npm run test:mainnet-guards && npm run test:lightning && npm run test:cdlc-smoke && npm run test:evidence-bundle",
     "test:offline": "TMPDIR=/tmp tsx testnet/src/offline-test.ts",
     "test:bilateral-roles": "TMPDIR=/tmp tsx testnet/src/bilateral-roles-test.ts",
     "test:bilateral-setup-schema": "TMPDIR=/tmp tsx testnet/src/bilateral-setup-schema-test.ts",
@@ -23,6 +23,7 @@
     "test:bilateral-restart-recovery": "TMPDIR=/tmp tsx testnet/src/bilateral-restart-recovery-test.ts",
     "test:bilateral-malformed-counterparty": "TMPDIR=/tmp tsx testnet/src/bilateral-malformed-counterparty-test.ts",
     "test:bilateral-settlement-execution": "TMPDIR=/tmp tsx testnet/src/bilateral-settlement-execution-test.ts",
+    "test:bilateral-wrong-path-replay": "TMPDIR=/tmp tsx testnet/src/bilateral-wrong-path-replay-test.ts",
     "test:mainnet-guards": "TMPDIR=/tmp tsx testnet/src/mainnet-guards-test.ts",
     "test:lightning": "TMPDIR=/tmp tsx testnet/src/lightning-offline-test.ts",
     "test:cdlc-smoke": "TMPDIR=/tmp tsx testnet/src/cdlc-smoke-test.ts",

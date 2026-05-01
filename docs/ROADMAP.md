@@ -101,6 +101,8 @@ Malformed counterparty-message behavior is defined in
 [`docs/L3_BILATERAL_MALFORMED_COUNTERPARTY.md`](L3_BILATERAL_MALFORMED_COUNTERPARTY.md).
 Bilateral settlement execution is defined in
 [`docs/L3_BILATERAL_SETTLEMENT_EXECUTION.md`](L3_BILATERAL_SETTLEMENT_EXECUTION.md).
+Wrong-path and replay rejection behavior is defined in
+[`docs/L3_BILATERAL_WRONG_PATH_REPLAY.md`](L3_BILATERAL_WRONG_PATH_REPLAY.md).
 
 Oracle equivocation evidence is defined in
 [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md).

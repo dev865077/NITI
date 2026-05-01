@@ -34,7 +34,8 @@ critical retained artifacts. A recovered participant may:
 
 The bridge completion path uses the retained adaptor signature and the oracle
 attestation scalar. It does not require recomputing the original adaptor
-signature.
+signature. The retained adaptor packets are checked against the retained
+transaction templates before completion.
 
 ## Failure Boundary
 

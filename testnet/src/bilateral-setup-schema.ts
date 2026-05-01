@@ -640,6 +640,7 @@ export function validateBilateralSetupTranscript(
   if (messages.length !== messageDigests.length) {
     throw new Error('setup transcript message digest count mismatch');
   }
+  const acknowledgedDigestHexes = new Set<string>();
   messages.forEach((message, index) => {
     if (message.sessionIdHex !== sessionIdHex) {
       throw new Error(`setup transcript message ${index} has wrong session id`);
@@ -656,6 +657,10 @@ export function validateBilateralSetupTranscript(
       if (!acknowledged) {
         throw new Error(`setup transcript message ${index} acknowledges an unknown prior digest`);
       }
+      if (acknowledgedDigestHexes.has(message.acknowledgedDigestHex)) {
+        throw new Error(`setup transcript message ${index} reuses an acknowledgement digest`);
+      }
+      acknowledgedDigestHexes.add(message.acknowledgedDigestHex);
     }
   });
   return {
