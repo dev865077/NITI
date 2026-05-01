@@ -9,6 +9,8 @@
 NITI is a research and implementation workspace for Cascading Discreet Log Contracts,
 or cDLCs.
 
+Start with the paper: [Cascading Discreet Log Contracts (cDLCs).pdf](<Cascading Discreet Log Contracts (cDLCs).pdf>).
+
 The core result is narrow: a DLC oracle attestation scalar revealed by a parent
 contract can also complete adaptor signatures on a bridge transaction that
 funds the next contract.
