@@ -1,0 +1,11 @@
+{
+  "announcementDigestHex": "e8bdfb0430f3b86e0ef1378006a38dbbf8b751e3aef22292dc6af6e5ea6d5e1d",
+  "attestationPointCompressedHex": "03a9853a7527b53165a23208738656cb6337d734297173e4939e1d6420f31a1124",
+  "attestationSecretHex": "2ba3facbf7a84e325506bf4c27ebf3cf115b0b79c23f2ca509cfb4bb7c8bb81d",
+  "bip340SignatureHex": "9ac20335eb38768d2052be1dbbc3c8f6178407458e51e6b4ad22f1d91758895b2ba3facbf7a84e325506bf4c27ebf3cf115b0b79c23f2ca509cfb4bb7c8bb810",
+  "eventId": "niti-v0.1-parent-cdlc-smoke",
+  "kind": "niti.oracle.attestation.v1",
+  "messageHashHex": "6ad43e207a1e65211db13cbd69c97d068bafa0f8a1037e65ef5e0e8476da5819",
+  "outcome": "BTCUSD_ABOVE_STRIKE",
+  "schemaVersion": 1
+}

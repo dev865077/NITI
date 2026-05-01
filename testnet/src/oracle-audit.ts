@@ -72,8 +72,12 @@ export interface OracleVerificationResult {
 export interface OracleAuditFixture {
   kind: 'niti.oracle.audit_fixture.v1';
   announcement: OracleAnnouncement;
+  staleAnnouncement: OracleAnnouncement;
   attestation: OracleAttestationEnvelope;
   wrongOutcomeAttestation: OracleAttestationEnvelope;
+  wrongNonceAttestation: OracleAttestationEnvelope;
+  equivocationAttestation: OracleAttestationEnvelope;
+  malformedSignatureAttestation: OracleAttestationEnvelope;
   mutatedAnnouncement: OracleAnnouncement;
 }
 
@@ -378,6 +382,47 @@ export function verifyOracleAnnouncement(value: unknown): OracleVerificationResu
   return withChecks(checks, errors);
 }
 
+export function verifyOracleAnnouncementFreshness(input: {
+  announcement: unknown;
+  nowIso: string;
+}): OracleVerificationResult {
+  const errors: string[] = [];
+  const checks: Record<string, boolean> = {
+    announcementVerifies: false,
+    nowIsoParses: false,
+    expiryIsoParses: false,
+    notExpired: false,
+  };
+
+  const announcementResult = verifyOracleAnnouncement(input.announcement);
+  checks.announcementVerifies = announcementResult.ok;
+  if (!announcementResult.ok) {
+    errors.push(...announcementResult.errors.map((error) => `announcement: ${error}`));
+  }
+
+  try {
+    const announcement = parseOracleAnnouncement(input.announcement);
+    const now = Date.parse(input.nowIso);
+    const expiry = Date.parse(announcement.expiryIso);
+    checks.nowIsoParses = Number.isFinite(now);
+    checks.expiryIsoParses = Number.isFinite(expiry);
+    if (!checks.nowIsoParses) {
+      errors.push('nowIso must parse as an ISO timestamp');
+    }
+    if (!checks.expiryIsoParses) {
+      errors.push('announcement expiryIso must parse as an ISO timestamp');
+    }
+    checks.notExpired = checks.nowIsoParses && checks.expiryIsoParses && now < expiry;
+    if (!checks.notExpired) {
+      errors.push('announcement is expired at nowIso');
+    }
+  } catch (error) {
+    errors.push(error instanceof Error ? error.message : String(error));
+  }
+
+  return withChecks(checks, errors);
+}
+
 export function verifyOracleAttestation(input: {
   announcement: unknown;
   attestation: unknown;
@@ -582,6 +627,15 @@ export function buildCanonicalOracleAuditFixture(): OracleAuditFixture {
     expiryIso: '2026-04-30T12:00:00Z',
     sourcePolicy,
   });
+  const staleAnnouncement = buildOracleAnnouncement({
+    eventId: canonicalOutcomes.eventId,
+    outcomes: [canonicalOutcomes.activating, canonicalOutcomes.wrong],
+    oracleSecretHex: canonicalSecrets.oracle,
+    nonceSecretHex: canonicalSecrets.oracleNonce,
+    announcementSignatureNonceHex: 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+    expiryIso: '2025-04-30T12:00:00Z',
+    sourcePolicy,
+  });
   const attestation = buildOracleAttestationEnvelope({
     announcement,
     outcome: canonicalOutcomes.activating,
@@ -594,11 +648,31 @@ export function buildCanonicalOracleAuditFixture(): OracleAuditFixture {
     oracleSecretHex: canonicalSecrets.oracle,
     nonceSecretHex: canonicalSecrets.oracleNonce,
   });
+  const wrongNonceAttestation = buildOracleAttestationEnvelope({
+    announcement,
+    outcome: canonicalOutcomes.activating,
+    oracleSecretHex: canonicalSecrets.oracle,
+    nonceSecretHex: canonicalSecrets.childOracleNonce,
+  });
+  const equivocationAttestation = buildOracleAttestationEnvelope({
+    announcement,
+    outcome: canonicalOutcomes.wrong,
+    oracleSecretHex: canonicalSecrets.oracle,
+    nonceSecretHex: canonicalSecrets.oracleNonce,
+  });
+  const malformedSignatureAttestation = {
+    ...attestation,
+    bip340SignatureHex: flipLastHexChar(attestation.bip340SignatureHex),
+  };
   return {
     kind: 'niti.oracle.audit_fixture.v1',
     announcement,
+    staleAnnouncement,
     attestation,
     wrongOutcomeAttestation,
+    wrongNonceAttestation,
+    equivocationAttestation,
+    malformedSignatureAttestation,
     mutatedAnnouncement: {
       ...announcement,
       outcomes: announcement.outcomes.map((outcome, index) => (
@@ -611,4 +685,9 @@ export function buildCanonicalOracleAuditFixture(): OracleAuditFixture {
       )),
     },
   };
+}
+
+function flipLastHexChar(hex: string): string {
+  const last = hex.at(-1);
+  return `${hex.slice(0, -1)}${last === '0' ? '1' : '0'}`;
 }

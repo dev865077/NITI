@@ -23,6 +23,7 @@ import {
   buildOracleAnnouncement,
   buildOracleAttestationEnvelope,
   parseOracleAnnouncement,
+  verifyOracleAnnouncementFreshness,
   verifyOracleAnnouncement,
   verifyOracleAttestation,
 } from './oracle-audit.js';
@@ -151,7 +152,7 @@ Commands:
   oracle:prepare --event-id <id> --outcome <text> [--oracle-secret-hex <hex>] [--nonce-secret-hex <hex>] [--out file.json]
   oracle:attest --event-id <id> --outcome <text> --oracle-secret-hex <hex> --nonce-secret-hex <hex> [--out file.json]
   oracle:announcement --event-id <id> --outcomes <csv> --oracle-secret-hex <hex> --nonce-secret-hex <hex> --announcement-nonce-secret-hex <hex> --expiry-iso <iso> [--out file.json]
-  oracle:verify-announcement --announcement file.json [--out file.json]
+  oracle:verify-announcement --announcement file.json [--now-iso <iso>] [--out file.json]
   oracle:attestation-envelope --announcement file.json --outcome <text> --oracle-secret-hex <hex> --nonce-secret-hex <hex> [--out file.json]
   oracle:verify-attestation --announcement file.json --attestation file.json [--out file.json]
   oracle:history:verify --history file.json [--out file.json]
@@ -267,7 +268,11 @@ async function main(): Promise<void> {
   }
 
   if (command === 'oracle:verify-announcement') {
-    const result = verifyOracleAnnouncement(readJsonFile<unknown>(stringArg(args, 'announcement')));
+    const announcement = readJsonFile<unknown>(stringArg(args, 'announcement'));
+    const nowIso = optionalStringArg(args, 'now-iso');
+    const result = nowIso
+      ? verifyOracleAnnouncementFreshness({ announcement, nowIso })
+      : verifyOracleAnnouncement(announcement);
     writeOrPrint(args, result);
     if (!result.ok) {
       process.exit(1);
