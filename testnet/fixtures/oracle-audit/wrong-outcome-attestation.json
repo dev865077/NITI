@@ -1,0 +1,11 @@
+{
+  "announcementDigestHex": "e8bdfb0430f3b86e0ef1378006a38dbbf8b751e3aef22292dc6af6e5ea6d5e1d",
+  "attestationPointCompressedHex": "03d162f1e00a643b4f908312eb7ba792b841033235df6b68737a938358883be76d",
+  "attestationSecretHex": "4aa7c7a9b12bb8a2c81da3597dcb711bed1194a5846a521aa5fc3b4da29513fa",
+  "bip340SignatureHex": "9ac20335eb38768d2052be1dbbc3c8f6178407458e51e6b4ad22f1d91758895b4aa7c7a9b12bb8a2c81da3597dcb711bed1194a5846a521aa5fc3b4da29513fa",
+  "eventId": "niti-v0.1-parent-cdlc-smoke",
+  "kind": "niti.oracle.attestation.v1",
+  "messageHashHex": "7b430eb708be7e88de2a702e9343372c180714cd80447169ab6a2ee6d641b228",
+  "outcome": "UNANNOUNCED_OUTCOME",
+  "schemaVersion": 1
+}

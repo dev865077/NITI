@@ -1,0 +1,29 @@
+{
+  "announcementDigestHex": "e8bdfb0430f3b86e0ef1378006a38dbbf8b751e3aef22292dc6af6e5ea6d5e1d",
+  "announcementSignatureHex": "b95c249d84f417e3e395a127425428b540671cc15881eb828c17b722a53fc5994dd0cb873dc3629f3d29a15bff0a67ff56b1a206e018c986f555bda900ec6993",
+  "eventId": "niti-v0.1-parent-cdlc-smoke",
+  "expiryIso": "2026-04-30T12:00:00Z",
+  "kind": "niti.oracle.announcement.v1",
+  "noncePointCompressedHex": "029ac20335eb38768d2052be1dbbc3c8f6178407458e51e6b4ad22f1d91758895b",
+  "noncePointXOnlyHex": "9ac20335eb38768d2052be1dbbc3c8f6178407458e51e6b4ad22f1d91758895b",
+  "oraclePublicCompressedHex": "022c0b7cf95324a07d05398b240174dc0c2be444d96b159aa6c7f7b1e668680991",
+  "oraclePublicXOnlyHex": "2c0b7cf95324a07d05398b240174dc0c2be444d96b159aa6c7f7b1e668680991",
+  "outcomes": [
+    {
+      "attestationPointCompressedHex": "03a9853a7527b53165a23208738656cb6337d734297173e4939e1d6420f31a1124",
+      "messageHashHex": "6ad43e207a1e65211db13cbd69c97d068bafa0f8a1037e65ef5e0e8476da5819",
+      "outcome": "BTCUSD_ABOVE_STRIKE"
+    },
+    {
+      "attestationPointCompressedHex": "036d53cf539f9f0b5480dfa984b6a8c9644dcd86b6deb65911e8b0d1266e554b0b",
+      "messageHashHex": "6d1e3994bdfa3f772c290ee748b254d4ee109190a630c328e42c538408d37a33",
+      "outcome": "BTCUSD_BELOW_STRIKE"
+    }
+  ],
+  "schemaVersion": 1,
+  "sourcePolicy": {
+    "description": "Deterministic test fixture policy; no market-data truth claim.",
+    "kind": "niti.oracle.source_policy.v1",
+    "policyId": "niti-canonical-oracle-fixture"
+  }
+}
