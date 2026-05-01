@@ -1,0 +1,449 @@
+{
+  "kind": "niti.layer5_economic_stress_report.v1",
+  "boundary": "Deterministic economic stress simulation. This is product diligence, not a proof of future solvency, market liquidity, oracle correctness, or production wallet safety.",
+  "dataset": {
+    "provider": "CryptoDataDownload Gemini BTC/USD daily CSV",
+    "sourceUrl": "https://www.cryptodatadownload.com/cdd/Gemini_BTCUSD_d.csv",
+    "rowCount": 365,
+    "firstDate": "2022-01-01",
+    "lastDate": "2022-12-31",
+    "curatedDataSha256": "31c22c188edbd5e74551ac7fb7547c064309d8762ca0c13a0dd35a10797e7d81"
+  },
+  "scenarios": [
+    {
+      "scenario": "historical_2022_drawdown",
+      "description": "Daily Gemini BTC/USD closes through the 2022 drawdown.",
+      "expectedClass": "solvent",
+      "pass": true,
+      "failureCauses": [],
+      "parameterSet": {
+        "name": "baseline_1btc_20k_stable_claim",
+        "initialCollateralSat": "100000000",
+        "targetValueCents": "2000000",
+        "liquidationThresholdBps": "15000",
+        "oracleCadenceDays": 1,
+        "oracleDelayDays": 2,
+        "confirmationDelayBlocks": 6,
+        "liquidationClaimBlocks": 12,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "blocksPerDay": 144,
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "acceptableShortfallCents": "0"
+      },
+      "path": {
+        "name": "gemini_btc_usd_2022_daily_close",
+        "source": "CryptoDataDownload Gemini BTC/USD daily CSV",
+        "observationCount": 365,
+        "firstDate": "2022-01-01",
+        "lastDate": "2022-12-31",
+        "startPriceCents": "4732905",
+        "minPriceCents": "1580503",
+        "maxDrawdownBps": "6698"
+      },
+      "liquidation": {
+        "triggered": true,
+        "triggerDate": "2022-05-10",
+        "triggerPriceCents": "2925868",
+        "triggerCollateralRatioBps": "14629",
+        "settlementDate": "2022-05-12",
+        "settlementPriceCents": "3068714",
+        "settlementIndex": 131
+      },
+      "timing": {
+        "actionDelayBlocks": 306,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "timeoutOrderingValid": true,
+        "actionBeforeBridgeTimeout": true,
+        "childAfterBridgeTimeout": true
+      },
+      "fees": {
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "feeReserveSufficient": true,
+        "effectiveCollateralSat": "99975000"
+      },
+      "waterfall": {
+        "targetValueCents": "2000000",
+        "stableClaimSat": "65173881",
+        "paidValueCents": "2000000",
+        "residualCollateralSat": "34801119",
+        "shortfallCents": "0",
+        "holderRecoveryBps": "10000",
+        "btcConserved": true
+      }
+    },
+    {
+      "scenario": "overnight_20_percent_gap",
+      "description": "Single-step 20 percent BTC/USD gap from the first 2022 close.",
+      "expectedClass": "solvent",
+      "pass": true,
+      "failureCauses": [],
+      "parameterSet": {
+        "name": "baseline_1btc_20k_stable_claim",
+        "initialCollateralSat": "100000000",
+        "targetValueCents": "2000000",
+        "liquidationThresholdBps": "15000",
+        "oracleCadenceDays": 1,
+        "oracleDelayDays": 2,
+        "confirmationDelayBlocks": 6,
+        "liquidationClaimBlocks": 12,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "blocksPerDay": 144,
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "acceptableShortfallCents": "0"
+      },
+      "path": {
+        "name": "overnight_20_percent_gap_from_2022_open",
+        "source": "CryptoDataDownload Gemini BTC/USD daily CSV; adversarial deterministic gap transform",
+        "observationCount": 3,
+        "firstDate": "2022-01-01",
+        "lastDate": "2022-01-03",
+        "startPriceCents": "4732905",
+        "minPriceCents": "3786324",
+        "maxDrawdownBps": "2000"
+      },
+      "liquidation": {
+        "triggered": false,
+        "triggerDate": null,
+        "triggerPriceCents": null,
+        "triggerCollateralRatioBps": null,
+        "settlementDate": "2022-01-03",
+        "settlementPriceCents": "3786324",
+        "settlementIndex": 2
+      },
+      "timing": {
+        "actionDelayBlocks": 306,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "timeoutOrderingValid": true,
+        "actionBeforeBridgeTimeout": true,
+        "childAfterBridgeTimeout": true
+      },
+      "fees": {
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "feeReserveSufficient": true,
+        "effectiveCollateralSat": "99975000"
+      },
+      "waterfall": {
+        "targetValueCents": "2000000",
+        "stableClaimSat": "52821682",
+        "paidValueCents": "2000000",
+        "residualCollateralSat": "47153318",
+        "shortfallCents": "0",
+        "holderRecoveryBps": "10000",
+        "btcConserved": true
+      }
+    },
+    {
+      "scenario": "overnight_40_percent_gap",
+      "description": "Single-step 40 percent BTC/USD gap from the first 2022 close.",
+      "expectedClass": "solvent",
+      "pass": true,
+      "failureCauses": [],
+      "parameterSet": {
+        "name": "baseline_1btc_20k_stable_claim",
+        "initialCollateralSat": "100000000",
+        "targetValueCents": "2000000",
+        "liquidationThresholdBps": "15000",
+        "oracleCadenceDays": 1,
+        "oracleDelayDays": 2,
+        "confirmationDelayBlocks": 6,
+        "liquidationClaimBlocks": 12,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "blocksPerDay": 144,
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "acceptableShortfallCents": "0"
+      },
+      "path": {
+        "name": "overnight_40_percent_gap_from_2022_open",
+        "source": "CryptoDataDownload Gemini BTC/USD daily CSV; adversarial deterministic gap transform",
+        "observationCount": 3,
+        "firstDate": "2022-01-01",
+        "lastDate": "2022-01-03",
+        "startPriceCents": "4732905",
+        "minPriceCents": "2839743",
+        "maxDrawdownBps": "4000"
+      },
+      "liquidation": {
+        "triggered": true,
+        "triggerDate": "2022-01-02",
+        "triggerPriceCents": "2839743",
+        "triggerCollateralRatioBps": "14198",
+        "settlementDate": "2022-01-03",
+        "settlementPriceCents": "2839743",
+        "settlementIndex": 2
+      },
+      "timing": {
+        "actionDelayBlocks": 306,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "timeoutOrderingValid": true,
+        "actionBeforeBridgeTimeout": true,
+        "childAfterBridgeTimeout": true
+      },
+      "fees": {
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "feeReserveSufficient": true,
+        "effectiveCollateralSat": "99975000"
+      },
+      "waterfall": {
+        "targetValueCents": "2000000",
+        "stableClaimSat": "70428909",
+        "paidValueCents": "2000000",
+        "residualCollateralSat": "29546091",
+        "shortfallCents": "0",
+        "holderRecoveryBps": "10000",
+        "btcConserved": true
+      }
+    },
+    {
+      "scenario": "overnight_70_percent_gap",
+      "description": "Single-step 70 percent BTC/USD gap from the first 2022 close.",
+      "expectedClass": "insolvent",
+      "pass": false,
+      "failureCauses": [
+        "holder_shortfall"
+      ],
+      "parameterSet": {
+        "name": "baseline_1btc_20k_stable_claim",
+        "initialCollateralSat": "100000000",
+        "targetValueCents": "2000000",
+        "liquidationThresholdBps": "15000",
+        "oracleCadenceDays": 1,
+        "oracleDelayDays": 2,
+        "confirmationDelayBlocks": 6,
+        "liquidationClaimBlocks": 12,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "blocksPerDay": 144,
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "acceptableShortfallCents": "0"
+      },
+      "path": {
+        "name": "overnight_70_percent_gap_from_2022_open",
+        "source": "CryptoDataDownload Gemini BTC/USD daily CSV; adversarial deterministic gap transform",
+        "observationCount": 3,
+        "firstDate": "2022-01-01",
+        "lastDate": "2022-01-03",
+        "startPriceCents": "4732905",
+        "minPriceCents": "1419871",
+        "maxDrawdownBps": "7000"
+      },
+      "liquidation": {
+        "triggered": true,
+        "triggerDate": "2022-01-02",
+        "triggerPriceCents": "1419871",
+        "triggerCollateralRatioBps": "7099",
+        "settlementDate": "2022-01-03",
+        "settlementPriceCents": "1419871",
+        "settlementIndex": 2
+      },
+      "timing": {
+        "actionDelayBlocks": 306,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "timeoutOrderingValid": true,
+        "actionBeforeBridgeTimeout": true,
+        "childAfterBridgeTimeout": true
+      },
+      "fees": {
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "feeReserveSufficient": true,
+        "effectiveCollateralSat": "99975000"
+      },
+      "waterfall": {
+        "targetValueCents": "2000000",
+        "stableClaimSat": "99975000",
+        "paidValueCents": "1419516",
+        "residualCollateralSat": "0",
+        "shortfallCents": "580484",
+        "holderRecoveryBps": "7097",
+        "btcConserved": true
+      }
+    },
+    {
+      "scenario": "oracle_delay_fee_spike",
+      "description": "Historical path with delayed oracle publication and relay fee demand above reserve.",
+      "expectedClass": "operational_failure",
+      "pass": false,
+      "failureCauses": [
+        "fee_reserve_shortfall",
+        "timeout_race"
+      ],
+      "parameterSet": {
+        "name": "delayed_oracle_fee_spike",
+        "initialCollateralSat": "100000000",
+        "targetValueCents": "2000000",
+        "liquidationThresholdBps": "15000",
+        "oracleCadenceDays": 1,
+        "oracleDelayDays": 10,
+        "confirmationDelayBlocks": 18,
+        "liquidationClaimBlocks": 36,
+        "bridgeTimeoutBlocks": 144,
+        "childRefundTimeoutBlocks": 180,
+        "blocksPerDay": 144,
+        "feeReserveSat": "25000",
+        "requiredRelayFeeSat": "140000",
+        "acceptableShortfallCents": "0"
+      },
+      "path": {
+        "name": "gemini_btc_usd_2022_daily_close",
+        "source": "CryptoDataDownload Gemini BTC/USD daily CSV",
+        "observationCount": 365,
+        "firstDate": "2022-01-01",
+        "lastDate": "2022-12-31",
+        "startPriceCents": "4732905",
+        "minPriceCents": "1580503",
+        "maxDrawdownBps": "6698"
+      },
+      "liquidation": {
+        "triggered": true,
+        "triggerDate": "2022-05-10",
+        "triggerPriceCents": "2925868",
+        "triggerCollateralRatioBps": "14629",
+        "settlementDate": "2022-05-20",
+        "settlementPriceCents": "2925274",
+        "settlementIndex": 139
+      },
+      "timing": {
+        "actionDelayBlocks": 1494,
+        "bridgeTimeoutBlocks": 144,
+        "childRefundTimeoutBlocks": 180,
+        "timeoutOrderingValid": false,
+        "actionBeforeBridgeTimeout": false,
+        "childAfterBridgeTimeout": true
+      },
+      "fees": {
+        "feeReserveSat": "25000",
+        "requiredRelayFeeSat": "140000",
+        "feeReserveSufficient": false,
+        "effectiveCollateralSat": "99860000"
+      },
+      "waterfall": {
+        "targetValueCents": "2000000",
+        "stableClaimSat": "68369664",
+        "paidValueCents": "2000000",
+        "residualCollateralSat": "31490336",
+        "shortfallCents": "0",
+        "holderRecoveryBps": "10000",
+        "btcConserved": true
+      }
+    },
+    {
+      "scenario": "thin_collateral_70_percent_gap",
+      "description": "A thinly collateralized 0.6 BTC position under a 70 percent overnight gap.",
+      "expectedClass": "insolvent",
+      "pass": false,
+      "failureCauses": [
+        "holder_shortfall"
+      ],
+      "parameterSet": {
+        "name": "thin_collateral_0_6btc_20k_claim",
+        "initialCollateralSat": "60000000",
+        "targetValueCents": "2000000",
+        "liquidationThresholdBps": "15000",
+        "oracleCadenceDays": 1,
+        "oracleDelayDays": 2,
+        "confirmationDelayBlocks": 6,
+        "liquidationClaimBlocks": 12,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "blocksPerDay": 144,
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "acceptableShortfallCents": "0"
+      },
+      "path": {
+        "name": "overnight_70_percent_gap_from_2022_open",
+        "source": "CryptoDataDownload Gemini BTC/USD daily CSV; adversarial deterministic gap transform",
+        "observationCount": 3,
+        "firstDate": "2022-01-01",
+        "lastDate": "2022-01-03",
+        "startPriceCents": "4732905",
+        "minPriceCents": "1419871",
+        "maxDrawdownBps": "7000"
+      },
+      "liquidation": {
+        "triggered": true,
+        "triggerDate": "2022-01-01",
+        "triggerPriceCents": "4732905",
+        "triggerCollateralRatioBps": "14198",
+        "settlementDate": "2022-01-03",
+        "settlementPriceCents": "1419871",
+        "settlementIndex": 2
+      },
+      "timing": {
+        "actionDelayBlocks": 306,
+        "bridgeTimeoutBlocks": 432,
+        "childRefundTimeoutBlocks": 720,
+        "timeoutOrderingValid": true,
+        "actionBeforeBridgeTimeout": true,
+        "childAfterBridgeTimeout": true
+      },
+      "fees": {
+        "feeReserveSat": "50000",
+        "requiredRelayFeeSat": "25000",
+        "feeReserveSufficient": true,
+        "effectiveCollateralSat": "59975000"
+      },
+      "waterfall": {
+        "targetValueCents": "2000000",
+        "stableClaimSat": "59975000",
+        "paidValueCents": "851567",
+        "residualCollateralSat": "0",
+        "shortfallCents": "1148433",
+        "holderRecoveryBps": "4257",
+        "btcConserved": true
+      }
+    }
+  ],
+  "aggregate": {
+    "scenarioCount": 6,
+    "passingScenarios": 3,
+    "failingScenarios": 3,
+    "worstShortfallCents": "1148433",
+    "worstShortfallScenario": "thin_collateral_70_percent_gap",
+    "allWaterfallsConserveBtc": true,
+    "noFalseSolvency": true
+  },
+  "goNoGo": {
+    "longRunningPilot": "NO_GO",
+    "criteria": [
+      {
+        "name": "historical path has no holder shortfall",
+        "passed": true,
+        "threshold": "0 cents shortfall",
+        "observed": "0 cents"
+      },
+      {
+        "name": "70 percent gap has no holder shortfall",
+        "passed": false,
+        "threshold": "0 cents shortfall",
+        "observed": "580484 cents"
+      },
+      {
+        "name": "fee reserve covers required relay fee",
+        "passed": false,
+        "threshold": "feeReserveSat >= requiredRelayFeeSat",
+        "observed": "25000 / 140000 sat"
+      },
+      {
+        "name": "oracle and confirmation delay fit bridge timeout",
+        "passed": false,
+        "threshold": "actionDelayBlocks < bridgeTimeoutBlocks < childRefundTimeoutBlocks",
+        "observed": "1494 < 144 < 180"
+      }
+    ]
+  }
+}

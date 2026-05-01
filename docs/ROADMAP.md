@@ -123,3 +123,9 @@ open.
 - Public Lazy demo package.
 - Historical and adversarial economic stress reports for the first product
   candidates.
+
+Status: deterministic economic stress evidence exists for a BTC-collateralized
+stable-value claim. The current parameters are blocked for a long-running pilot
+by the documented 70% gap and delayed-oracle fee-spike scenarios. See
+[`docs/ECONOMIC_STRESS_REPORT.md`](ECONOMIC_STRESS_REPORT.md) and
+[`docs/ECONOMIC_STRESS_GO_NO_GO.md`](ECONOMIC_STRESS_GO_NO_GO.md).
