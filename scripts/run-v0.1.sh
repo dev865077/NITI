@@ -17,7 +17,7 @@ Usage: scripts/run-v0.1.sh [options]
 Run the reproducible v0.1 verification gate:
   - TypeScript deterministic harness and cDLC smoke transcript
   - Ada finite cDLC manifest validator
-  - SPARK core and lazy-window proof targets, with pragma Assume rejected
+  - SPARK core and lazy-window proof targets, with proof-shortcut pragmas rejected
 
 Options:
   --artifacts-dir DIR       Write logs and transcripts to DIR.
@@ -117,17 +117,18 @@ run_shell_step() {
   run_step "$name" bash -lc "$command"
 }
 
-reject_pragma_assume() {
-  local log="$ARTIFACTS_DIR/spark-pragma-assume-scan.log"
-  echo "==> spark-pragma-assume-scan"
-  if grep -RIn "pragma[[:space:]]\+Assume" spark/src spark/*.gpr >"$log" 2>&1; then
-    echo "FAILED: SPARK proof sources must not use pragma Assume." >&2
+reject_spark_proof_shortcuts() {
+  local log="$ARTIFACTS_DIR/spark-proof-shortcut-scan.log"
+  echo "==> spark-proof-shortcut-scan"
+  if grep -RInE "pragma[[:space:]]+Assume|Assert[[:space:]]*\\([[:space:]]*False[[:space:]]*\\)" \
+    spark/src spark/*.gpr >"$log" 2>&1; then
+    echo "FAILED: SPARK proof sources must not use pragma Assume or Assert(False)." >&2
     echo "Log: ${log}" >&2
     cat "$log" >&2
     exit 1
   fi
-  echo "No pragma Assume statements found." >"$log"
-  echo "ok: spark-pragma-assume-scan (log: ${log})"
+  echo "No pragma Assume or Assert(False) statements found." >"$log"
+  echo "ok: spark-proof-shortcut-scan (log: ${log})"
 }
 
 write_summary() {
@@ -179,7 +180,7 @@ fi
 
 if [ "$RUN_SPARK" -eq 1 ]; then
   require_tool gnatprove
-  reject_pragma_assume
+  reject_spark_proof_shortcuts
 
   SPARK_TARGETS=(
     spark/cdlc_integer_proofs.gpr
