@@ -1,0 +1,374 @@
+{
+  "kind": "niti.v0_2_lazy_public_testnet_signet_activation_evidence_bundle.v1",
+  "network": "testnet",
+  "boundary": "Public signet/testnet Lazy cDLC bounded-window execution with public Esplora broadcast and observed confirmations; not regtest mining",
+  "generatedAt": "2026-05-01T08:43:57.060Z",
+  "executionBackend": {
+    "kind": "esplora",
+    "baseUrl": "https://mempool.space/testnet/api"
+  },
+  "sourceRevision": {
+    "gitHeadAtGeneration": "1cdf55674449ab6689f20994d590d03e18676126",
+    "workingTreeStatusAtGeneration": "dirty",
+    "node": "v20.20.2"
+  },
+  "replayCommands": {
+    "fundingRequest": "npm run public:lazy-cdlc-funding-request -- --network testnet",
+    "execute": "npm run public:lazy-cdlc-execute -- --network testnet --backend esplora --funding-txid cae51cbb81b9dfe0dc72e8e1eed3fbdf6ebd20b2bb7c3e281378a90929b3dda8 --funding-vout 0 --funding-value-sat 227163 --out-dir docs/evidence/lazy-bilateral-public-testnet",
+    "verify": "npm run test:evidence-bundle -- --bundle docs/evidence/lazy-bilateral-public-testnet/lazy-activation-evidence-bundle.json"
+  },
+  "bitcoinCore": {
+    "chain": "testnet",
+    "blocks": 4955676,
+    "version": "esplora",
+    "subversion": "https://mempool.space/testnet/api"
+  },
+  "fundingRequest": {
+    "address": "tb1p9fjtrm3nwhemkjek0wxtswz2glmneu33w9lcylrvd7alttk0psmqds9pcj",
+    "scriptPubKeyHex": "51202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c36",
+    "minimumValueSat": "2330",
+    "deterministicFixtureValueSat": "100000"
+  },
+  "oracle": {
+    "eventId": "niti-v0.1-parent-cdlc-smoke",
+    "activatingOutcome": "BTCUSD_ABOVE_STRIKE",
+    "wrongOutcome": "BTCUSD_BELOW_STRIKE",
+    "noncePointCompressedHex": "029ac20335eb38768d2052be1dbbc3c8f6178407458e51e6b4ad22f1d91758895b",
+    "oraclePublicCompressedHex": "022c0b7cf95324a07d05398b240174dc0c2be444d96b159aa6c7f7b1e668680991",
+    "activatingAttestationPointCompressedHex": "03a9853a7527b53165a23208738656cb6337d734297173e4939e1d6420f31a1124",
+    "wrongAttestationPointCompressedHex": "036d53cf539f9f0b5480dfa984b6a8c9644dcd86b6deb65911e8b0d1266e554b0b",
+    "activatingAttestationSecretHex": "2ba3facbf7a84e325506bf4c27ebf3cf115b0b79c23f2ca509cfb4bb7c8bb81d",
+    "activatingSignatureVerifies": true,
+    "wrongSignatureVerifies": true
+  },
+  "lazyWindow": {
+    "kind": "niti.v0_2_lazy_cdlc_window_manifest.v1",
+    "network": "testnet",
+    "window": {
+      "k": 2,
+      "activeNodeId": "C_0",
+      "preparedNodeIds": [
+        "C_1"
+      ],
+      "retainedNodeIds": [
+        "C_0",
+        "C_1"
+      ]
+    },
+    "nodes": [
+      {
+        "id": "C_0",
+        "role": "active-parent",
+        "fundingOutpoint": {
+          "txid": "cae51cbb81b9dfe0dc72e8e1eed3fbdf6ebd20b2bb7c3e281378a90929b3dda8",
+          "vout": 0,
+          "valueSat": "227163",
+          "scriptPubKeyHex": "51202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c36",
+          "address": "tb1p9fjtrm3nwhemkjek0wxtswz2glmneu33w9lcylrvd7alttk0psmqds9pcj"
+        }
+      },
+      {
+        "id": "C_1",
+        "role": "prepared-child",
+        "fundingOutpoint": {
+          "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+          "vout": 0,
+          "valueSat": "225663",
+          "scriptPubKeyHex": "5120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b"
+        },
+        "preparedSpends": {
+          "cet": {
+            "txidNoWitness": "d5dbf620672109da123f050f30d49fd0b8fa387e655a3087381260a143b0ade3",
+            "signatureState": "adaptor-signature-not-valid-bitcoin-witness-before-child-oracle-attestation"
+          },
+          "refund": {
+            "txid": "1aa5cc6ac7a4259d80b7879d358ad0229c25850127c08158f97dce9847c0ec65",
+            "signatureState": "complete-schnorr-signature-but-timelocked",
+            "locktime": 4955820
+          }
+        }
+      }
+    ],
+    "liveEdges": [
+      {
+        "id": "E_0_x_to_1",
+        "from": "C_0",
+        "to": "C_1",
+        "oracleEventId": "niti-v0.1-parent-cdlc-smoke",
+        "activatingOutcome": "BTCUSD_ABOVE_STRIKE",
+        "wrongOutcome": "BTCUSD_BELOW_STRIKE",
+        "adaptorPointCompressedHex": "03a9853a7527b53165a23208738656cb6337d734297173e4939e1d6420f31a1124",
+        "wrongOutcomeAttestationPointCompressedHex": "036d53cf539f9f0b5480dfa984b6a8c9644dcd86b6deb65911e8b0d1266e554b0b",
+        "parentCetTxidNoWitness": "e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823",
+        "bridgeTxidNoWitness": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+        "bridgeInput": {
+          "txid": "e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823",
+          "vout": 0,
+          "valueSat": "226163",
+          "scriptPubKeyHex": "5120624fff658880e6c942efcc527d29597f16e576137b88b3f267ac54685c5f582d"
+        },
+        "bridgeOutput": {
+          "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+          "vout": 0,
+          "valueSat": "225663",
+          "scriptPubKeyHex": "5120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b"
+        }
+      }
+    ],
+    "preparationOrder": [
+      "funding-utxo-observed",
+      "parent-cet-adaptor-prepared",
+      "bridge-adaptor-prepared",
+      "child-cet-adaptor-prepared",
+      "child-refund-prepared",
+      "parent-oracle-scalar-published",
+      "parent-cet-completed",
+      "bridge-completed"
+    ],
+    "invariants": {
+      "activeNodeInWindow": true,
+      "preparedChildInWindow": true,
+      "childPreparedBeforeParentCompletion": true,
+      "bridgeAdaptorPointEqualsParentOutcomePoint": true,
+      "childSpendsPreparedBridgeOutput": true,
+      "bridgePreResolutionSignatureIsNotValidBitcoinSignature": true,
+      "wrongOutcomeScalarRejected": true
+    }
+  },
+  "bilateralLazyActivation": {
+    "kind": "niti.v0_2_bilateral_lazy_activation_holder_evidence.v1",
+    "boundary": "A prepared bridge edge can be activated non-interactively by any holder of the edge package after oracle attestation; unprepared or wrong-outcome paths fail closed.",
+    "signerSecretsAvailableToHolders": false,
+    "preparedEdgePackageKind": "niti.l3.lazy_prepared_edge_package.v1",
+    "holders": [
+      {
+        "holder": "alice",
+        "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+        "verifies": true,
+        "rawTxMatchesBroadcastBridge": true,
+        "extractedSecretMatchesOracle": true
+      },
+      {
+        "holder": "bob",
+        "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+        "verifies": true,
+        "rawTxMatchesBroadcastBridge": true,
+        "extractedSecretMatchesOracle": true
+      },
+      {
+        "holder": "watchtower",
+        "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+        "verifies": true,
+        "rawTxMatchesBroadcastBridge": true,
+        "extractedSecretMatchesOracle": true
+      }
+    ],
+    "wrongOutcomeRejected": true,
+    "missingPackageRejected": true,
+    "checks": {
+      "activationDoesNotRequireSignerOnline": true,
+      "allHoldersProduceBroadcastBridgeTxid": true,
+      "allHoldersProduceBroadcastBridgeRawTx": true,
+      "allHoldersExtractOracleSecret": true,
+      "wrongOutcomeDoesNotActivatePreparedEdge": true,
+      "unpreparedEdgeCannotBeActivated": true
+    }
+  },
+  "explorer": {
+    "parentFunding": "https://mempool.space/testnet/tx/cae51cbb81b9dfe0dc72e8e1eed3fbdf6ebd20b2bb7c3e281378a90929b3dda8",
+    "parentCet": "https://mempool.space/testnet/tx/e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823",
+    "bridge": "https://mempool.space/testnet/tx/730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712"
+  },
+  "activationPath": {
+    "parentFunding": {
+      "txid": "cae51cbb81b9dfe0dc72e8e1eed3fbdf6ebd20b2bb7c3e281378a90929b3dda8",
+      "vout": 0,
+      "valueSat": "227163",
+      "confirmations": 96,
+      "scriptPubKeyHex": "51202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c36",
+      "address": "tb1p9fjtrm3nwhemkjek0wxtswz2glmneu33w9lcylrvd7alttk0psmqds9pcj",
+      "signatureState": "externally-funded-public-network-transaction",
+      "rawTx": {
+        "path": "docs/evidence/lazy-bilateral-public-testnet/public-01-parent-funding.hex",
+        "rawTxHex": "02000000000101137e5027fa88e9521c2bfb88f753c5dc8a6c9e1795cd946730289c051944dc630000000000ffffffff015b770300000000002251202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c36014005516083769afe3e4047d7701718aa8cc89c3842d99bebc522f648bffa0e7ec17b03f62bbebf78dad5c46d0c6e8194aa8044ff0267aab7a16ccdd8721ca6ef9100000000"
+      }
+    },
+    "parentCet": {
+      "txid": "e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823",
+      "input": {
+        "txid": "cae51cbb81b9dfe0dc72e8e1eed3fbdf6ebd20b2bb7c3e281378a90929b3dda8",
+        "vout": 0,
+        "valueSat": "227163",
+        "scriptPubKeyHex": "51202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c36"
+      },
+      "output": {
+        "vout": 0,
+        "valueSat": "226163",
+        "scriptPubKeyHex": "5120624fff658880e6c942efcc527d29597f16e576137b88b3f267ac54685c5f582d"
+      },
+      "adaptor": {
+        "signerPublicXOnlyHex": "2a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c36",
+        "signerPublicCompressedHex": "022a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c36",
+        "adaptorPointCompressedHex": "03a9853a7527b53165a23208738656cb6337d734297173e4939e1d6420f31a1124",
+        "adaptedNonceXOnlyHex": "f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac8",
+        "adaptedNonceCompressedHex": "02f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac8",
+        "preNonceCompressedHex": "025cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc",
+        "adaptorSignatureScalarHex": "286db25edad712ee1ba3ddde93fbf2f86c71a00cccdb93d8add723cd8ebd6cbb",
+        "verifiesAdaptor": true
+      },
+      "signatureState": "completed-schnorr-signature-after-parent-oracle-attestation",
+      "completedSignatureHex": "f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac85411ad2ad27f612070aa9d2abbe7e6c77dccab868f1ac07db7a6d8890b4924d8",
+      "rawTx": {
+        "path": "docs/evidence/lazy-bilateral-public-testnet/public-02-parent-cet.hex",
+        "rawTxHex": "02000000000101a8ddb32909a97813283e7cbbb220bd6edffbd3eee1e872dce0dfb981bb1ce5ca0000000000ffffffff017373030000000000225120624fff658880e6c942efcc527d29597f16e576137b88b3f267ac54685c5f582d0140f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac85411ad2ad27f612070aa9d2abbe7e6c77dccab868f1ac07db7a6d8890b4924d800000000"
+      },
+      "mempoolAccept": {
+        "txid": "e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823",
+        "wtxid": "unavailable-esplora",
+        "allowed": true,
+        "backend": "esplora",
+        "note": "Esplora already had the expected txid."
+      },
+      "broadcastTxid": "e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823",
+      "confirmation": {
+        "txid": "e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823",
+        "blockHash": "000000000001141f42222d31a9ca520f222802228cae6722c14fc9b9dbb3fa87",
+        "blockHeight": 4955616,
+        "confirmations": 61
+      }
+    },
+    "bridge": {
+      "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+      "input": {
+        "txid": "e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823",
+        "vout": 0,
+        "valueSat": "226163",
+        "scriptPubKeyHex": "5120624fff658880e6c942efcc527d29597f16e576137b88b3f267ac54685c5f582d"
+      },
+      "output": {
+        "vout": 0,
+        "valueSat": "225663",
+        "scriptPubKeyHex": "5120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b",
+        "address": "tb1plr5908qjdayaa5ehcxwy7hcur9glqafpvtt2v8c2nc24s4v5899seky47r"
+      },
+      "adaptor": {
+        "signerPublicXOnlyHex": "624fff658880e6c942efcc527d29597f16e576137b88b3f267ac54685c5f582d",
+        "signerPublicCompressedHex": "02624fff658880e6c942efcc527d29597f16e576137b88b3f267ac54685c5f582d",
+        "adaptorPointCompressedHex": "03a9853a7527b53165a23208738656cb6337d734297173e4939e1d6420f31a1124",
+        "adaptedNonceXOnlyHex": "f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac8",
+        "adaptedNonceCompressedHex": "02f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac8",
+        "preNonceCompressedHex": "025cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc",
+        "adaptorSignatureScalarHex": "d4a6c56a7c83e62424f4ed182ab0ed92d73b279a65d731d9f610a6c0c98bb0c0",
+        "verifiesAdaptor": true,
+        "signatureState": "adaptor-signature-not-valid-bitcoin-witness-before-parent-oracle-attestation",
+        "preResolutionSignatureHex": "f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac8d4a6c56a7c83e62424f4ed182ab0ed92d73b279a65d731d9f610a6c0c98bb0c0",
+        "preResolutionSignatureVerifies": false
+      },
+      "completion": {
+        "signatureState": "completed-schnorr-signature-after-parent-oracle-attestation",
+        "completedSignatureHex": "f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac8004ac036742c345679fbac64529ce1632de7562d78cdbe43400dfcef75e1279c",
+        "completedSignatureVerifies": true,
+        "extractedSecretHex": "2ba3facbf7a84e325506bf4c27ebf3cf115b0b79c23f2ca509cfb4bb7c8bb81d"
+      },
+      "wrongScalar": {
+        "attestationPointCompressedHex": "036d53cf539f9f0b5480dfa984b6a8c9644dcd86b6deb65911e8b0d1266e554b0b",
+        "rejected": true
+      },
+      "rawTx": {
+        "path": "docs/evidence/lazy-bilateral-public-testnet/public-03-bridge.hex",
+        "rawTxHex": "0200000000010123b8d91ea52ed1ca4d8a18a1f4ec9d540dd11732cb62b9f1759f9875dc10cbe70000000000ffffffff017f71030000000000225120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b0140f12d0d54effef159d6b389f58c53c95e1b12f0526f75609701d19845bcc74ac8004ac036742c345679fbac64529ce1632de7562d78cdbe43400dfcef75e1279c00000000"
+      },
+      "mempoolAccept": {
+        "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+        "wtxid": "unavailable-esplora",
+        "allowed": true,
+        "backend": "esplora",
+        "note": "Esplora already had the expected txid."
+      },
+      "broadcastTxid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+      "confirmation": {
+        "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+        "blockHash": "000000000001c52462f4800716a43b3dce154c2f1200efeea172997fe708e09c",
+        "blockHeight": 4955617,
+        "confirmations": 60
+      }
+    },
+    "childPreparedCet": {
+      "txidNoWitness": "d5dbf620672109da123f050f30d49fd0b8fa387e655a3087381260a143b0ade3",
+      "input": {
+        "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+        "vout": 0,
+        "valueSat": "225663",
+        "scriptPubKeyHex": "5120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b"
+      },
+      "destinationAddress": "tb1p9fjtrm3nwhemkjek0wxtswz2glmneu33w9lcylrvd7alttk0psmqds9pcj",
+      "sendValueSat": "225163",
+      "feeSat": "500",
+      "adaptor": {
+        "signerPublicXOnlyHex": "f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b",
+        "signerPublicCompressedHex": "02f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b",
+        "adaptorPointCompressedHex": "03324002d204506cbec89b376a0069e96a6bd3789b56ac3c78ab846b89f7f506f9",
+        "adaptedNonceXOnlyHex": "05516083769afe3e4047d7701718aa8cc89c3842d99bebc522f648bffa0e7ec1",
+        "adaptedNonceCompressedHex": "0205516083769afe3e4047d7701718aa8cc89c3842d99bebc522f648bffa0e7ec1",
+        "preNonceCompressedHex": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+        "adaptorSignatureScalarHex": "f5c9f5dfc4b022fdbe88b960102639193592c6fa6fc52eed32356055edb88b7c",
+        "verifiesAdaptor": true,
+        "signatureState": "adaptor-signature-not-valid-bitcoin-witness-before-child-oracle-attestation",
+        "preResolutionSignatureHex": "05516083769afe3e4047d7701718aa8cc89c3842d99bebc522f648bffa0e7ec1f5c9f5dfc4b022fdbe88b960102639193592c6fa6fc52eed32356055edb88b7c",
+        "preResolutionSignatureVerifies": false
+      },
+      "rawTx": {
+        "path": "docs/evidence/lazy-bilateral-public-testnet/public-04-child-prepared-cet-unsigned.hex",
+        "rawTxHex": "020000000112273f9ae74b99a35601997bd07caf83b669fff93213ee3901cfd5cdb3b60d730000000000ffffffff018b6f0300000000002251202a64b1ee3375f3bb4b367b8cb8384a47f73cf231717f827c6c6fbbf5aecf0c3600000000"
+      }
+    },
+    "childRefund": {
+      "txid": "1aa5cc6ac7a4259d80b7879d358ad0229c25850127c08158f97dce9847c0ec65",
+      "input": {
+        "txid": "730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712",
+        "vout": 0,
+        "valueSat": "225663",
+        "scriptPubKeyHex": "5120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b"
+      },
+      "output": {
+        "vout": 0,
+        "valueSat": "225163",
+        "scriptPubKeyHex": "5120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b"
+      },
+      "locktime": 4955820,
+      "sequence": 4294967294,
+      "signatureState": "complete-schnorr-signature-but-timelocked",
+      "signatureVerifies": true,
+      "earlyMempoolAccept": {
+        "txid": "1aa5cc6ac7a4259d80b7879d358ad0229c25850127c08158f97dce9847c0ec65",
+        "wtxid": "unavailable-esplora",
+        "allowed": false,
+        "backend": "esplora",
+        "note": "Esplora does not expose testmempoolaccept; the refund is retained as a timelocked raw transaction and is not broadcast in this run."
+      },
+      "rawTx": {
+        "path": "docs/evidence/lazy-bilateral-public-testnet/public-05-child-refund-timelocked.hex",
+        "rawTxHex": "0200000000010112273f9ae74b99a35601997bd07caf83b669fff93213ee3901cfd5cdb3b60d730000000000feffffff018b6f030000000000225120f8e8579c126f49ded337c19c4f5f1c1951f0752162d6a61f0a9e15585594394b01406a04ab98d9e4774ad806e302dddeb63bea16b5cb5f223ee77478e861bb583eb30747de88abdf08f5e90cb18ec816e51a0f96c9445cf00ee5d9924b78e40d7005ac9e4b00"
+      }
+    }
+  },
+  "checks": {
+    "publicNetwork": true,
+    "fundingConfirmed": true,
+    "parentCetAccepted": true,
+    "parentCetConfirmed": true,
+    "parentWrongOutcomeRejected": true,
+    "bridgeAdaptorPreResolutionNotValidSignature": true,
+    "bridgeWrongScalarRejected": true,
+    "bridgeAccepted": true,
+    "bridgeConfirmed": true,
+    "bridgeCreatesChildFunding": true,
+    "childPreparedCetAdaptorOnly": true,
+    "childRefundEarlyRejected": true,
+    "lazyWindowK2": true,
+    "lazyChildPreparedBeforeParentCompletion": true,
+    "lazyBridgeUsesParentOraclePoint": true,
+    "lazyChildSpendsPreparedBridgeOutput": true,
+    "lazyBilateralHolderActivation": true
+  }
+}

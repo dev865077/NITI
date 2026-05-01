@@ -38,6 +38,7 @@
     "public:cdlc-execute": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode execute-activation",
     "public:lazy-cdlc-funding-request": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode funding-request --lazy",
     "public:lazy-cdlc-execute": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode execute-activation --lazy",
+    "public:lazy-cdlc-recycle-child": "TMPDIR=/tmp tsx testnet/src/public-child-cet-fund-parent.ts",
     "mainnet:cdlc-plan": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode mainnet-plan",
     "mainnet:cdlc-funding-request": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode funding-request --network mainnet",
     "mainnet:cdlc-execute": "TMPDIR=/tmp tsx testnet/src/public-cdlc-evidence.ts --mode execute-activation --network mainnet",
