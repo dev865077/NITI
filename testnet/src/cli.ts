@@ -20,6 +20,13 @@ import { readJsonFile, writeJsonFile, writeTextFile } from './io.js';
 import { buildCanonicalParentFundingFixture } from './cdlc-scenario.js';
 import { deterministicJson, sampleManifest, writeSampleManifest } from './manifest.js';
 import {
+  buildOracleAnnouncement,
+  buildOracleAttestationEnvelope,
+  parseOracleAnnouncement,
+  verifyOracleAnnouncement,
+  verifyOracleAttestation,
+} from './oracle-audit.js';
+import {
   LndRestClient,
   attestLightningOracle,
   createHoldInvoiceArtifact,
@@ -139,6 +146,10 @@ Commands:
   wallet:new --network testnet4 [--secret-hex <32-byte-hex>] [--out file.json]
   oracle:prepare --event-id <id> --outcome <text> [--oracle-secret-hex <hex>] [--nonce-secret-hex <hex>] [--out file.json]
   oracle:attest --event-id <id> --outcome <text> --oracle-secret-hex <hex> --nonce-secret-hex <hex> [--out file.json]
+  oracle:announcement --event-id <id> --outcomes <csv> --oracle-secret-hex <hex> --nonce-secret-hex <hex> --announcement-nonce-secret-hex <hex> --expiry-iso <iso> [--out file.json]
+  oracle:verify-announcement --announcement file.json [--out file.json]
+  oracle:attestation-envelope --announcement file.json --outcome <text> --oracle-secret-hex <hex> --nonce-secret-hex <hex> [--out file.json]
+  oracle:verify-attestation --announcement file.json --attestation file.json [--out file.json]
   cdlc:parent-funding --network testnet4 [--out funding.json] [--raw-out funding.hex]
   taproot:prepare --network testnet4 --signer-output-secret-hex <hex> --signer-script-pubkey-hex <hex> --utxo-txid <txid> --utxo-vout <n> --utxo-value-sat <sat> --destination <addr> --fee-sat <sat> --adaptor-point-hex <compressed> [--out pending.json]
   taproot:complete --pending pending.json --attestation-secret-hex <hex> [--out completed.json] [--raw-out tx.hex]
@@ -221,6 +232,63 @@ async function main(): Promise<void> {
       oracleSecret: scalarFromHex(stringArg(args, 'oracle-secret-hex'), 'oracle-secret-hex'),
       nonceSecret: scalarFromHex(stringArg(args, 'nonce-secret-hex'), 'nonce-secret-hex'),
     }));
+    return;
+  }
+
+  if (command === 'oracle:announcement') {
+    const outcomes = stringArg(args, 'outcomes')
+      .split(',')
+      .map((outcome) => outcome.trim())
+      .filter((outcome) => outcome.length > 0);
+    writeOrPrint(args, buildOracleAnnouncement({
+      eventId: stringArg(args, 'event-id'),
+      outcomes,
+      oracleSecretHex: stringArg(args, 'oracle-secret-hex'),
+      nonceSecretHex: stringArg(args, 'nonce-secret-hex'),
+      announcementSignatureNonceHex: stringArg(args, 'announcement-nonce-secret-hex'),
+      expiryIso: stringArg(args, 'expiry-iso'),
+      sourcePolicy: {
+        kind: 'niti.oracle.source_policy.v1',
+        policyId: stringArg(args, 'source-policy-id', 'manual-fixture-policy'),
+        description: stringArg(
+          args,
+          'source-policy-description',
+          'Operator-supplied source policy committed by the announcement.',
+        ),
+      },
+    }));
+    return;
+  }
+
+  if (command === 'oracle:verify-announcement') {
+    const result = verifyOracleAnnouncement(readJsonFile<unknown>(stringArg(args, 'announcement')));
+    writeOrPrint(args, result);
+    if (!result.ok) {
+      process.exit(1);
+    }
+    return;
+  }
+
+  if (command === 'oracle:attestation-envelope') {
+    const announcement = parseOracleAnnouncement(readJsonFile<unknown>(stringArg(args, 'announcement')));
+    writeOrPrint(args, buildOracleAttestationEnvelope({
+      announcement,
+      outcome: stringArg(args, 'outcome'),
+      oracleSecretHex: stringArg(args, 'oracle-secret-hex'),
+      nonceSecretHex: stringArg(args, 'nonce-secret-hex'),
+    }));
+    return;
+  }
+
+  if (command === 'oracle:verify-attestation') {
+    const result = verifyOracleAttestation({
+      announcement: readJsonFile<unknown>(stringArg(args, 'announcement')),
+      attestation: readJsonFile<unknown>(stringArg(args, 'attestation')),
+    });
+    writeOrPrint(args, result);
+    if (!result.ok) {
+      process.exit(1);
+    }
     return;
   }
 
