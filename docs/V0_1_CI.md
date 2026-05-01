@@ -13,7 +13,7 @@ It runs on every proposed repository change and on pushes to `main`.
 
 | Job | Purpose | Commands |
 | --- | --- | --- |
-| TypeScript deterministic harness | Build and run the deterministic protocol harnesses, including bilateral setup fixtures and the cDLC smoke path. | `npm run v0.1:verify -- --skip-ada --skip-spark` |
+| TypeScript deterministic harness | Build and run the deterministic protocol harnesses, including bilateral setup fixtures and the cDLC smoke path. | `npm run v0.1:verify -- --skip-ada --skip-spark`; `npm run test:layer3` |
 | Ada manifest validator | Build the finite cDLC graph manifest validator and validate the canonical fixture. | `npm run v0.1:verify -- --skip-node --skip-spark` |
 | SPARK proof regression | Run the core cDLC, Lightning, and Lazy cDLC SPARK proof targets and reject `pragma Assume` in proof sources. | `scripts/run-v0.1.sh --skip-node --skip-ada`; `scripts/run-v0.1.sh --skip-node --skip-ada --lazy-spark` |
 
@@ -21,6 +21,12 @@ The TypeScript job uploads `cdlc-smoke-transcript.json` and
 `l2-e2e-transcript.json` from the v0.1 runner artifact directory. Those
 transcripts are the reproducible remote evidence for the minimum parent-CET ->
 bridge -> child-funding smoke path.
+
+The same job also uploads the Layer 3 bilateral replay package as
+`layer-3-bilateral-artifacts`. That package contains JSON outputs for every
+bilateral replay plus `l3-bilateral-summary.json`, which is written only after
+the verifier confirms that every required artifact is present and every
+required check passed.
 
 ## Manual Or External Steps
 
@@ -46,6 +52,7 @@ A green workflow means:
 
 - the TypeScript code compiles;
 - the deterministic adaptor, bilateral setup, Lightning, and cDLC smoke harnesses pass;
+- the Layer 3 bilateral artifact package is generated and verified;
 - the Ada cDLC graph manifest validator builds and accepts the canonical
   manifest fixture;
 - the core cDLC, Lightning, and Lazy cDLC SPARK proof targets pass in CI;
