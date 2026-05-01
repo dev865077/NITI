@@ -4,13 +4,9 @@ NITI is split into three layers.
 
 ## 1. Research Layer
 
-The research layer contains the primary cDLC whitepaper, the legacy NITI draft,
-the Lazy cDLC research note, and the focused cDLC technical note:
+The research layer is anchored by the primary cDLC whitepaper:
 
 - [`WHITEPAPER.md`](../WHITEPAPER.md)
-- [`LEGACY-WHITEPAPER.md`](../LEGACY-WHITEPAPER.md)
-- [`research/lazy-cdlcs-v0.2.md`](../research/lazy-cdlcs-v0.2.md)
-- [`research/cdlc-technical-note.md`](../research/cdlc-technical-note.md)
 - [`research/cdlc-algebra-check.ts`](../research/cdlc-algebra-check.ts)
 
 It defines the core equation:
