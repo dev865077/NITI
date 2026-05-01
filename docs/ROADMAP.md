@@ -105,6 +105,8 @@ Wrong-path and replay rejection behavior is defined in
 [`docs/L3_BILATERAL_WRONG_PATH_REPLAY.md`](L3_BILATERAL_WRONG_PATH_REPLAY.md).
 The Layer 3 replay artifact gate is defined in
 [`docs/L3_CI_ARTIFACT_GATE.md`](L3_CI_ARTIFACT_GATE.md).
+The deterministic bilateral closeout matrix is defined in
+[`docs/L3_BILATERAL_CLOSEOUT_MATRIX.md`](L3_BILATERAL_CLOSEOUT_MATRIX.md).
 
 Oracle equivocation evidence is defined in
 [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](ORACLE_EQUIVOCATION_EVIDENCE.md).

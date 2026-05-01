@@ -47,8 +47,8 @@ It demonstrates a `K = 2` bounded preparation window on Bitcoin mainnet:
 
 This is still a technical prototype result. The remaining major work is not
 another proof of the basic activation primitive; it is protocol hardening:
-bilateral negotiation, oracle auditability, economic stress, wallet UX,
-fee/reorg policy, and external review.
+production bilateral transport, oracle auditability, economic stress, wallet
+UX, fee/reorg policy, and external review.
 
 ## Lazy cDLC Compression
 
@@ -222,6 +222,7 @@ Use this table as the top-level audit map.
 | Bilateral settlement execution | [`docs/L3_BILATERAL_SETTLEMENT_EXECUTION.md`](docs/L3_BILATERAL_SETTLEMENT_EXECUTION.md) | Parent CET completion, bridge completion, graph-transition verification, cross-participant agreement, and missing-state rejection. |
 | Bilateral wrong-path replay matrix | [`docs/L3_BILATERAL_WRONG_PATH_REPLAY.md`](docs/L3_BILATERAL_WRONG_PATH_REPLAY.md) | Stale transcript replay, session mismatch, reorder, reused ack, role swap, adaptor swap, wrong scalar, wrong bridge edge, template-binding drift, and double activation rejection. |
 | Layer 3 CI artifact gate | [`docs/L3_CI_ARTIFACT_GATE.md`](docs/L3_CI_ARTIFACT_GATE.md) | One-command bilateral replay package with JSON artifacts and CI upload. |
+| Layer 3 bilateral closeout | [`docs/L3_BILATERAL_CLOSEOUT_MATRIX.md`](docs/L3_BILATERAL_CLOSEOUT_MATRIX.md) | Final deterministic bilateral evidence matrix, allowed claims, and non-goals for the research prototype. |
 | Oracle equivocation evidence | [`docs/ORACLE_EQUIVOCATION_EVIDENCE.md`](docs/ORACLE_EQUIVOCATION_EVIDENCE.md) | Public evidence object and verification procedure for conflicting oracle attestations. |
 | Oracle price policy | [`docs/ORACLE_PRICE_SOURCE_POLICY.md`](docs/ORACLE_PRICE_SOURCE_POLICY.md) | Deterministic source, timestamp, aggregation, rounding, stale-price, outage, and correction policy. |
 | SPARK-to-Bitcoin trace | [`docs/SPARK_TO_BITCOIN_TRACE.md`](docs/SPARK_TO_BITCOIN_TRACE.md) | Mapping from formal algebra claims to TypeScript/Bitcoin transaction fields. |
