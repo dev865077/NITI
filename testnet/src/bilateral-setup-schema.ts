@@ -385,6 +385,16 @@ function validateRoleAnnouncement(value: unknown): BilateralSetupMessage {
       ),
     };
   });
+  const noncePurposes = new Set(adaptorNonceCommitments.map((entry) => entry.purpose));
+  if (noncePurposes.size !== adaptorNonceCommitments.length) {
+    throw new Error('announcement.adaptorNonceCommitments must not repeat a purpose');
+  }
+  const nonceCommitments = new Set(adaptorNonceCommitments.map((entry) => (
+    entry.commitmentCompressedHex
+  )));
+  if (nonceCommitments.size !== adaptorNonceCommitments.length) {
+    throw new Error('announcement.adaptorNonceCommitments must not repeat a commitment');
+  }
   return {
     kind: 'niti.l3.bilateral_setup_message.v1',
     role: requireRole(object.role, 'announcement.role'),
