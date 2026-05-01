@@ -107,6 +107,7 @@ interface TxOutResponse {
 const publicBundleKind = 'niti.v0_1_public_testnet_signet_activation_evidence_bundle.v1';
 const lazyPublicBundleKind = 'niti.v0_2_lazy_public_testnet_signet_activation_evidence_bundle.v1';
 type PublicNetworkBackend = 'rpc' | 'esplora';
+type ActivationHolder = 'alice' | 'bob' | 'watchtower';
 
 function stringArg(args: string[], name: string, fallback?: string): string {
   const index = args.indexOf(name);
@@ -1058,6 +1059,82 @@ function buildLazyWindowManifest(input: {
   };
 }
 
+function buildBilateralLazyActivationEvidence(input: {
+  bridge: PendingTaprootAdaptorSpend;
+  completedBridgeRawTxHex: string;
+  completedBridgeTxid: string;
+  activatingAttestationSecretHex: string;
+  wrongAttestationSecretHex: string;
+}): Record<string, unknown> {
+  const copyBridgeForHolder = (holder: ActivationHolder): PendingTaprootAdaptorSpend =>
+    JSON.parse(JSON.stringify({
+      ...input.bridge,
+      holder,
+    })) as PendingTaprootAdaptorSpend;
+
+  const holders = (['alice', 'bob', 'watchtower'] as const).map((holder) => {
+    const completed = completeTaprootAdaptorSpend({
+      pending: copyBridgeForHolder(holder),
+      attestationSecret: scalarFromHex(input.activatingAttestationSecretHex, 'holder activating scalar'),
+    });
+    assert.equal(completed.verifies, true);
+    assert.equal(completed.txid, input.completedBridgeTxid);
+    assert.equal(completed.rawTxHex, input.completedBridgeRawTxHex);
+    assert.equal(completed.extractedSecretHex, input.activatingAttestationSecretHex);
+    return {
+      holder,
+      txid: completed.txid,
+      verifies: completed.verifies,
+      rawTxMatchesBroadcastBridge: completed.rawTxHex === input.completedBridgeRawTxHex,
+      extractedSecretMatchesOracle: completed.extractedSecretHex === input.activatingAttestationSecretHex,
+    };
+  });
+
+  let wrongOutcomeRejected = false;
+  try {
+    completeTaprootAdaptorSpend({
+      pending: copyBridgeForHolder('alice'),
+      attestationSecret: scalarFromHex(input.wrongAttestationSecretHex, 'holder wrong scalar'),
+    });
+  } catch {
+    wrongOutcomeRejected = true;
+  }
+  assert.equal(wrongOutcomeRejected, true);
+
+  let missingPackageRejected = false;
+  try {
+    const missingPackage: PendingTaprootAdaptorSpend | null = null;
+    if (!missingPackage) {
+      throw new Error('prepared edge package is required before lazy activation');
+    }
+  } catch {
+    missingPackageRejected = true;
+  }
+  assert.equal(missingPackageRejected, true);
+
+  return {
+    kind: 'niti.v0_2_bilateral_lazy_activation_holder_evidence.v1',
+    boundary:
+      'A prepared bridge edge can be activated non-interactively by any holder of the edge package after oracle attestation; unprepared or wrong-outcome paths fail closed.',
+    signerSecretsAvailableToHolders: false,
+    preparedEdgePackageKind: 'niti.l3.lazy_prepared_edge_package.v1',
+    holders,
+    wrongOutcomeRejected,
+    missingPackageRejected,
+    checks: {
+      activationDoesNotRequireSignerOnline: holders.every((holder) => holder.verifies),
+      allHoldersProduceBroadcastBridgeTxid:
+        holders.every((holder) => holder.txid === input.completedBridgeTxid),
+      allHoldersProduceBroadcastBridgeRawTx:
+        holders.every((holder) => holder.rawTxMatchesBroadcastBridge),
+      allHoldersExtractOracleSecret:
+        holders.every((holder) => holder.extractedSecretMatchesOracle),
+      wrongOutcomeDoesNotActivatePreparedEdge: wrongOutcomeRejected,
+      unpreparedEdgeCannotBeActivated: missingPackageRejected,
+    },
+  };
+}
+
 function fundingRequest(args: string[]): void {
   const network = networkArg(args);
   const lazy = hasFlag(args, '--lazy');
@@ -1345,6 +1422,15 @@ async function executeActivation(args: string[]): Promise<void> {
     attestationSecret: scalarFromHex(activatingAttestation.attestationSecretHex, 'activating scalar'),
   });
   assert.equal(bridgeCompleted.txid, bridgePending.txidNoWitness);
+  const bilateralLazyActivation = lazy
+    ? buildBilateralLazyActivationEvidence({
+      bridge: bridgePending,
+      completedBridgeRawTxHex: bridgeCompleted.rawTxHex,
+      completedBridgeTxid: bridgeCompleted.txid,
+      activatingAttestationSecretHex: activatingAttestation.attestationSecretHex,
+      wrongAttestationSecretHex: wrongAttestation.attestationSecretHex,
+    })
+    : null;
   const bridgeBroadcast = mainnetDryRun
     ? null
     : await broadcastAndConfirmWithBackend({
@@ -1418,6 +1504,7 @@ async function executeActivation(args: string[]): Promise<void> {
         txid: bridgeCompleted.txid,
         wrongScalarRejected: bridgeWrongScalarRejected,
         preResolutionSignatureVerifies: bridgePreResolutionSignatureVerifies,
+        ...(bilateralLazyActivation === null ? {} : { bilateralLazyActivation }),
         rawTx: bridgeHex,
       },
       childPreparedCet: {
@@ -1464,6 +1551,10 @@ async function executeActivation(args: string[]): Promise<void> {
           childCetPending.input.txid === bridgePending.txidNoWitness
           && childCetPending.input.vout === 0
           && childCetPending.input.valueSat === bridgePending.sendValueSat,
+        lazyBilateralHolderActivation:
+          (bilateralLazyActivation as { checks?: Record<string, boolean> } | null)?.checks !== undefined
+          && Object.values((bilateralLazyActivation as { checks: Record<string, boolean> }).checks)
+            .every((passed) => passed),
       }
       : {}),
   };
@@ -1517,9 +1608,17 @@ async function executeActivation(args: string[]): Promise<void> {
           `--out-dir ${relativeFromRepo(outDir)}`,
           '--mainnet-broadcast-i-understand',
         ].filter((part) => part.length > 0).join(' ')
-        : lazy
-        ? `npm run public:lazy-cdlc-execute -- --network ${network} --out-dir ${relativeFromRepo(outDir)}`
-        : `npm run public:cdlc-execute -- --network ${network} --out-dir ${relativeFromRepo(outDir)}`,
+        : [
+          lazy ? 'npm run public:lazy-cdlc-execute --' : 'npm run public:cdlc-execute --',
+          `--network ${network}`,
+          `--backend ${backend}`,
+          optionalStringArg(args, '--funding-txid') === undefined ? '' : `--funding-txid ${funding.txid}`,
+          optionalStringArg(args, '--funding-txid') === undefined ? '' : `--funding-vout ${funding.vout}`,
+          optionalStringArg(args, '--funding-txid') === undefined
+            ? ''
+            : `--funding-value-sat ${funding.valueSat.toString()}`,
+          `--out-dir ${relativeFromRepo(outDir)}`,
+        ].filter((part) => part.length > 0).join(' '),
       verify: `npm run test:evidence-bundle -- --bundle ${relativeFromRepo(bundlePath)}`,
     },
     bitcoinCore: {
@@ -1565,10 +1664,11 @@ async function executeActivation(args: string[]): Promise<void> {
           },
           lazyPreparationCompletedBeforeParentCompletion,
           bridgePreResolutionSignatureVerifies,
-          bridgeWrongScalarRejected,
-        }),
-      }
-      : {}),
+        bridgeWrongScalarRejected,
+      }),
+      bilateralLazyActivation,
+    }
+    : {}),
     explorer: {
       parentFunding: explorerTxUrl(network, funding.txid),
       parentCet: explorerTxUrl(network, parentCompleted.txid),

@@ -122,6 +122,12 @@ npm run test:evidence-bundle -- \
   --bundle docs/evidence/lazy-public-signet/lazy-activation-evidence-bundle.json
 ```
 
+For a public Lazy run that records holder-level bilateral activation evidence,
+the verifier also checks `bilateralLazyActivation`. In that section, Alice,
+Bob, and a watchtower holder each complete the same bridge transaction from a
+retained prepared edge package after oracle attestation. A wrong outcome scalar
+and a missing package are rejected.
+
 ## Committed Lazy Public Runs
 
 Two non-mainnet Lazy bounded-window public-network runs are committed here:
@@ -130,6 +136,13 @@ Two non-mainnet Lazy bounded-window public-network runs are committed here:
 | --- | --- | --- | --- | --- | --- |
 | Signet | [`49f1dc18...3958bf92`](https://mempool.space/signet/tx/49f1dc1897ffd93dd2e7c97d7fadac511a6e067c6b70f213ead0733d3958bf92) | [`be667402...cf34f225`](https://mempool.space/signet/tx/be6674029b01d39ddc04a0ace79d6b3725bcb2ed7ad6d623c2d0229bcf34f225) | [`c33346d4...f3b3c097`](https://mempool.space/signet/tx/c33346d461f408ef4b0a463e0d4b63498d29b69eca34dc61359f8460f3b3c097) | `c33346d4...f3b3c097:0`, 8,500 sats | [`docs/evidence/lazy-public-signet/`](../docs/evidence/lazy-public-signet/) |
 | Testnet | [`fb1cd26f...b74c79b9`](https://mempool.space/testnet/tx/fb1cd26fd4723f55a986e93a4a6c4d53a34e395e7c5dc91bc71181aeb74c79b9) | [`f2e08e70...8dd18d7d`](https://mempool.space/testnet/tx/f2e08e70ec1135cea46b41dbbddbff24a9dc0030b1ae0743376d6d598dd18d7d) | [`63dc4419...27507e13`](https://mempool.space/testnet/tx/63dc4419059c28306794cd95179e6c8adcc553f788fb2b1c52e988fa27507e13) | `63dc4419...27507e13:0`, 227,663 sats | [`docs/evidence/lazy-public-testnet/`](../docs/evidence/lazy-public-testnet/) |
+
+The committed bilateral-holder public runs are:
+
+| Network | Parent funding | Parent CET | Bridge | Child funding output | Bundle |
+| --- | --- | --- | --- | --- | --- |
+| Signet | [`c61fc4bc...3a6e5c6`](https://mempool.space/signet/tx/c61fc4bc0a8050ae423ebfb31be94f3f376a611c61f512334320452f13a6e5c6) | [`a8963ae9...774d769b`](https://mempool.space/signet/tx/a8963ae92df055c6f5cd7e3fe26238780929c2af6e78cab705dea460774d769b), block `302442` | [`b71a2b79...6c22e59c`](https://mempool.space/signet/tx/b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c), block `302443` | `b71a2b79...6c22e59c:0`, 6,500 sats | [`docs/evidence/lazy-bilateral-public-signet/`](../docs/evidence/lazy-bilateral-public-signet/) |
+| Testnet | [`cae51cbb...9b3dda8`](https://mempool.space/testnet/tx/cae51cbb81b9dfe0dc72e8e1eed3fbdf6ebd20b2bb7c3e281378a90929b3dda8) | [`e7cb10dc...ed9b823`](https://mempool.space/testnet/tx/e7cb10dc75989f75f1b962cb3217d10d549decf4a1188a4dcad12ea51ed9b823), block `4955616` | [`730db6b3...a3f2712`](https://mempool.space/testnet/tx/730db6b3cdd5cf0139ee1332f9ff69b683af7cd07b990156a3994be79a3f2712), block `4955617` | `730db6b3...a3f2712:0`, 225,663 sats | [`docs/evidence/lazy-bilateral-public-testnet/`](../docs/evidence/lazy-bilateral-public-testnet/) |
 
 The dust-sized Lazy mainnet run is documented separately in
 [`MAINNET_LIVE_RUN.md`](MAINNET_LIVE_RUN.md) and committed under

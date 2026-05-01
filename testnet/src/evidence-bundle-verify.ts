@@ -184,6 +184,41 @@ function verifyLazyWindow(bundle: Record<string, any>, activation: Record<string
   assert.equal(invariants.wrongOutcomeScalarRejected, true);
 }
 
+function verifyBilateralLazyActivation(bundle: Record<string, any>, activation: Record<string, any>): void {
+  if (bundle.bilateralLazyActivation === undefined) {
+    return;
+  }
+  const evidence = assertObject(bundle.bilateralLazyActivation, 'bilateralLazyActivation');
+  assert.equal(evidence.kind, 'niti.v0_2_bilateral_lazy_activation_holder_evidence.v1');
+  assert.equal(evidence.signerSecretsAvailableToHolders, false);
+  assert.equal(evidence.preparedEdgePackageKind, 'niti.l3.lazy_prepared_edge_package.v1');
+  assert.equal(evidence.wrongOutcomeRejected, true);
+  assert.equal(evidence.missingPackageRejected, true);
+
+  const bridge = assertObject(activation.bridge, 'activation.bridge');
+  const holders = evidence.holders;
+  assert.ok(Array.isArray(holders), 'bilateralLazyActivation.holders must be an array');
+  assert.deepEqual(
+    holders.map((holder: Record<string, any>) => holder.holder),
+    ['alice', 'bob', 'watchtower'],
+  );
+  for (const holder of holders.map((value: unknown, index: number) =>
+    assertObject(value, `bilateralLazyActivation.holders[${index}]`))) {
+    assert.equal(holder.txid, bridge.txid);
+    assert.equal(holder.verifies, true);
+    assert.equal(holder.rawTxMatchesBroadcastBridge, true);
+    assert.equal(holder.extractedSecretMatchesOracle, true);
+  }
+
+  const checks = assertObject(evidence.checks, 'bilateralLazyActivation.checks');
+  const failed = Object.entries(checks)
+    .filter(([, passed]) => passed !== true)
+    .map(([name]) => name);
+  assert.deepEqual(failed, [], `failed bilateral lazy activation checks: ${failed.join(', ')}`);
+  const bundleChecks = assertObject(bundle.checks, 'checks');
+  assert.equal(bundleChecks.lazyBilateralHolderActivation, true);
+}
+
 function verifyRegtestBundle(repoRoot: string, bundle: Record<string, any>): number {
   assert.equal(bundle.kind, 'niti.v0_1_testnet_signet_tx_evidence_bundle.v1');
   assert.equal(bundle.issue, 132);
@@ -239,6 +274,7 @@ function verifyPublicBundle(repoRoot: string, bundle: Record<string, any>): numb
   const result = verifyActivationPath(repoRoot, activation);
   if (bundle.kind === lazyPublicBundleKind) {
     verifyLazyWindow(bundle, activation);
+    verifyBilateralLazyActivation(bundle, activation);
   }
   return result.transactionCount;
 }
@@ -252,6 +288,7 @@ function verifyMainnetBundle(repoRoot: string, bundle: Record<string, any>): num
   const result = verifyActivationPath(repoRoot, activation);
   if (bundle.kind === lazyMainnetBundleKind) {
     verifyLazyWindow(bundle, activation);
+    verifyBilateralLazyActivation(bundle, activation);
   }
   return result.transactionCount;
 }

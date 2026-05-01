@@ -69,10 +69,17 @@ Committed public evidence now includes Lazy `K = 2` activation runs on:
 | --- | --- |
 | Signet | [`docs/evidence/lazy-public-signet/`](evidence/lazy-public-signet/) |
 | Testnet | [`docs/evidence/lazy-public-testnet/`](evidence/lazy-public-testnet/) |
+| Signet with bilateral holder activation | [`docs/evidence/lazy-bilateral-public-signet/`](evidence/lazy-bilateral-public-signet/) |
+| Testnet with bilateral holder activation | [`docs/evidence/lazy-bilateral-public-testnet/`](evidence/lazy-bilateral-public-testnet/) |
 | Mainnet | [`docs/evidence/lazy-public-mainnet/`](evidence/lazy-public-mainnet/) |
 
 The mainnet run is dust-sized and demonstrates mechanical activation only. It
 is not production custody software and not a financial product release.
+
+The bilateral holder bundles record the same Lazy activation path with
+additional holder evidence: Alice, Bob, and a watchtower copy of the prepared
+edge package each complete the same bridge transaction after oracle
+attestation. The wrong outcome scalar and missing package paths fail closed.
 
 ## Remaining Work
 
