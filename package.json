@@ -24,6 +24,8 @@
     "test:bilateral-malformed-counterparty": "TMPDIR=/tmp tsx testnet/src/bilateral-malformed-counterparty-test.ts",
     "test:bilateral-settlement-execution": "TMPDIR=/tmp tsx testnet/src/bilateral-settlement-execution-test.ts",
     "test:bilateral-wrong-path-replay": "TMPDIR=/tmp tsx testnet/src/bilateral-wrong-path-replay-test.ts",
+    "test:layer3-artifacts": "TMPDIR=/tmp tsx testnet/src/l3-artifact-verify.ts",
+    "test:layer3": "bash scripts/run-layer3.sh",
     "test:mainnet-guards": "TMPDIR=/tmp tsx testnet/src/mainnet-guards-test.ts",
     "test:lightning": "TMPDIR=/tmp tsx testnet/src/lightning-offline-test.ts",
     "test:cdlc-smoke": "TMPDIR=/tmp tsx testnet/src/cdlc-smoke-test.ts",

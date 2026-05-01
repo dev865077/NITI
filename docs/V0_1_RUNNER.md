@@ -74,6 +74,12 @@ To run only the Lazy cDLC SPARK targets, use:
 npm run v0.1:verify -- --skip-node --skip-ada --lazy-spark
 ```
 
+To produce the dedicated Layer 3 bilateral replay package, use:
+
+```sh
+npm run test:layer3 -- --artifacts-dir testnet/artifacts/layer3-review
+```
+
 The extended sweeps are intentionally outside the default v0.1 command because
 the v0.1 release claim is the cDLC activation primitive, not production
 readiness for every modeled financial product or every lazy-continuation
@@ -84,6 +90,7 @@ protocol condition.
 The GitHub Actions workflow invokes this runner in scoped jobs:
 
 - TypeScript deterministic harness job: `--skip-ada --skip-spark`
+- Layer 3 bilateral artifact gate: `npm run test:layer3`
 - Ada manifest validator job: `--skip-node --skip-spark`
 - SPARK proof regression job: `--skip-node --skip-ada`
 - Lazy cDLC SPARK regression step: `--skip-node --skip-ada --lazy-spark`
