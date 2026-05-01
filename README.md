@@ -210,6 +210,7 @@ Use this table as the top-level audit map.
 | External auditor quickstart | [`docs/AUDITOR_QUICKSTART.md`](docs/AUDITOR_QUICKSTART.md) | Minimal reviewer path with dependencies, commands, expected outputs, troubleshooting, and a committed demo transcript. |
 | v0.1 limitations document | [`docs/V0_1_LIMITATIONS.md`](docs/V0_1_LIMITATIONS.md) | Technical diligence boundary for oracle, fee, liquidity, collateral, state retention, bilateral protocol, Lightning, and mainnet readiness. |
 | v0.1 release notes | [`docs/V0_1_RELEASE_NOTES.md`](docs/V0_1_RELEASE_NOTES.md) | Allowed/forbidden release claims, residual assumptions, and anti-overclaim reviewer checklist. |
+| Economic stress report | [`docs/ECONOMIC_STRESS_REPORT.md`](docs/ECONOMIC_STRESS_REPORT.md), [`docs/ECONOMIC_STRESS_GO_NO_GO.md`](docs/ECONOMIC_STRESS_GO_NO_GO.md), [`docs/evidence/economic-stress/`](docs/evidence/economic-stress/) | Deterministic 2022 BTC/USD replay, adversarial gap scenarios, holder recovery waterfall, fee/timelock stress, and product-level go/no-go. |
 | SPARK target inventory | [`docs/SPARK_TARGET_INVENTORY.md`](docs/SPARK_TARGET_INVENTORY.md) | Canonical map from SPARK targets to package files, object directories, commands, and claim families. |
 | Regtest Bitcoin Core bundle | [`docs/evidence/regtest-cdlc/`](docs/evidence/regtest-cdlc/) | Controlled Bitcoin Core regtest RPC broadcast, mempool checks, confirmations, raw tx files, timeout path. |
 | Deterministic Layer 2 closeout | [`docs/L2_DETERMINISTIC_CLOSEOUT.md`](docs/L2_DETERMINISTIC_CLOSEOUT.md) | Deterministic Layer 2 evidence, component status, and residual risks. |
@@ -421,8 +422,12 @@ docs/
                               Lazy public testnet parent CET -> bridge evidence
   evidence/lazy-public-mainnet/
                               Dust-sized Lazy mainnet parent CET -> bridge evidence
+  evidence/economic-stress/
+                              Deterministic economic stress report snapshot
   evidence/regtest-cdlc/ Bitcoin Core regtest tx evidence bundle
   ARCHITECTURE.md            Research/proof/testnet architecture
+  ECONOMIC_STRESS_REPORT.md  Product-level economic stress report
+  ECONOMIC_STRESS_GO_NO_GO.md Economic stress pilot gate
   PROTOCOL.md                cDLC protocol summary
   ROADMAP.md                 Engineering roadmap
   SECURITY.md                Safety boundary and non-goals
@@ -451,6 +456,7 @@ testnet/
   src/                       TypeScript harness and CLI
   ada/                       Ada cDLC manifest validator
   examples/                  Canonical manifests
+  fixtures/economic-stress/  BTC/USD 2022 stress dataset
   LIGHTNING.md               Lightning hold-invoice harness
   PUBLIC_SIGNET.md           Public signet/testnet workflow
   MAINNET_LIVE_RUN.md        Dust-sized mainnet activation workflow

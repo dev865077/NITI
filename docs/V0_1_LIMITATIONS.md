@@ -26,7 +26,7 @@ Everything below defines the boundary around that result.
 | Public network claim | Public signet evidence exists for one parent -> bridge -> child funding path. |
 | Bilateral protocol | Deterministic Alice/Bob harness exists. It is not production transport, wallet UX, custody, or backup infrastructure. |
 | Oracle layer | Not production. The scalar relation is exercised, and source/equivocation boundaries are documented, but production oracle operations remain out of scope. |
-| Economic stress | Outside the v0.1 activation claim. Financial payoff models exist, but historical stress replay and solvency reporting remain product work. |
+| Economic stress | Outside the v0.1 activation claim. Financial payoff models and deterministic stress outputs exist, but they are product diligence, not proof of future solvency. |
 | Mainnet readiness | Not claimed. A later dust-sized mainnet artifact demonstrates mechanics only; do not use with production funds. |
 
 ## What v0.1 Proves
@@ -168,8 +168,9 @@ Production collateral design still needs:
 - gap-risk treatment;
 - historical and adversarial stress testing.
 
-Economic stress work remains outside the v0.1 activation claim and is tracked
-as product-level diligence, not as proof of the activation primitive.
+Economic stress work remains outside the v0.1 activation claim. Deterministic
+stress evidence is product-level diligence, not proof of the activation
+primitive or future solvency.
 
 ### State Retention
 
