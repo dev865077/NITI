@@ -33,6 +33,9 @@ deterministic harness.
 | Acceptance matrix | `docs/V0_1_ACCEPTANCE_MATRIX.md` |
 | Claim lock | `docs/V0_1_CLAIM_LOCK.md` |
 | Fresh-clone audit | `docs/V0_1_FRESH_CLONE_AUDIT.md` |
+| Fixture manifest | `docs/V0_1_FIXTURE_MANIFEST.md` |
+| Artifact archive | `docs/V0_1_ARTIFACT_ARCHIVE.md` |
+| Go/no-go gate | `docs/V0_1_GO_NO_GO.md` |
 | Semantic trace | `docs/V0_1_SEMANTIC_TRACE.md` |
 | Written execution transcript | `docs/V0_1_EXECUTION_TRANSCRIPT.md` |
 | Bilateral transcript | `docs/V0_1_BILATERAL_E2E_TRANSCRIPT.md` |

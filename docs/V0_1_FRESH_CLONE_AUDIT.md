@@ -57,6 +57,10 @@ The Node gate validates the deterministic transaction harness, bilateral setup
 and settlement harnesses, lazy holder activation, adversarial failure matrix,
 public evidence verifier, and cDLC smoke transcript.
 
+Fixture sources and expected artifact kinds are listed in
+`docs/V0_1_FIXTURE_MANIFEST.md`. Durable committed artifacts, generated local
+artifacts, and CI artifacts are listed in `docs/V0_1_ARTIFACT_ARCHIVE.md`.
+
 ## Full Local Gate
 
 When GNAT and GNATprove are installed:
