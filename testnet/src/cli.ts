@@ -29,8 +29,15 @@ import {
 } from './oracle-audit.js';
 import {
   monitorOracleHistory,
+  type OracleHistoryLog,
   verifyOracleHistoryLog,
 } from './oracle-history.js';
+import {
+  loadOracleFixtureRepository,
+  queryOracleAnnouncements,
+  queryOracleAttestations,
+  queryOracleHistory,
+} from './oracle-query.js';
 import {
   LndRestClient,
   attestLightningOracle,
@@ -157,6 +164,9 @@ Commands:
   oracle:verify-attestation --announcement file.json --attestation file.json [--out file.json]
   oracle:history:verify --history file.json [--out file.json]
   oracle:history:monitor --history file.json [--out file.json]
+  oracle:query-announcements --fixtures-dir dir --event-id <id> [--out file.json]
+  oracle:query-attestations --fixtures-dir dir --event-id <id> --outcome <text> [--announcement-digest <hex>] [--out file.json]
+  oracle:query-history --history file.json --event-id <id> [--outcome <text>] [--out file.json]
   cdlc:parent-funding --network testnet4 [--out funding.json] [--raw-out funding.hex]
   taproot:prepare --network testnet4 --signer-output-secret-hex <hex> --signer-script-pubkey-hex <hex> --utxo-txid <txid> --utxo-vout <n> --utxo-value-sat <sat> --destination <addr> --fee-sat <sat> --adaptor-point-hex <compressed> [--out pending.json]
   taproot:complete --pending pending.json --attestation-secret-hex <hex> [--out completed.json] [--raw-out tx.hex]
@@ -318,6 +328,37 @@ async function main(): Promise<void> {
     if (!result.ok) {
       process.exit(1);
     }
+    return;
+  }
+
+  if (command === 'oracle:query-announcements') {
+    writeOrPrint(args, queryOracleAnnouncements({
+      repository: loadOracleFixtureRepository(stringArg(args, 'fixtures-dir')),
+      eventId: stringArg(args, 'event-id'),
+    }));
+    return;
+  }
+
+  if (command === 'oracle:query-attestations') {
+    writeOrPrint(args, queryOracleAttestations({
+      repository: loadOracleFixtureRepository(stringArg(args, 'fixtures-dir')),
+      eventId: stringArg(args, 'event-id'),
+      outcome: stringArg(args, 'outcome'),
+      ...(optionalStringArg(args, 'announcement-digest')
+        ? { announcementDigestHex: stringArg(args, 'announcement-digest') }
+        : {}),
+    }));
+    return;
+  }
+
+  if (command === 'oracle:query-history') {
+    writeOrPrint(args, queryOracleHistory({
+      history: readJsonFile<OracleHistoryLog>(stringArg(args, 'history')),
+      eventId: stringArg(args, 'event-id'),
+      ...(optionalStringArg(args, 'outcome')
+        ? { outcome: stringArg(args, 'outcome') }
+        : {}),
+    }));
     return;
   }
 
