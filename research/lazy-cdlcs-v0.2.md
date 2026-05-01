@@ -34,6 +34,11 @@ continuation state is not prepared before the current node can resolve, the
 contract must fall back to a terminal settlement, refund, liquidation, unwind,
 or other non-roll branch.
 
+This liveness boundary is about prior authorization of future edges, not about
+both signers being online at activation time. Once an edge package has been
+prepared and retained, activation after oracle attestation is non-interactive:
+any holder of the package can complete the bridge.
+
 ## 1. Base Construction Recap
 
 Let `C_i` be a parent DLC, `x` an outcome of `C_i`, and `C_j` a child DLC. A
@@ -395,6 +400,40 @@ continuation outcomes of `C_i`.
 This is conditional safety, not progress. If the precondition is false, the
 claim does not apply.
 
+### Claim 5: Non-Interactive Holder Activation
+
+Assume an edge package for `e = (i, x, j)` contains the bridge transaction
+`B_e`, the required adaptor signatures, and the local data needed to broadcast
+or audit `B_e`. If the oracle publishes the matching scalar `s_{i,x}`, then any
+holder of that package can complete the bridge without interacting with the
+signers.
+
+Proof: for every required signer `a`, the edge package contains:
+
+```text
+s_hat_a G = R*_a - S_{i,x} + c_a P_a.
+```
+
+After publication of `s_{i,x}`, define:
+
+```text
+s_a = s_hat_a + s_{i,x} mod n.
+```
+
+Since `S_{i,x} = s_{i,x}G`:
+
+```text
+s_aG
+= (s_hat_a + s_{i,x})G
+= R*_a - S_{i,x} + c_aP_a + S_{i,x}
+= R*_a + c_aP_a.
+```
+
+Thus each completed `(R*_a, s_a)` is a valid signature for `B_e`. No step uses
+a fresh private signing key, a new counterparty message, or bilateral online
+availability. The holder still needs the prepared edge package; without it,
+there is no adaptor state to complete.
+
 ## 6. Proof Boundary
 
 Lazy cDLCs inherit the proof boundary of the base construction.
@@ -420,7 +459,7 @@ The lazy claim does not prove:
 - mempool relay, package relay, fee bumping, or confirmation;
 - production wallet key management;
 - full bilateral DLC negotiation;
-- online availability of both parties;
+- online availability of both parties for future window extension;
 - oracle operations or future nonce scheduling;
 - economic solvency of a financial product.
 
@@ -435,7 +474,7 @@ future edges does not weaken that edge's activation isolation.
 
 Lazy cDLCs do not guarantee indefinite continuation.
 
-The minimum liveness condition is:
+The minimum prior-authorization condition is:
 
 ```text
 C_{i+1} must be fully prepared before C_i reaches the point where its oracle
@@ -453,8 +492,10 @@ that path may be:
 - non-roll continuation with reduced rights;
 - dispute or manual closeout path outside the cDLC graph.
 
-This is not a defect in the adaptor algebra. It is the real cost of replacing
-full upfront graph materialization with progressive preparation.
+This is not a requirement that both parties be online when `C_i` activates a
+prepared edge. It is the real cost of replacing full upfront graph
+materialization with progressive preparation: the next edge must already exist
+before it is relied on.
 
 The fallback path must be economically meaningful. A lazy protocol that gives a
 party a profitable reason to refuse window extension is not a safe financial

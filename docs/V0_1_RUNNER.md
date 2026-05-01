@@ -18,7 +18,8 @@ npm run v0.1:verify
 The default run performs:
 
 1. TypeScript build.
-2. Deterministic adaptor, bilateral setup, Lightning, and cDLC smoke tests.
+2. Deterministic adaptor, bilateral setup, bilateral lazy activation,
+   Lightning, and cDLC smoke tests.
 3. A fresh parent funding artifact at
    `testnet/artifacts/v0.1-*/parent-funding.json` and raw transaction at
    `testnet/artifacts/v0.1-*/parent-funding.hex`.
@@ -29,10 +30,11 @@ The default run performs:
 6. Ada cDLC manifest validator build.
 7. Sample finite cDLC manifest generation and validation.
 8. `pragma Assume` scan over SPARK proof sources.
-9. Core SPARK proof targets:
+9. Core and lazy-window SPARK proof targets:
    - `spark/cdlc_integer_proofs.gpr`
    - `spark/cdlc_residue_proofs.gpr`
    - `spark/cdlc_proofs.gpr`
+   - `spark/lazy_cdlc_window_proofs.gpr`
    - `spark/lightning_cdlc_proofs.gpr`
 
 Each step writes a log under the selected artifact directory. The runner also

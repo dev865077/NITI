@@ -468,6 +468,49 @@ boundary is the same kind of boundary as the base algebra: they check modeled
 finite claims, not secp256k1, SHA-256, Bitcoin serialization, mempool relay,
 wallet safety, oracle operations, or a full bilateral production protocol.
 
+Prepared-edge activation has a separate liveness property. The edge package
+contains the bridge transaction, child funding path, refund path, and all
+adaptor signatures required to spend the parent edge output. Each bridge
+adaptor verifies against the parent outcome point:
+
+```text
+s_hat_a G = R*_a - S_{i,x} + c_a P_a.
+```
+
+When the oracle publishes `s_{i,x}` with `S_{i,x} = s_{i,x}G`, any holder of
+that package can compute:
+
+```text
+s_a = s_hat_a + s_{i,x} mod n.
+```
+
+Then:
+
+```text
+s_a G
+= (s_hat_a + s_{i,x})G
+= R*_a - S_{i,x} + c_a P_a + S_{i,x}
+= R*_a + c_a P_a.
+```
+
+The completed bridge signature is therefore valid. No signer interaction is
+part of this activation equation. Alice, Bob, a watchtower, or any delegated
+activator can complete and broadcast the bridge if it has the prepared edge
+package and the oracle scalar.
+
+The real boundary is earlier: an edge that was not previously authorized cannot
+be created unilaterally after the oracle signs. Current Bitcoin signature rules
+do not let one party synthesize the other party's bridge authorization. Lazy
+compression therefore requires prior authorization and state availability, not
+bilateral online presence at activation time.
+
+The operational invariant is:
+
+```text
+prepared edge + matching scalar + at least one package holder -> activation
+missing edge package or unprepared edge                         -> fallback
+prepared edge + wrong scalar                                    -> rejection
+```
 ## 10. Applications
 
 A cDLC can express rolling contracts, automatic re-hedging, periodic synthetic
@@ -977,6 +1020,12 @@ per-period negotiation work, state backup, oracle scheduling, timeout policy,
 or product-specific payout compression. The cumulative lifetime work may still
 scale with the number of periods actually traversed.
 
+This is a prior-authorization and state-availability requirement. It is not a
+requirement that both signers remain online when the oracle attests. Once the
+edge package exists, activation is non-interactive; the remaining liveness
+condition is that at least one honest holder retains and can broadcast the
+package before the relevant timeout.
+
 ### 12.4 Bitcoin Policy, Fees, and Timelocks
 
 The equations prove that the right scalar completes the right signature. They
@@ -1050,10 +1099,11 @@ financial system exists." The claim is:
 ```text
 Under the stated cryptographic assumptions, if the parties maintain a valid
 cDLC preparation window of depth K, every live continuation edge from the active
-node has its child funding path prepared, and the oracle publishes exactly one
-valid outcome scalar, then that scalar can activate the corresponding prepared
-child edge and cannot activate non-corresponding edges except through the
-stated failure assumptions.
+node has its child funding path prepared, at least one honest holder retains
+the prepared edge package, and the oracle publishes exactly one valid outcome
+scalar before the relevant timeout, then that scalar can activate the
+corresponding prepared child edge without further signer interaction and cannot
+activate non-corresponding edges except through the stated failure assumptions.
 
 If the parties fail to extend the window before the required liveness deadline,
 the protocol does not guarantee continuation. It must execute the prepared
@@ -1087,6 +1137,12 @@ In HTLC-compatible channels, the oracle additionally commits to
 already the payment point. These channel forms improve the possible execution
 surface of cDLCs, but they remain extensions of the cDLC construction rather
 than a replacement for it.
+
+Lazy preparation preserves the same local activation rule. It can reduce live
+retained graph state, but only for edges that have already been authorized and
+stored. It does not remove the need to negotiate future edges before they are
+relied on; it shows that already-prepared edges do not require both parties to
+be online at the moment of oracle attestation.
 
 The result is real but bounded. The paper supports the mathematical existence
 of Cascading DLC activation under explicit assumptions and shows how lazy
