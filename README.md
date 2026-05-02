@@ -8,8 +8,7 @@ parent outcome also completes the bridge signatures and funds the child DLC.
 In other words...
 
 cDLCs introduce renewable fixed-term
-contracts with bilateral extension rights (like rolling contracts, re-hedging, periodic synthetic exposure, condi-
-tional refinancing, etc) directly to the Bitcoin protocol, without any need for updates.
+contracts with bilateral extension rights (like rolling contracts, re-hedging, periodic synthetic exposure, conditional refinancing, etc) directly to the Bitcoin protocol, without any need for updates.
 
 [![v0.1 validation](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml/badge.svg)](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml)
 ![Status](https://img.shields.io/badge/status-research%20prototype-orange)
