@@ -19,8 +19,6 @@ contracts with bilateral extension rights (like rolling contracts, re-hedging, p
 
 Start with the paper:
 [Cascading Discreet Log Contracts (cDLCs).pdf](<Cascading Discreet Log Contracts (cDLCs).pdf>).
-The LaTeX source is
-[Cascading Discreet Log Contracts (cDLCs).tex](<Cascading Discreet Log Contracts (cDLCs).tex>).
 
 The project is not production software. It contains a dust-sized mainnet
 activation run, but it is not custody software, wallet software, or a financial
