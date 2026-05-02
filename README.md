@@ -4,12 +4,17 @@
 ![License](https://img.shields.io/badge/license-GPL-black)
 ![Network](https://img.shields.io/badge/network-signet%2Ftestnet%2Fmainnet-lightgrey)
 
-Cascading Discreet Log Contracts, or cDLCs, are a construction for composing DLCs into
-finite graphs of conditionally activated Bitcoin transactions. For each parent outcome x,
-the oracle attestation point Sx is used as the adaptor point for signatures on a bridge
-transaction that spends the parent outcome output into a prepared child funding output.
-When the oracle later reveals the attestation scalar sx, the same scalar that settles the
-parent outcome also completes the bridge signatures and funds the child DLC.
+A DLC already contains a hidden scalar that becomes public only when a specific real-world
+outcome is attested. A cDLC uses that scalar twice: first to settle the parent contract,
+and second to complete adaptor signatures that fund the next contract.
+
+The core equation is:
+```text
+Sx = Ro + H(Ro ∥ V ∥ x) V, sxG = Sx, s = ˆs + sx (mod n).
+```
+
+This is sufficient to build a graph of conditional Bitcoin transactions in which one DLC
+outcome activates another.
 
 In other words...
 
