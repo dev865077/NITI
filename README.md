@@ -1,4 +1,15 @@
-# NITI
+Cascading Discreet Log Contracts, or cDLCs, are a construction for composing DLCs into
+finite graphs of conditionally activated Bitcoin transactions. For each parent outcome x,
+the oracle attestation point Sx is used as the adaptor point for signatures on a bridge
+transaction that spends the parent outcome output into a prepared child funding output.
+When the oracle later reveals the attestation scalar sx, the same scalar that settles the
+parent outcome also completes the bridge signatures and funds the child DLC.
+
+In other words...
+
+cDLCs introduce renewable fixed-term
+contracts with bilateral extension rights (like rolling contracts, re-hedging, periodic synthetic exposure, condi-
+tional refinancing, etc) directly to the Bitcoin protocol, without any need for updates.
 
 [![v0.1 validation](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml/badge.svg)](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml)
 ![Status](https://img.shields.io/badge/status-research%20prototype-orange)
@@ -6,21 +17,11 @@
 ![License](https://img.shields.io/badge/license-GPL-black)
 ![Network](https://img.shields.io/badge/network-signet%2Ftestnet%2Fmainnet-lightgrey)
 
-NITI is a research and implementation workspace for Cascading Discreet Log Contracts,
-or cDLCs.
 
 Start with the paper:
 [Cascading Discreet Log Contracts (cDLCs).pdf](<Cascading Discreet Log Contracts (cDLCs).pdf>).
 The LaTeX source is
 [Cascading Discreet Log Contracts (cDLCs).tex](<Cascading Discreet Log Contracts (cDLCs).tex>).
-
-The core result is narrow: a DLC oracle attestation scalar revealed by a parent
-contract can also complete adaptor signatures on a bridge transaction that
-funds the next contract. With Lazy Compression, equivalent continuation states
-share templates across a bounded preparation window. In the bounded,
-collateralized sense used by the paper, cDLCs with Lazy Compression are
-financially Turing complete: every computable financial contract over oracle
-data can be represented as oracle-conditioned cDLC state transitions.
 
 The project is not production software. It contains a dust-sized mainnet
 activation run, but it is not custody software, wallet software, or a financial
