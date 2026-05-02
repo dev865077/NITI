@@ -6,17 +6,10 @@
 
 A DLC already contains a hidden scalar that becomes public only when a specific real-world
 outcome is attested. A cDLC uses that scalar twice: first to settle the parent contract,
-and second to complete adaptor signatures that fund the next contract.
-
-The core equation is:
-```text
-Sx = Ro + H(Ro ∥ V ∥ x) V, sxG = Sx, s = ˆs + sx (mod n).
-```
-
-This is sufficient to build a graph of conditional Bitcoin transactions in which one DLC
+and second to complete adaptor signatures that fund the next contract. This is sufficient to build a graph of conditional Bitcoin transactions in which one DLC
 outcome activates another.
 
-In other words...
+In other words,
 
 cDLCs introduce renewable fixed-term
 contracts with bilateral extension rights (like rolling contracts, re-hedging, periodic synthetic exposure, conditional refinancing, etc) directly to the Bitcoin protocol, without any need for updates.
