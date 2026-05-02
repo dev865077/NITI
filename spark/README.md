@@ -8,7 +8,7 @@ For the canonical map from proof targets to package files, object directories,
 commands, and claim families, see
 [`docs/SPARK_TARGET_INVENTORY.md`](../docs/SPARK_TARGET_INVENTORY.md).
 
-There are twenty-five models:
+There are twenty-six models:
 
 - `cdlc_integer_algebra`: proves the core identities over mathematical
   integers with `SPARK.Big_Integers`. These are polynomial identities. Because
@@ -46,6 +46,12 @@ There are twenty-five models:
   compressed per-node weights reduce or equal raw live state, strict reduction
   requires positive saved weight, and no universal logarithmic compression is
   hidden in the model.
+- `lazy_cdlc_financial_completeness_algebra`: proves the finite branch-step
+  obligations used by the Lazy Compression financial completeness theorem:
+  positive and negative financial flows are conservative redistributions,
+  prepared matching branches activate, wrong or unprepared branches fall back,
+  equivalent compressed states share a continuation template, and terminal
+  payout accounting conserves funded collateral.
 - `lazy_cdlc_liveness_algebra`: proves the finite timing/fallback model:
   continuation requires both preparation and timing gates, missing gates select
   fallback, branches are disjoint and complete, and adjacent timing gates are
@@ -140,6 +146,12 @@ There are twenty-five models:
 - In the per-node compression model, compression is monotone and compositional:
   it can reduce retained weight when saved weight is positive, but the model
   makes no universal logarithmic-compression claim.
+- In the Lazy financial completeness model, computable collateral-bounded
+  financial transitions are represented as prepared branch steps whose
+  positive and negative flows are zero-sum, whose matching prepared branch
+  activates, whose wrong or unprepared branches fall back, whose compressed
+  state class determines the continuation template, and whose terminal payout
+  conserves funded collateral.
 - In the Lazy cDLC liveness model, continuation requires preparation and timing
   gates; if either gate fails, fallback is selected, and the modeled branches
   are complete and disjoint.

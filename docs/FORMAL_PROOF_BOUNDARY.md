@@ -36,6 +36,13 @@ prepared edge, retained state is bounded by the modeled window, recombination
 and per-node compression do not increase retained state, and missing
 preparation or timing gates select fallback.
 
+The Lazy financial completeness target proves the local branch-step obligations
+for computable, collateral-bounded financial transitions: positive and negative
+flows are conservative redistributions, prepared matching branches activate,
+wrong or unprepared branches fall back, compressed state classes determine
+continuation templates, in-window prepared branches are executable, and terminal
+payout accounting conserves funded collateral.
+
 The Lightning target proves finite HTLC/PTLC companion predicates under the
 model's assumptions: correct witnesses settle, wrong witnesses do not settle,
 route tweaks preserve point-lock correctness, child activation follows the

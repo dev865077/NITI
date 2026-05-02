@@ -203,6 +203,7 @@ if [ "$RUN_SPARK" -eq 1 ]; then
       spark/lazy_cdlc_tree_bound_proofs.gpr
       spark/lazy_cdlc_recombining_proofs.gpr
       spark/lazy_cdlc_compression_proofs.gpr
+      spark/lazy_cdlc_financial_completeness_proofs.gpr
       spark/lazy_cdlc_liveness_proofs.gpr
       spark/lazy_cdlc_loan_rollover_proofs.gpr
       spark/btc_collateral_loan_proofs.gpr
@@ -227,6 +228,7 @@ if [ "$RUN_SPARK" -eq 1 ]; then
       spark/lazy_cdlc_tree_bound_proofs.gpr
       spark/lazy_cdlc_recombining_proofs.gpr
       spark/lazy_cdlc_compression_proofs.gpr
+      spark/lazy_cdlc_financial_completeness_proofs.gpr
       spark/lazy_cdlc_liveness_proofs.gpr
       spark/lazy_cdlc_loan_rollover_proofs.gpr
     )

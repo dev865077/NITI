@@ -9,84 +9,30 @@
 NITI is a research and implementation workspace for Cascading Discreet Log Contracts,
 or cDLCs.
 
-Start with the paper: [Cascading Discreet Log Contracts (cDLCs).pdf](<Cascading Discreet Log Contracts (cDLCs).pdf>).
+Start with the paper:
+[Cascading Discreet Log Contracts (cDLCs).pdf](<Cascading Discreet Log Contracts (cDLCs).pdf>).
+The LaTeX source is
+[Cascading Discreet Log Contracts (cDLCs).tex](<Cascading Discreet Log Contracts (cDLCs).tex>).
 
 The core result is narrow: a DLC oracle attestation scalar revealed by a parent
 contract can also complete adaptor signatures on a bridge transaction that
-funds the next contract.
-
-The current scaling result is Lazy cDLC preparation: because activation safety
-is local to a prepared edge, the full future graph does not need to be retained
-at genesis.
+funds the next contract. With Lazy Compression, equivalent continuation states
+share templates across a bounded preparation window. In the bounded,
+collateralized sense used by the paper, cDLCs with Lazy Compression are
+financially Turing complete: every computable financial contract over oracle
+data can be represented as oracle-conditioned cDLC state transitions.
 
 The project is not production software. It contains a dust-sized mainnet
 activation run, but it is not custody software, wallet software, or a financial
 product release.
 
-## Current State
-
-NITI now has public Bitcoin evidence for a single cDLC activation path:
-
-```text
-public funding
-  -> parent CET confirmed
-  -> oracle scalar completes bridge adaptor signature
-  -> bridge confirmed
-  -> child funding output exists
-```
-
-The strongest committed execution artifact is the dust-sized Lazy mainnet run
-in [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/).
-It demonstrates a `K = 2` bounded preparation window on Bitcoin mainnet:
-
-| Item | Value |
-| --- | --- |
-| Funding output | [`d05aa027...67efee3:0`](https://mempool.space/tx/d05aa027f1e046a7deef5f28d11f7b729149293c5eb4eaaac882eaab567efee3), `31,878 sats` |
-| Parent CET | [`2abf8200...54775c9`](https://mempool.space/tx/2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9), mainnet block `947247` |
-| Bridge | [`2bd5ff8c...e96263af`](https://mempool.space/tx/2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af), mainnet block `947248` |
-| Child funding output | `2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af:0`, `30,378 sats` |
-| Evidence bundle | [`lazy-activation-evidence-bundle.json`](docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json) |
-
-This is still a technical prototype result. The remaining major work is not
-another proof of the basic activation primitive; it is protocol hardening:
-production bilateral transport, oracle auditability, economic stress, wallet
-UX, fee/reorg policy, and external review.
-
-## Lazy cDLC Compression
-
-Lazy cDLCs are the current NITI path for making deep cDLC graphs practical.
-The compression is live-state compression, not a claim that every product cost
-disappears.
-
-For a non-recombining graph with branching factor `b` and depth `D`, eager
-preparation may require retaining:
-
-```text
-EagerNodes(D) = 1 + b + b^2 + ... + b^D
-```
-
-With a Lazy preparation window of depth `K`, retained live state is bounded by:
-
-```text
-LazyNodes(K) = 1 + b + b^2 + ... + b^(K-1)
-```
-
-For fixed `K`, the live retained state is independent of total product depth
-`D`. Lifetime negotiation work may still grow with the number of periods
-actually traversed, and per-node compression remains payoff-dependent.
-
-The SPARK/Ada Lazy proof suite models finite-window preparation, edge-local
-activation independence, window sliding, retained-state bounds, recombining
-state, per-node compression composition, liveness fallback, and a BTC loan
-rollover specialization. See [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md).
-
 ## Contents
 
-- [Current State](#current-state)
-- [Lazy cDLC Compression](#lazy-cdlc-compression)
-- [Reproducibility Status](#reproducibility-status)
-- [Precise Claim](#precise-claim)
+- [Whitepaper Claim](#whitepaper-claim)
 - [How cDLC Cascading Works](#how-cdlc-cascading-works)
+- [Lazy Compression And Financial Completeness](#lazy-compression-and-financial-completeness)
+- [Current State](#current-state)
+- [Reproducibility Status](#reproducibility-status)
 - [Evidence Map](#evidence-map)
 - [Quick Start](#quick-start)
 - [Reproduce Evidence](#reproduce-evidence)
@@ -99,25 +45,7 @@ rollover specialization. See [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.
 - [Security Boundary](#security-boundary)
 - [License](#license)
 
-## Reproducibility Status
-
-The current remote release gate is the
-[v0.1 validation workflow](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml).
-The latest recorded green `main` baseline for this status is commit
-[`f13e662751eadfc4e0038b82ece88c099b6ab574`](https://github.com/dev865077/NITI/commit/f13e662751eadfc4e0038b82ece88c099b6ab574),
-validated by
-[GitHub Actions run `25088426740`](https://github.com/dev865077/NITI/actions/runs/25088426740).
-
-| Surface | Status | Evidence |
-| --- | --- | --- |
-| Remote v0.1 CI gate | Passing for the recorded `main` baseline. | [`v0.1 validation`](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) |
-| Local full gate | Reproducible with `npm run v0.1:verify` when Node, Ada, and SPARK toolchains are installed. | [`docs/V0_1_RUNNER.md`](docs/V0_1_RUNNER.md) |
-| Public signet activation | Committed public evidence exists for one parent -> bridge -> child funding path. | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) |
-| Lazy SPARK compression suite | Finite Lazy models cover bounded windows, edge-local independence, retained-state bounds, recombination, compression composition, liveness fallback, and loan rollover. | [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md) |
-| Lazy mainnet activation | A dust-sized `K = 2` Lazy path is committed with Bitcoin mainnet confirmations for parent CET and bridge. | [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/) |
-| Manual or experimental surfaces | Fresh public broadcasts, faucet funding, production wallet behavior, fee-bump policy, and product-level SPARK sweeps remain explicit manual or extended steps. | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) |
-
-## Precise Claim
+## Whitepaper Claim
 
 The conservative claim supported by the current repository is:
 
@@ -135,6 +63,12 @@ This claim is supported by four evidence layers:
 | Deterministic/regtest evidence | Local deterministic transcripts and Bitcoin Core regtest broadcast/confirmation evidence are committed. |
 | Public signet evidence | A funded parent output, parent CET, bridge, and child funding output were broadcast and confirmed on public signet. |
 | Dust mainnet evidence | A Lazy bounded-window parent CET and bridge were broadcast and confirmed on Bitcoin mainnet with a small controlled UTXO. |
+
+The expressiveness claim added by Lazy Compression is:
+
+> Every computable, collateral-bounded financial contract over oracle streams
+> can be represented as a sequence of prepared cDLC state transitions, provided
+> the required preparation windows and oracle attestations exist before use.
 
 NITI does not claim:
 
@@ -180,16 +114,109 @@ flowchart LR
   Y["Oracle reveals s_y"] -. "wrong outcome rejected" .-> C
 ```
 
+## Lazy Compression And Financial Completeness
+
+Lazy cDLCs are the current NITI path for making deep cDLC graphs practical.
+The compression is live-state compression, not a claim that every product cost
+disappears.
+
+For a non-recombining graph with branching factor `b` and depth `D`, eager
+preparation may require retaining:
+
+```text
+EagerNodes(D) = 1 + b + b^2 + ... + b^D
+```
+
+With a Lazy preparation window of depth `K`, retained live state is bounded by:
+
+```text
+LazyNodes(K) = 1 + b + b^2 + ... + b^(K-1)
+```
+
+For fixed `K`, the live retained state is independent of total product depth
+`D`. If histories recombine into the same compressed financial state, they
+share the same continuation template.
+
+The financial-completeness statement uses the same locality. A financial state
+is represented as:
+
+```text
+z = (q, m, a, b, r)
+a + b + r = T
+```
+
+where `q` is finite control, `m` is encoded memory, `a` and `b` are party
+claims, and `r` is reserve collateral. A computable transition
+`delta(z, x)` is compiled into a branch for oracle outcome `x`. Positive and
+negative flows are conservative redistributions of funded sats. Terminal
+payouts are allowed only when bounded by the collateral `T`.
+
+The SPARK/Ada Lazy proof suite models finite-window preparation, edge-local
+activation independence, window sliding, retained-state bounds, recombining
+state, per-node compression composition, liveness fallback, financial
+completeness branch-step accounting, and a BTC loan rollover specialization.
+See [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md),
+[`research/lazy-compression-financial-completeness.md`](research/lazy-compression-financial-completeness.md),
+and [`docs/SPARK_TARGET_INVENTORY.md`](docs/SPARK_TARGET_INVENTORY.md).
+
+## Current State
+
+NITI now has public Bitcoin evidence for a single cDLC activation path:
+
+```text
+public funding
+  -> parent CET confirmed
+  -> oracle scalar completes bridge adaptor signature
+  -> bridge confirmed
+  -> child funding output exists
+```
+
+The strongest committed execution artifact is the dust-sized Lazy mainnet run
+in [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/).
+It demonstrates a `K = 2` bounded preparation window on Bitcoin mainnet:
+
+| Item | Value |
+| --- | --- |
+| Funding output | [`d05aa027...67efee3:0`](https://mempool.space/tx/d05aa027f1e046a7deef5f28d11f7b729149293c5eb4eaaac882eaab567efee3), `31,878 sats` |
+| Parent CET | [`2abf8200...54775c9`](https://mempool.space/tx/2abf820058b146d32d186a62675990abeedc55971e2c7e2ecadc936b854775c9), mainnet block `947247` |
+| Bridge | [`2bd5ff8c...e96263af`](https://mempool.space/tx/2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af), mainnet block `947248` |
+| Child funding output | `2bd5ff8c7010c0b7803137e6e72e0a41ff0357e3bdf0f3a1ed878552e96263af:0`, `30,378 sats` |
+| Evidence bundle | [`lazy-activation-evidence-bundle.json`](docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json) |
+
+This is still a technical prototype result. The remaining major work is not
+another proof of the basic activation primitive; it is protocol hardening:
+production bilateral transport, oracle auditability, economic stress, wallet
+UX, fee/reorg policy, and external review.
+
+## Reproducibility Status
+
+The current remote release gate is the
+[v0.1 validation workflow](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml).
+The latest recorded green `main` baseline for this status is commit
+[`f13e662751eadfc4e0038b82ece88c099b6ab574`](https://github.com/dev865077/NITI/commit/f13e662751eadfc4e0038b82ece88c099b6ab574),
+validated by
+[GitHub Actions run `25088426740`](https://github.com/dev865077/NITI/actions/runs/25088426740).
+
+| Surface | Status | Evidence |
+| --- | --- | --- |
+| Remote v0.1 CI gate | Passing for the recorded `main` baseline. | [`v0.1 validation`](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml) |
+| Local full gate | Reproducible with `npm run v0.1:verify` when Node, Ada, and SPARK toolchains are installed. | [`docs/V0_1_RUNNER.md`](docs/V0_1_RUNNER.md) |
+| Public signet activation | Committed public evidence exists for one parent -> bridge -> child funding path. | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) |
+| Lazy SPARK compression suite | Finite Lazy models cover bounded windows, edge-local independence, retained-state bounds, recombination, compression composition, liveness fallback, financial completeness, and loan rollover. | [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md) |
+| Lazy mainnet activation | A dust-sized `K = 2` Lazy path is committed with Bitcoin mainnet confirmations for parent CET and bridge. | [`docs/evidence/lazy-public-mainnet/`](docs/evidence/lazy-public-mainnet/) |
+| Manual or experimental surfaces | Fresh public broadcasts, faucet funding, production wallet behavior, fee-bump policy, and product-level SPARK sweeps remain explicit manual or extended steps. | [`docs/V0_1_REPRODUCIBILITY_STATUS.md`](docs/V0_1_REPRODUCIBILITY_STATUS.md) |
+
 ## Evidence Map
 
 Use this table as the top-level audit map.
 
 | Evidence | Where | What it supports |
 | --- | --- | --- |
-| Primary whitepaper | [Cascading Discreet Log Contracts (cDLCs).pdf](<Cascading Discreet Log Contracts (cDLCs).pdf>) | cDLC construction, security claims, Lightning extension, and limitations. |
+| Primary whitepaper | [PDF](<Cascading Discreet Log Contracts (cDLCs).pdf>), [LaTeX source](<Cascading Discreet Log Contracts (cDLCs).tex>) | cDLC construction, security claims, Lazy financial completeness, Lightning extension, and limitations. |
 | Protocol summary | [`docs/PROTOCOL.md`](docs/PROTOCOL.md) | Compact protocol description: oracle, adaptor, bridge, Lightning, graph discipline. |
 | Architecture note | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Research, proof, and testnet architecture. |
 | Lazy cDLC status | [`docs/LAZY_CDLC_STATUS.md`](docs/LAZY_CDLC_STATUS.md) | Live-state compression claim, proof boundary, public evidence, and remaining work. |
+| Lazy financial completeness | [`research/lazy-compression-financial-completeness.md`](research/lazy-compression-financial-completeness.md) | Expressiveness theorem for computable, collateral-bounded financial contracts represented by cDLCs with Lazy Compression, with SPARK companion obligations. |
 | Public signet activation bundle | [`docs/evidence/public-signet/`](docs/evidence/public-signet/) | Funded public signet parent CET, bridge confirmation, child funding output, raw tx files, verifier log. |
 | Lazy public testnet bundle | [`docs/evidence/lazy-public-testnet/`](docs/evidence/lazy-public-testnet/) | Public Bitcoin testnet Lazy `K = 2` parent CET, bridge confirmation, child funding output, raw tx files, and Lazy window manifest. |
 | Lazy bilateral public signet bundle | [`docs/evidence/lazy-bilateral-public-signet/`](docs/evidence/lazy-bilateral-public-signet/) | Public Bitcoin signet Lazy `K = 2` run with holder evidence: Alice, Bob, and watchtower holders each complete the same broadcast bridge from the retained prepared edge package. |
@@ -466,6 +493,8 @@ testnet/
   REGTEST.md                 Deterministic Bitcoin Core regtest guide
 Cascading Discreet Log Contracts (cDLCs).pdf
                              Primary cDLC whitepaper
+Cascading Discreet Log Contracts (cDLCs).tex
+                             LaTeX source for the primary cDLC whitepaper
 ```
 
 The local `site/` directory is ignored by Git and is not part of the GitHub
