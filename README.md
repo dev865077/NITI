@@ -1,3 +1,9 @@
+[![v0.1 validation](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml/badge.svg)](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml)
+![Status](https://img.shields.io/badge/status-research%20prototype-orange)
+![Evidence](https://img.shields.io/badge/evidence-public%20Bitcoin%20verified-brightgreen)
+![License](https://img.shields.io/badge/license-GPL-black)
+![Network](https://img.shields.io/badge/network-signet%2Ftestnet%2Fmainnet-lightgrey)
+
 Cascading Discreet Log Contracts, or cDLCs, are a construction for composing DLCs into
 finite graphs of conditionally activated Bitcoin transactions. For each parent outcome x,
 the oracle attestation point Sx is used as the adaptor point for signatures on a bridge
@@ -9,12 +15,6 @@ In other words...
 
 cDLCs introduce renewable fixed-term
 contracts with bilateral extension rights (like rolling contracts, re-hedging, periodic synthetic exposure, conditional refinancing, etc) directly to the Bitcoin protocol, without any need for updates.
-
-[![v0.1 validation](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml/badge.svg)](https://github.com/dev865077/NITI/actions/workflows/v0-1-validation.yml)
-![Status](https://img.shields.io/badge/status-research%20prototype-orange)
-![Evidence](https://img.shields.io/badge/evidence-public%20Bitcoin%20verified-brightgreen)
-![License](https://img.shields.io/badge/license-GPL-black)
-![Network](https://img.shields.io/badge/network-signet%2Ftestnet%2Fmainnet-lightgrey)
 
 
 Start with the paper:
