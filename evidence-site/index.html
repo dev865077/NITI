@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="NITI evidence reel for a testnet cDLC activation, using real signet transaction screenshots."
+    >
+    <title>NITI Evidence Reel | Testnet cDLC</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="scanline" aria-hidden="true"></div>
+    <div class="progress" aria-hidden="true"><span data-progress></span></div>
+    <div class="dock" aria-label="Playback and language controls">
+      <button type="button" data-lang-toggle>EN</button>
+      <button type="button" data-play data-i18n="play">Play</button>
+    </div>
+
+    <main>
+      <section class="scene hero" data-scene>
+        <div class="pixel-tag">SIGNET / TESTNET / REAL TX</div>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow" data-i18n="heroEyebrow">EVIDÊNCIA, NÃO PROMESSA</p>
+            <h1 data-i18n="heroTitle">Começa aqui: esta transação é a bridge.</h1>
+            <p class="script-line" data-i18n="heroLine">
+              Olhe para o print como um bitcoiner: uma entrada, uma saída, uma taxa,
+              confirmações. A pergunta é simples: por que essa transação só ficou
+              válida depois do oracle falar?
+            </p>
+            <div class="fact-row">
+              <span>txid</span>
+              <strong>b71a2b79...22e59c</strong>
+            </div>
+            <div class="fact-row">
+              <span data-i18n="bridgeAmountLabel">saída</span>
+              <strong>6,500 sats</strong>
+            </div>
+            <div class="fact-row">
+              <span data-i18n="bridgeRoleLabel">papel</span>
+              <strong data-i18n="bridgeRole">ativa o child</strong>
+            </div>
+          </div>
+          <figure class="browser-shot hero-shot">
+            <img src="./assets/mempool/bridge.png" alt="mempool.space signet bridge transaction screenshot">
+            <figcaption data-i18n="heroCaption">Print real de mempool.space/signet: a bridge broadcastada.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="scene thesis" data-scene>
+        <div class="mono-title">00_THE_POINT</div>
+        <div class="thesis-card">
+          <h2 data-i18n="pointTitle">A NITI não pede que você imagine o contrato. Ela mostra a trilha.</h2>
+          <p data-i18n="pointCopy">
+            Parent funding. Parent CET. Bridge. Child funding. A história inteira
+            vira uma sequência de UTXOs. O contrato não é uma promessa fora da
+            cadeia; é uma coreografia de transações preparadas antes e ativadas
+            pelo resultado certo.
+          </p>
+        </div>
+      </section>
+
+      <section class="scene chain-map" data-scene>
+        <div class="section-copy">
+          <p class="eyebrow" data-i18n="mapEyebrow">O mapa mental</p>
+          <h2 data-i18n="mapTitle">Pense em três portas em fila.</h2>
+          <p data-i18n="mapCopy">
+            A primeira porta guarda o parent. A segunda é a bridge. A terceira é
+            o child. Antes do evento, as fechaduras já estão instaladas. O oracle
+            não move sats; ele revela a senha que faz a assinatura certa fechar.
+          </p>
+        </div>
+        <div class="door-strip" aria-label="Parent bridge child sequence">
+          <div class="door active">
+            <span>01</span>
+            <strong>parent funding</strong>
+            <em>8,000 sats</em>
+          </div>
+          <div class="door active">
+            <span>02</span>
+            <strong>parent CET</strong>
+            <em>7,000 sats</em>
+          </div>
+          <div class="door hot">
+            <span>03</span>
+            <strong>bridge</strong>
+            <em>6,500 sats</em>
+          </div>
+          <div class="door">
+            <span>04</span>
+            <strong>child funding</strong>
+            <em>outpoint :0</em>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene tx-scene" data-scene>
+        <div class="tx-copy">
+          <p class="eyebrow" data-i18n="fundingEyebrow">Cena 1</p>
+          <h2 data-i18n="fundingTitle">Primeiro entra o colateral no parent.</h2>
+          <p data-i18n="fundingCopy">
+            Isto é só Bitcoin normal: um UTXO em signet aparece no explorer. A
+            NITI chama isso de parent funding porque é daqui que o primeiro
+            contrato pode ser resolvido.
+          </p>
+          <a class="tx-link" href="https://mempool.space/signet/tx/c61fc4bc0a8050ae423ebfb31be94f3f376a611c61f512334320452f13a6e5c6" target="_blank" rel="noreferrer">
+            c61fc4bc...3a6e5c6
+          </a>
+        </div>
+        <figure class="browser-shot">
+          <img src="./assets/mempool/parent-funding.png" alt="mempool.space signet parent funding transaction screenshot">
+          <figcaption data-i18n="fundingCaption">Funding real do parent: 8,000 sats no bundle bilateral signet.</figcaption>
+        </figure>
+      </section>
+
+      <section class="scene oracle-scene" data-scene>
+        <div class="oracle-board">
+          <div class="big-word">ORACLE</div>
+          <div class="secret-tape">
+            <span>BTCUSD_ABOVE_STRIKE</span>
+            <strong>sₓ</strong>
+          </div>
+          <div class="pulse-grid" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="section-copy">
+          <p class="eyebrow" data-i18n="oracleEyebrow">Cena 2</p>
+          <h2 data-i18n="oracleTitle">O oracle não “aprova” nada. Ele revela um número.</h2>
+          <p data-i18n="oracleCopy">
+            Esse número é o segredo do outcome. Quem já tinha o pacote preparado
+            consegue somar esse segredo ao adaptor e transformar uma quase-assinatura
+            em uma assinatura Bitcoin válida.
+          </p>
+        </div>
+      </section>
+
+      <section class="scene tx-scene reverse" data-scene>
+        <div class="tx-copy">
+          <p class="eyebrow" data-i18n="cetEyebrow">Cena 3</p>
+          <h2 data-i18n="cetTitle">O parent fecha no CET do outcome certo.</h2>
+          <p data-i18n="cetCopy">
+            Depois da attestation, o parent CET gasta o funding. Esse passo é o
+            contrato dizendo: “o resultado chegou; este caminho venceu”.
+          </p>
+          <a class="tx-link" href="https://mempool.space/signet/tx/a8963ae92df055c6f5cd7e3fe26238780929c2af6e78cab705dea460774d769b" target="_blank" rel="noreferrer">
+            a8963ae9...774d769b
+          </a>
+        </div>
+        <figure class="browser-shot">
+          <img src="./assets/mempool/parent-cet.png" alt="mempool.space signet parent CET transaction screenshot">
+          <figcaption data-i18n="cetCaption">Parent CET real: 7,000 sats, confirmado em signet.</figcaption>
+        </figure>
+      </section>
+
+      <section class="scene tx-scene bridge-focus" data-scene>
+        <div class="tx-copy">
+          <p class="eyebrow" data-i18n="bridgeEyebrow">Cena 4</p>
+          <h2 data-i18n="bridgeTitle">A mesma senha destrava a bridge.</h2>
+          <p data-i18n="bridgeCopy">
+            Aqui está a sacada do cDLC: o segredo que fecha o parent também
+            completa a bridge. A bridge gasta a saída do CET e cria o funding do
+            child. Não tem mágica, tem assinatura que só fecha com o outcome certo.
+          </p>
+          <a class="tx-link" href="https://mempool.space/signet/tx/b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c" target="_blank" rel="noreferrer">
+            b71a2b79...22e59c
+          </a>
+        </div>
+        <figure class="browser-shot">
+          <img src="./assets/mempool/bridge.png" alt="mempool.space signet bridge transaction screenshot">
+          <figcaption data-i18n="bridgeCaption">Bridge real: uma entrada de 7,000 sats, saída child de 6,500 sats, taxa de 500 sats.</figcaption>
+        </figure>
+      </section>
+
+      <section class="scene aha" data-scene>
+        <div class="mono-title">A_SACADA</div>
+        <div class="aha-grid">
+          <div>
+            <h2 data-i18n="ahaTitle">Uma revelação. Dois efeitos.</h2>
+            <p data-i18n="ahaCopy">
+              Sem o segredo, a bridge é um rascunho criptográfico. Com o segredo,
+              ela vira uma transação Bitcoin normal. Por isso o cDLC consegue
+              encadear contratos sem deixar o próximo passo depender de um signer
+              online na hora do evento.
+            </p>
+          </div>
+          <div class="equation">
+            <span>adaptor</span>
+            <strong>+</strong>
+            <span>sₓ</span>
+            <strong>=</strong>
+            <span>witness</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene fail" data-scene>
+        <div class="section-copy">
+          <p class="eyebrow" data-i18n="failEyebrow">Falha fechada</p>
+          <h2 data-i18n="failTitle">Se a senha errada aparece, nada abre.</h2>
+          <p data-i18n="failCopy">
+            O bundle não mostra só o caminho feliz. Ele registra que outcome
+            errado não ativa a edge, pacote ausente não basta e refund antecipado
+            respeita timelock.
+          </p>
+        </div>
+        <div class="fail-stack">
+          <div><span>wrong outcome</span><strong>rejected</strong></div>
+          <div><span>missing package</span><strong>rejected</strong></div>
+          <div><span>early refund</span><strong>blocked</strong></div>
+        </div>
+      </section>
+
+      <section class="scene retainers" data-scene>
+        <div class="section-copy">
+          <p class="eyebrow" data-i18n="holderEyebrow">Retainer</p>
+          <h2 data-i18n="holderTitle">Alice, Bob e watchtower chegam ao mesmo txid.</h2>
+          <p data-i18n="holderCopy">
+            Cada holder autorizado carrega o pacote preparado. Quando o oracle
+            publica o segredo, qualquer um deles consegue completar a mesma bridge.
+            Eles não recebem signer secret; recebem só o material necessário para
+            agir depois do outcome.
+          </p>
+        </div>
+        <div class="holder-grid" data-holder-grid></div>
+      </section>
+
+      <section class="scene product" data-scene>
+        <div class="section-copy">
+          <p class="eyebrow" data-i18n="productEyebrow">Produto-demo</p>
+          <h2 data-i18n="productTitle">Agora troque “outcome” por preço BTC/USD.</h2>
+          <p data-i18n="productCopy">
+            Em testnet, a mesma mecânica pode ensinar exposição educativa ao
+            dólar: o oracle informa preço, o contrato calcula quantos sats cabem
+            no alvo, e o payout nunca promete dinheiro real.
+          </p>
+        </div>
+        <div class="demo-card">
+          <div class="stamp">TESTNET ONLY</div>
+          <div><span data-i18n="collateral">colateral</span><strong>8,000 sats</strong></div>
+          <div><span data-i18n="price">preço oracle</span><strong>$60,000/BTC</strong></div>
+          <div><span data-i18n="target">alvo didático</span><strong>$3.90</strong></div>
+          <div class="claim"><span data-i18n="claim">claim calculado</span><strong>6,500 sats</strong></div>
+          <p data-i18n="productBoundary">Simulação em signet/testnet. Sem peg, sem resgate, sem mainnet, sem custódia de valor real.</p>
+        </div>
+      </section>
+
+      <section class="scene proof" data-scene>
+        <div class="section-copy">
+          <p class="eyebrow" data-i18n="proofEyebrow">Prova e replay</p>
+          <h2 data-i18n="proofTitle">A tela é simples. A evidência é auditável.</h2>
+          <p data-i18n="proofCopy">
+            O site aponta para txids públicos, bundles commitados e inventário de
+            prova. A parte visual serve para explicar; a confiança vem do replay.
+          </p>
+        </div>
+        <div class="source-list">
+          <a href="/docs/evidence/lazy-bilateral-public-signet/lazy-activation-evidence-bundle.json">bilateral signet bundle</a>
+          <a href="/docs/evidence/lazy-public-signet/lazy-activation-evidence-bundle.json">public signet bundle</a>
+          <a href="/docs/evidence/lazy-public-mainnet/lazy-activation-evidence-bundle.json">mainnet histórica / visual only</a>
+          <a href="/docs/evidence/economic-stress/economic-stress-results.json">economic stress limit</a>
+          <a href="/cdlc-lean/PROOF_INVENTORY.md">Lean protocol inventory</a>
+        </div>
+      </section>
+
+      <section class="scene terminal" data-scene>
+        <div class="section-copy">
+          <p class="eyebrow" data-i18n="testEyebrow">Teste você mesmo</p>
+          <h2 data-i18n="testTitle">Não assine no browser. Rode o teste no terminal.</h2>
+          <p data-i18n="testCopy">
+            A página só mostra evidência e comandos. Execução ao vivo continua
+            explícita, local e testnet/signet.
+          </p>
+        </div>
+        <div class="terminal-grid">
+          <article>
+            <h3 data-i18n="cmdReplay">Ver replay</h3>
+            <pre><code data-command="replay"></code></pre>
+            <button type="button" data-copy-command="replay" data-i18n="copy">Copiar</button>
+          </article>
+          <article>
+            <h3 data-i18n="cmdFunding">Gerar funding request</h3>
+            <pre><code data-command="funding"></code></pre>
+            <button type="button" data-copy-command="funding" data-i18n="copy">Copiar</button>
+          </article>
+          <article>
+            <h3 data-i18n="cmdVerify">Verificar bundle</h3>
+            <pre><code data-command="verify"></code></pre>
+            <button type="button" data-copy-command="verify" data-i18n="copy">Copiar</button>
+          </article>
+        </div>
+        <div class="txid-tool">
+          <label for="txid-input" data-i18n="txidLabel">Cole um txid signet/testnet</label>
+          <div>
+            <input id="txid-input" data-txid-input value="b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c">
+            <a data-txid-link href="https://mempool.space/signet/tx/b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c" target="_blank" rel="noreferrer" data-i18n="openExplorer">Abrir no explorer</a>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p data-i18n="footer">
+          Demo educativa em signet/testnet. Nada aqui é oferta financeira,
+          garantia de dólar, stablecoin, custódia real ou fluxo mainnet.
+        </p>
+      </footer>
+    </main>
+
+    <script type="module" src="./dist/app.js"></script>
+  </body>
+</html>

@@ -56,6 +56,8 @@
     "regtest:info": "bash scripts/regtest-env.sh info",
     "site:build": "tsc -p site/tsconfig.json",
     "site:serve": "npm run site:build && tsc -p site/tsconfig.server.json && node site/dist-server/server.js",
+    "evidence-site:build": "tsc -p evidence-site/tsconfig.json",
+    "evidence-site:serve": "npm run evidence-site:build && tsc -p evidence-site/tsconfig.server.json && node evidence-site/dist-server/server.js",
     "ada:build": "PATH=/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH gprbuild -P testnet/ada/niti_cdlc_testnet.gpr",
     "ada:validate": "PATH=/opt/gnat-fsf/tools/gprbuild-x86_64-linux-25.0.0-1/bin:/opt/gnat-fsf/tools/gnat-x86_64-linux-15.1.0-2/bin:$PATH ./testnet/ada/bin/niti_manifest_validate"
   },
