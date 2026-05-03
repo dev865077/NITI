@@ -3,295 +3,205 @@ const copy = {
     pt: {
         play: 'Play',
         pause: 'Pause',
-        heroKicker: 'NITI Evidence Infomercial',
-        heroTitle: 'Veja um contrato Bitcoin acontecer.',
-        heroLede: 'Um oracle revela um segredo. Esse mesmo segredo fecha o parent, ativa a bridge e cria o child. Tudo aparece como transação pública.',
-        statusOne: 'Demo signet/testnet',
-        statusTwo: 'Sem valor real',
-        statusThree: 'Bundle verificado',
-        problemKicker: 'O problema',
-        problemTitle: 'As pessoas não confiam no que não conseguem ver.',
-        problemCopy: 'Whitepapers e logs de prova importam, mas a maioria das pessoas precisa de um caminho visível: o dinheiro entra, o oracle fala, a próxima transação fica válida.',
-        ideaKicker: 'A ideia',
-        ideaTitle: 'Prepare o caminho antes do resultado existir.',
-        ideaCopy: 'O parent, a bridge e o child são preparados antes. A bridge existe, mas fica travada pelo outcome do oracle.',
-        trickKicker: 'O truque',
-        trickTitle: 'Um segredo completa dois passos.',
-        trickCopy: 'Antes da attestation, a assinatura da bridge não é uma witness Bitcoin válida. Depois que o oracle revela o scalar correto, a bridge completa.',
-        equationCaption: 'adaptor oculto + segredo do oracle = assinatura válida',
-        chainKicker: 'Evidência na blockchain',
-        chainTitle: 'O caminho público fica visível.',
-        chainCopy: 'Estes são objetos de evidência signet/testnet commitados. Cada txid aponta para um explorer público e o bundle pode ser verificado localmente.',
-        productKicker: 'Produto-demo',
-        productTitle: 'Exposição educativa ao dólar, sem dinheiro real.',
-        productCopy: 'O cartão demo mapeia um alvo em dólar para sats usando o preço BTC/USD do oracle. É só educativo: sem peg, sem promessa de resgate, sem mainnet.',
-        testnetOnly: 'TESTNET ONLY',
-        collateralLabel: 'Colateral',
-        priceLabel: 'Oracle BTC/USD',
-        targetLabel: 'Alvo educativo',
-        payoutLabel: 'Claim calculado',
-        formulaNote: 'Fórmula: min(colateral, ceil(alvo * 100.000.000 / preço)).',
-        failKicker: 'Caminhos de falha',
-        failTitle: 'O caminho errado falha fechado.',
-        failCopy: 'O bundle registra os casos negativos em vez de escondê-los: outcome errado rejeitado, pacote ausente rejeitado, refund antecipado bloqueado.',
-        failWrong: 'Outcome errado rejeitado',
-        failMissing: 'Pacote ausente rejeitado',
-        failTimeout: 'Timelock respeitado',
-        holderKicker: 'Evidência de retainer',
-        holderTitle: 'Alice, Bob e uma watchtower completam a mesma bridge.',
-        holderCopy: 'Um prepared edge package permite que qualquer holder autorizado complete a mesma bridge após o oracle atestar. Nenhum holder recebe signer secrets.',
-        proofKicker: 'Fronteira formal',
-        proofTitle: 'A história é apoiada por provas, não só animação.',
-        proofCopy: 'Lean prova a camada protocolar da NITI. SPARK verifica a álgebra finita. O site separa claims de produto da evidência técnica.',
-        sourceSignet: 'Demo pública signet/testnet',
-        sourceBilateral: 'Retainer bilateral',
-        sourceMainnet: 'Mainnet histórica, somente visual',
-        sourceStress: 'Economic stress como limite',
-        sourceWindow: 'Janela lazy K=2 materializada',
-        testKicker: 'Teste você mesmo',
-        testTitle: 'Rode o caminho testnet pelo terminal.',
-        testCopy: 'O browser não assina nem faz broadcast. Ele mostra comandos e verifica evidência commitada. A execução signet ao vivo continua explícita.',
-        recordedDemo: 'Demo gravada',
-        fundingRequest: 'Gerar funding request',
-        verifyResult: 'Verificar bundle',
+        heroEyebrow: 'EVIDÊNCIA, NÃO PROMESSA',
+        heroTitle: 'Começa aqui: esta transação é a bridge.',
+        heroLine: 'Olhe para o print como um bitcoiner: uma entrada, uma saída, uma taxa, confirmações. A pergunta é simples: por que essa transação só ficou válida depois do oracle falar?',
+        bridgeAmountLabel: 'saída',
+        bridgeRoleLabel: 'papel',
+        bridgeRole: 'ativa o child',
+        heroCaption: 'Print real de mempool.space/signet: a bridge broadcastada.',
+        pointTitle: 'A NITI não pede que você imagine o contrato. Ela mostra a trilha.',
+        pointCopy: 'Parent funding. Parent CET. Bridge. Child funding. A história inteira vira uma sequência de UTXOs. O contrato não é uma promessa fora da cadeia; é uma coreografia de transações preparadas antes e ativadas pelo resultado certo.',
+        mapEyebrow: 'O mapa mental',
+        mapTitle: 'Pense em três portas em fila.',
+        mapCopy: 'A primeira porta guarda o parent. A segunda é a bridge. A terceira é o child. Antes do evento, as fechaduras já estão instaladas. O oracle não move sats; ele revela a senha que faz a assinatura certa fechar.',
+        fundingEyebrow: 'Cena 1',
+        fundingTitle: 'Primeiro entra o colateral no parent.',
+        fundingCopy: 'Isto é só Bitcoin normal: um UTXO em signet aparece no explorer. A NITI chama isso de parent funding porque é daqui que o primeiro contrato pode ser resolvido.',
+        fundingCaption: 'Funding real do parent: 8,000 sats no bundle bilateral signet.',
+        oracleEyebrow: 'Cena 2',
+        oracleTitle: 'O oracle não “aprova” nada. Ele revela um número.',
+        oracleCopy: 'Esse número é o segredo do outcome. Quem já tinha o pacote preparado consegue somar esse segredo ao adaptor e transformar uma quase-assinatura em uma assinatura Bitcoin válida.',
+        cetEyebrow: 'Cena 3',
+        cetTitle: 'O parent fecha no CET do outcome certo.',
+        cetCopy: 'Depois da attestation, o parent CET gasta o funding. Esse passo é o contrato dizendo: “o resultado chegou; este caminho venceu”.',
+        cetCaption: 'Parent CET real: 7,000 sats, confirmado em signet.',
+        bridgeEyebrow: 'Cena 4',
+        bridgeTitle: 'A mesma senha destrava a bridge.',
+        bridgeCopy: 'Aqui está a sacada do cDLC: o segredo que fecha o parent também completa a bridge. A bridge gasta a saída do CET e cria o funding do child. Não tem mágica, tem assinatura que só fecha com o outcome certo.',
+        bridgeCaption: 'Bridge real: uma entrada de 7,000 sats, saída child de 6,500 sats, taxa de 500 sats.',
+        ahaTitle: 'Uma revelação. Dois efeitos.',
+        ahaCopy: 'Sem o segredo, a bridge é um rascunho criptográfico. Com o segredo, ela vira uma transação Bitcoin normal. Por isso o cDLC consegue encadear contratos sem deixar o próximo passo depender de um signer online na hora do evento.',
+        failEyebrow: 'Falha fechada',
+        failTitle: 'Se a senha errada aparece, nada abre.',
+        failCopy: 'O bundle não mostra só o caminho feliz. Ele registra que outcome errado não ativa a edge, pacote ausente não basta e refund antecipado respeita timelock.',
+        holderEyebrow: 'Retainer',
+        holderTitle: 'Alice, Bob e watchtower chegam ao mesmo txid.',
+        holderCopy: 'Cada holder autorizado carrega o pacote preparado. Quando o oracle publica o segredo, qualquer um deles consegue completar a mesma bridge. Eles não recebem signer secret; recebem só o material necessário para agir depois do outcome.',
+        productEyebrow: 'Produto-demo',
+        productTitle: 'Agora troque “outcome” por preço BTC/USD.',
+        productCopy: 'Em testnet, a mesma mecânica pode ensinar exposição educativa ao dólar: o oracle informa preço, o contrato calcula quantos sats cabem no alvo, e o payout nunca promete dinheiro real.',
+        collateral: 'colateral',
+        price: 'preço oracle',
+        target: 'alvo didático',
+        claim: 'claim calculado',
+        productBoundary: 'Simulação em signet/testnet. Sem peg, sem resgate, sem mainnet, sem custódia de valor real.',
+        proofEyebrow: 'Prova e replay',
+        proofTitle: 'A tela é simples. A evidência é auditável.',
+        proofCopy: 'O site aponta para txids públicos, bundles commitados e inventário de prova. A parte visual serve para explicar; a confiança vem do replay.',
+        testEyebrow: 'Teste você mesmo',
+        testTitle: 'Não assine no browser. Rode o teste no terminal.',
+        testCopy: 'A página só mostra evidência e comandos. Execução ao vivo continua explícita, local e testnet/signet.',
+        cmdReplay: 'Ver replay',
+        cmdFunding: 'Gerar funding request',
+        cmdVerify: 'Verificar bundle',
         copy: 'Copiar',
         copied: 'Copiado',
         txidLabel: 'Cole um txid signet/testnet',
-        openExplorer: 'Abrir explorer',
-        boundary: 'Fronteira: demo educativa em testnet. Sem depósito mainnet, sem stablecoin, sem garantia de resgate, sem recomendação de investimento.',
+        openExplorer: 'Abrir no explorer',
+        footer: 'Demo educativa em signet/testnet. Nada aqui é oferta financeira, garantia de dólar, stablecoin, custódia real ou fluxo mainnet.',
     },
     en: {
         play: 'Play',
         pause: 'Pause',
-        heroKicker: 'NITI Evidence Infomercial',
-        heroTitle: 'Watch a Bitcoin contract happen.',
-        heroLede: 'An oracle reveals a secret. The same secret resolves the parent, activates the bridge, and creates the child. The path appears as public transactions.',
-        statusOne: 'Signet/testnet demo',
-        statusTwo: 'No real value',
-        statusThree: 'Bundle verified',
-        problemKicker: 'The problem',
-        problemTitle: 'People cannot trust what they cannot see.',
-        problemCopy: 'Whitepapers and proof logs matter, but most people need a visible path: money enters, the oracle speaks, the next transaction becomes valid.',
-        ideaKicker: 'The idea',
-        ideaTitle: 'Prepare the path before the result exists.',
-        ideaCopy: 'The parent, bridge, and child are prepared in advance. The bridge is present, but locked behind the oracle outcome.',
-        trickKicker: 'The trick',
-        trickTitle: 'One secret completes two steps.',
-        trickCopy: 'Before attestation, the bridge signature is not a valid Bitcoin witness. After the oracle reveals the matching scalar, the bridge completes.',
-        equationCaption: 'hidden adaptor + oracle secret = valid signature',
-        chainKicker: 'Blockchain evidence',
-        chainTitle: 'The public path is visible.',
-        chainCopy: 'These are committed signet/testnet evidence objects. Every txid links to a public explorer and the bundle can be verified locally.',
-        productKicker: 'Product demo',
-        productTitle: 'Educational dollar exposure, without real money.',
-        productCopy: 'The demo card maps a dollar target to sats using the oracle BTC/USD price. It is educational only: no peg, no redemption promise, no mainnet funds.',
-        testnetOnly: 'TESTNET ONLY',
-        collateralLabel: 'Collateral',
-        priceLabel: 'Oracle BTC/USD',
-        targetLabel: 'Educational target',
-        payoutLabel: 'Calculated claim',
-        formulaNote: 'Formula: min(collateral, ceil(target * 100,000,000 / price)).',
-        failKicker: 'Failure paths',
-        failTitle: 'The wrong path fails closed.',
-        failCopy: 'The evidence bundle records negative cases instead of hiding them: wrong outcome rejected, missing package rejected, early refund blocked.',
-        failWrong: 'Wrong outcome rejected',
-        failMissing: 'Missing package rejected',
-        failTimeout: 'Timelock respected',
-        holderKicker: 'Retainer evidence',
-        holderTitle: 'Alice, Bob, and a watchtower complete the same bridge.',
-        holderCopy: 'A prepared edge package lets any authorized holder complete the same bridge after the oracle attests. No holder receives signer secrets.',
-        proofKicker: 'Formal boundary',
-        proofTitle: 'The story is backed by proofs, not just animation.',
-        proofCopy: 'Lean proves the NITI protocol layer. SPARK checks the finite algebra. The site separates product claims from technical evidence.',
-        sourceSignet: 'Public signet/testnet demo',
-        sourceBilateral: 'Bilateral retainer',
-        sourceMainnet: 'Historical mainnet, visual only',
-        sourceStress: 'Economic stress as a limit',
-        sourceWindow: 'Lazy K=2 window materialized',
-        testKicker: 'Try it yourself',
-        testTitle: 'Run the testnet path from your terminal.',
-        testCopy: 'The browser does not sign or broadcast. It shows commands and verifies committed evidence. Live signet execution remains explicit.',
-        recordedDemo: 'Recorded demo',
-        fundingRequest: 'Generate funding request',
-        verifyResult: 'Verify bundle',
+        heroEyebrow: 'EVIDENCE, NOT A PROMISE',
+        heroTitle: 'Start here: this transaction is the bridge.',
+        heroLine: 'Read the screenshot like a Bitcoiner: one input, one output, one fee, confirmations. The question is simple: why did this transaction only become valid after the oracle spoke?',
+        bridgeAmountLabel: 'output',
+        bridgeRoleLabel: 'role',
+        bridgeRole: 'activates the child',
+        heroCaption: 'Real mempool.space/signet screenshot: the broadcast bridge.',
+        pointTitle: 'NITI does not ask you to imagine the contract. It shows the trail.',
+        pointCopy: 'Parent funding. Parent CET. Bridge. Child funding. The whole story becomes a UTXO sequence. The contract is not an off-chain promise; it is a choreography of transactions prepared before the event and activated by the correct outcome.',
+        mapEyebrow: 'Mental model',
+        mapTitle: 'Think of three doors in a row.',
+        mapCopy: 'The first door holds the parent. The second is the bridge. The third is the child. Before the event, the locks are already installed. The oracle does not move sats; it reveals the password that makes the right signature close.',
+        fundingEyebrow: 'Scene 1',
+        fundingTitle: 'First, collateral enters the parent.',
+        fundingCopy: 'This is plain Bitcoin: a signet UTXO appears in the explorer. NITI calls it parent funding because this is where the first contract can resolve from.',
+        fundingCaption: 'Real parent funding: 8,000 sats in the bilateral signet bundle.',
+        oracleEyebrow: 'Scene 2',
+        oracleTitle: 'The oracle does not “approve” anything. It reveals a number.',
+        oracleCopy: 'That number is the outcome secret. Anyone who already holds the prepared package can add that secret to the adaptor and turn an almost-signature into a valid Bitcoin signature.',
+        cetEyebrow: 'Scene 3',
+        cetTitle: 'The parent closes through the correct-outcome CET.',
+        cetCopy: 'After attestation, the parent CET spends the funding. This step says: “the result arrived; this path won”.',
+        cetCaption: 'Real parent CET: 7,000 sats, confirmed on signet.',
+        bridgeEyebrow: 'Scene 4',
+        bridgeTitle: 'The same password unlocks the bridge.',
+        bridgeCopy: 'This is the cDLC trick: the secret that resolves the parent also completes the bridge. The bridge spends the CET output and creates the child funding. No magic, just a signature that only closes with the correct outcome.',
+        bridgeCaption: 'Real bridge: one 7,000 sat input, one 6,500 sat child output, 500 sat fee.',
+        ahaTitle: 'One revelation. Two effects.',
+        ahaCopy: 'Without the secret, the bridge is a cryptographic draft. With the secret, it becomes a normal Bitcoin transaction. That is why a cDLC can cascade contracts without the next step waiting for a signer to be online at event time.',
+        failEyebrow: 'Fail closed',
+        failTitle: 'If the wrong password appears, nothing opens.',
+        failCopy: 'The bundle does not only show the happy path. It records that a wrong outcome does not activate the edge, a missing package is not enough, and early refund respects the timelock.',
+        holderEyebrow: 'Retainer',
+        holderTitle: 'Alice, Bob, and watchtower reach the same txid.',
+        holderCopy: 'Each authorized holder carries the prepared package. When the oracle publishes the secret, any of them can complete the same bridge. They do not receive signer secrets; only the material needed to act after the outcome.',
+        productEyebrow: 'Product demo',
+        productTitle: 'Now replace “outcome” with BTC/USD price.',
+        productCopy: 'On testnet, the same mechanics can teach educational dollar exposure: the oracle reports price, the contract computes how many sats fit the target, and the payout never promises real money.',
+        collateral: 'collateral',
+        price: 'oracle price',
+        target: 'educational target',
+        claim: 'calculated claim',
+        productBoundary: 'Signet/testnet simulation. No peg, no redemption, no mainnet, no real-value custody.',
+        proofEyebrow: 'Proof and replay',
+        proofTitle: 'The screen is simple. The evidence is auditable.',
+        proofCopy: 'The site points to public txids, committed bundles, and the proof inventory. The visual layer explains; trust comes from replay.',
+        testEyebrow: 'Try it yourself',
+        testTitle: 'Do not sign in the browser. Run the test in the terminal.',
+        testCopy: 'The page only shows evidence and commands. Live execution remains explicit, local, and testnet/signet.',
+        cmdReplay: 'See replay',
+        cmdFunding: 'Generate funding request',
+        cmdVerify: 'Verify bundle',
         copy: 'Copy',
         copied: 'Copied',
         txidLabel: 'Paste a signet/testnet txid',
         openExplorer: 'Open explorer',
-        boundary: 'Boundary: testnet educational demo only. No mainnet deposit flow, no stablecoin claim, no redemption guarantee, no investment advice.',
+        footer: 'Educational signet/testnet demo. Nothing here is a financial offer, dollar guarantee, stablecoin, real custody, or mainnet flow.',
     },
 };
-const txEvidence = [
-    {
-        label: 'Parent funding',
-        txid: 'c61fc4bc0a8050ae423ebfb31be94f3f376a611c61f512334320452f13a6e5c6',
-        value: '8,000 sats',
-        url: 'https://mempool.space/signet/tx/c61fc4bc0a8050ae423ebfb31be94f3f376a611c61f512334320452f13a6e5c6',
-        note: 'C_0 active parent',
-    },
-    {
-        label: 'Parent CET',
-        txid: 'a8963ae92df055c6f5cd7e3fe26238780929c2af6e78cab705dea460774d769b',
-        value: '7,000 sats',
-        url: 'https://mempool.space/signet/tx/a8963ae92df055c6f5cd7e3fe26238780929c2af6e78cab705dea460774d769b',
-        note: 'oracle scalar completes CET',
-    },
-    {
-        label: 'Bridge',
-        txid: 'b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c',
-        value: '6,500 sats',
-        url: 'https://mempool.space/signet/tx/b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c',
-        note: 'same scalar completes bridge',
-    },
-    {
-        label: 'Child funding',
-        txid: 'b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c:0',
-        value: '6,500 sats',
-        url: 'https://mempool.space/signet/tx/b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c',
-        note: 'C_1 prepared child',
-    },
-];
-const holders = [
-    { name: 'Alice', txid: txEvidence[2]?.txid ?? '', verifies: true },
-    { name: 'Bob', txid: txEvidence[2]?.txid ?? '', verifies: true },
-    { name: 'Watchtower', txid: txEvidence[2]?.txid ?? '', verifies: true },
-];
 const commands = {
-    recorded: 'npm run test:evidence-bundle -- \\\n  --bundle docs/evidence/lazy-bilateral-public-signet/lazy-activation-evidence-bundle.json',
-    funding: 'npm run public:lazy-cdlc-funding-request -- \\\n  --network signet \\\n  --out testnet/artifacts/lazy-public-signet-funding-request.json',
-    verify: 'npm run test:evidence-bundle -- \\\n  --bundle docs/evidence/lazy-public-signet/lazy-activation-evidence-bundle.json',
+    replay: 'npm run test:evidence-bundle -- \\\n+  --bundle docs/evidence/lazy-bilateral-public-signet/lazy-activation-evidence-bundle.json',
+    funding: 'npm run public:lazy-cdlc-funding-request -- \\\n+  --network signet \\\n+  --out testnet/artifacts/lazy-public-signet-funding-request.json',
+    verify: 'npm run test:evidence-bundle -- \\\n+  --bundle docs/evidence/lazy-public-signet/lazy-activation-evidence-bundle.json',
 };
+const holders = [
+    { name: 'Alice', txid: 'b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c' },
+    { name: 'Bob', txid: 'b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c' },
+    { name: 'Watchtower', txid: 'b71a2b79fab0cc8f20ead09e539aa122878f44d44cb562b70de0e0016c22e59c' },
+];
 let language = 'pt';
 let autoPlay = false;
-let autoPlayTimer;
+let timer;
+function select(selector) {
+    const node = document.querySelector(selector);
+    if (!node) {
+        throw new Error(`Missing ${selector}`);
+    }
+    return node;
+}
+function all(selector) {
+    return Array.from(document.querySelectorAll(selector));
+}
 function t(key) {
     return copy[language][key] ?? copy.pt[key] ?? key;
 }
-function select(selector) {
-    const element = document.querySelector(selector);
-    if (!element) {
-        throw new Error(`Missing element: ${selector}`);
-    }
-    return element;
-}
-function selectAll(selector) {
-    return Array.from(document.querySelectorAll(selector));
-}
-function shortTxid(txid) {
-    if (txid.includes(':')) {
-        const [id, vout] = txid.split(':');
-        return `${id?.slice(0, 8)}...${id?.slice(-8)}:${vout}`;
-    }
+function short(txid) {
     return `${txid.slice(0, 8)}...${txid.slice(-8)}`;
 }
 function setLanguage(next) {
     language = next;
     document.documentElement.lang = next === 'pt' ? 'pt-BR' : 'en';
-    for (const element of selectAll('[data-i18n]')) {
+    for (const element of all('[data-i18n]')) {
         const key = element.dataset.i18n;
-        if (key && copy[next][key]) {
+        if (key) {
             element.textContent = copy[next][key] ?? key;
         }
     }
     select('[data-lang-toggle]').textContent = next === 'pt' ? 'EN' : 'PT';
     if (autoPlay) {
-        select('[data-play]').textContent = copy[next].pause ?? 'Pause';
+        select('[data-play]').textContent = t('pause');
     }
-}
-function renderEvidence() {
-    const rail = select('[data-tx-rail]');
-    rail.replaceChildren(...txEvidence.map((tx, index) => {
-        const item = document.createElement('article');
-        item.className = 'tx-card';
-        item.innerHTML = `
-        <span class="tx-index">${String(index + 1).padStart(2, '0')}</span>
-        <h3>${tx.label}</h3>
-        <a href="${tx.url}" target="_blank" rel="noreferrer">${shortTxid(tx.txid)}</a>
-        <p>${tx.note}</p>
-        <strong>${tx.value}</strong>
-      `;
-        return item;
-    }));
-    const holderStrip = select('[data-holder-strip]');
-    holderStrip.replaceChildren(...holders.map((holder) => {
-        const item = document.createElement('article');
-        item.className = 'holder';
-        item.innerHTML = `
-        <span>${holder.name}</span>
-        <strong>${holder.verifies ? 'verifies' : 'fails'}</strong>
-        <p>${shortTxid(holder.txid)}</p>
-      `;
-        return item;
-    }));
-    for (const key of Object.keys(commands)) {
-        const target = document.querySelector(`[data-command="${key}"]`);
-        if (target) {
-            target.textContent = commands[key];
-        }
-    }
-}
-function initCopyButtons() {
-    for (const button of selectAll('[data-copy-command]')) {
-        button.addEventListener('click', async () => {
-            const key = button.dataset.copyCommand;
-            await navigator.clipboard.writeText(commands[key]);
-            const original = t('copy');
-            button.textContent = t('copied');
-            window.setTimeout(() => {
-                button.textContent = original;
-            }, 1100);
-        });
-    }
-}
-function initTxidTool() {
-    const input = select('[data-txid-input]');
-    const link = select('[data-txid-link]');
-    const update = () => {
-        const txid = input.value.trim().split(':')[0] ?? '';
-        const clean = txid.replace(/[^a-fA-F0-9]/g, '');
-        if (clean.length === 64) {
-            link.href = `https://mempool.space/signet/tx/${clean}`;
-        }
-    };
-    input.addEventListener('input', update);
-    update();
 }
 function initProgress() {
-    const progress = select('[data-progress]');
+    const bar = select('[data-progress]');
     const update = () => {
         const max = document.documentElement.scrollHeight - window.innerHeight;
         const pct = max <= 0 ? 0 : window.scrollY / max;
-        progress.style.transform = `scaleX(${Math.min(1, Math.max(0, pct))})`;
+        bar.style.transform = `scaleX(${Math.max(0, Math.min(1, pct))})`;
     };
     window.addEventListener('scroll', update, { passive: true });
     update();
 }
-function initSceneObserver() {
+function initScenes() {
     const observer = new IntersectionObserver((entries) => {
         for (const entry of entries) {
-            entry.target.classList.toggle('in-view', entry.isIntersecting);
+            entry.target.classList.toggle('visible', entry.isIntersecting);
         }
-    }, { threshold: 0.34 });
-    for (const scene of selectAll('[data-scene]')) {
+    }, { threshold: 0.28 });
+    for (const scene of all('[data-scene]')) {
         observer.observe(scene);
     }
 }
-function initAutoPlay() {
+function initAutoplay() {
     const button = select('[data-play]');
-    const scenes = selectAll('[data-scene]');
+    const scenes = all('[data-scene]');
     const stop = () => {
         autoPlay = false;
         button.textContent = t('play');
-        if (autoPlayTimer !== undefined) {
-            window.clearInterval(autoPlayTimer);
-            autoPlayTimer = undefined;
+        if (timer !== undefined) {
+            window.clearInterval(timer);
+            timer = undefined;
         }
     };
     const start = () => {
         autoPlay = true;
         button.textContent = t('pause');
-        let index = Math.max(0, scenes.findIndex((scene) => scene.getBoundingClientRect().top > 40));
-        autoPlayTimer = window.setInterval(() => {
+        let index = Math.max(0, scenes.findIndex((scene) => scene.getBoundingClientRect().top > 80));
+        timer = window.setInterval(() => {
             const scene = scenes[index];
             if (!scene) {
                 stop();
@@ -299,7 +209,7 @@ function initAutoPlay() {
             }
             scene.scrollIntoView({ behavior: 'smooth', block: 'start' });
             index += 1;
-        }, 2600);
+        }, 4300);
     };
     button.addEventListener('click', () => {
         if (autoPlay) {
@@ -311,107 +221,53 @@ function initAutoPlay() {
     });
     window.addEventListener('wheel', () => autoPlay && stop(), { passive: true });
 }
-function initLanguageToggle() {
-    select('[data-lang-toggle]').addEventListener('click', () => {
-        setLanguage(language === 'pt' ? 'en' : 'pt');
-    });
-    setLanguage('pt');
-}
-function initCanvas() {
-    const canvas = select('#hero-canvas');
-    const context = canvas.getContext('2d');
-    if (!context) {
-        return;
+function initCommands() {
+    for (const [key, command] of Object.entries(commands)) {
+        const target = document.querySelector(`[data-command="${key}"]`);
+        if (target) {
+            target.textContent = command;
+        }
     }
-    let frame = 0;
-    const nodes = [
-        { x: 0.16, y: 0.58, label: 'funding' },
-        { x: 0.38, y: 0.42, label: 'parent' },
-        { x: 0.62, y: 0.58, label: 'bridge' },
-        { x: 0.84, y: 0.42, label: 'child' },
-    ];
-    const draw = () => {
-        const width = canvas.width;
-        const height = canvas.height;
-        context.clearRect(0, 0, width, height);
-        context.fillStyle = '#101315';
-        context.fillRect(0, 0, width, height);
-        context.strokeStyle = 'rgba(243, 238, 225, 0.08)';
-        context.lineWidth = 1;
-        for (let x = 0; x < width; x += 64) {
-            context.beginPath();
-            context.moveTo(x, 0);
-            context.lineTo(x, height);
-            context.stroke();
-        }
-        for (let y = 0; y < height; y += 64) {
-            context.beginPath();
-            context.moveTo(0, y);
-            context.lineTo(width, y);
-            context.stroke();
-        }
-        context.lineWidth = 4;
-        context.strokeStyle = '#e5b866';
-        context.beginPath();
-        nodes.forEach((node, index) => {
-            const x = node.x * width;
-            const y = node.y * height;
-            if (index === 0) {
-                context.moveTo(x, y);
-            }
-            else {
-                const prev = nodes[index - 1];
-                if (prev) {
-                    context.bezierCurveTo(prev.x * width + 110, prev.y * height, x - 110, y, x, y);
-                }
-            }
+    for (const button of all('[data-copy-command]')) {
+        button.addEventListener('click', async () => {
+            const key = button.dataset.copyCommand;
+            await navigator.clipboard.writeText(commands[key]);
+            button.textContent = t('copied');
+            window.setTimeout(() => {
+                button.textContent = t('copy');
+            }, 900);
         });
-        context.stroke();
-        const pulseIndex = (frame / 160) % 1;
-        const pulseX = (0.16 + pulseIndex * 0.68) * width;
-        const pulseY = (0.50 + Math.sin(frame / 30) * 0.09) * height;
-        context.fillStyle = '#88d8bf';
-        context.beginPath();
-        context.arc(pulseX, pulseY, 12 + Math.sin(frame / 8) * 3, 0, Math.PI * 2);
-        context.fill();
-        for (const [index, node] of nodes.entries()) {
-            const x = node.x * width;
-            const y = node.y * height;
-            const active = frame / 80 > index;
-            context.fillStyle = active ? '#f8f1df' : '#22282a';
-            context.strokeStyle = active ? '#88d8bf' : 'rgba(248, 241, 223, 0.28)';
-            context.lineWidth = 2;
-            context.beginPath();
-            context.roundRect(x - 86, y - 44, 172, 88, 8);
-            context.fill();
-            context.stroke();
-            context.fillStyle = active ? '#111315' : '#f8f1df';
-            context.font = '700 24px ui-monospace, SFMono-Regular, Menlo, monospace';
-            context.textAlign = 'center';
-            context.fillText(node.label, x, y + 8);
+    }
+}
+function initTxidTool() {
+    const input = select('[data-txid-input]');
+    const link = select('[data-txid-link]');
+    const update = () => {
+        const clean = input.value.trim().split(':')[0]?.replace(/[^a-fA-F0-9]/g, '') ?? '';
+        if (clean.length === 64) {
+            link.href = `https://mempool.space/signet/tx/${clean}`;
         }
-        frame += 1;
-        requestAnimationFrame(draw);
     };
-    draw();
+    input.addEventListener('input', update);
+    update();
 }
-function initProductMath() {
-    const collateral = 8000;
-    const priceCents = 6_000_000;
-    const targetCents = 390;
-    const need = Math.ceil((targetCents * 100_000_000) / priceCents);
-    const claim = Math.min(collateral, need);
-    select('[data-collateral]').textContent = `${collateral.toLocaleString()} sats`;
-    select('[data-price]').textContent = '$60,000';
-    select('[data-target]').textContent = '$3.90';
-    select('[data-payout]').textContent = `${claim.toLocaleString()} sats`;
+function renderHolders() {
+    const grid = select('[data-holder-grid]');
+    grid.replaceChildren(...holders.map((holder, index) => {
+        const card = document.createElement('article');
+        card.innerHTML = `
+        <span>0${index + 1}</span>
+        <strong>${holder.name}</strong>
+        <em>${short(holder.txid)}</em>
+        <p>same bridge txid</p>
+      `;
+        return card;
+    }));
 }
-renderEvidence();
-initCopyButtons();
-initTxidTool();
+setLanguage('pt');
 initProgress();
-initSceneObserver();
-initAutoPlay();
-initLanguageToggle();
-initCanvas();
-initProductMath();
+initScenes();
+initAutoplay();
+initCommands();
+initTxidTool();
+renderHolders();

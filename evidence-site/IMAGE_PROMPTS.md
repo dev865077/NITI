@@ -1,51 +1,40 @@
-# Image Production Prompts
+# Visual Assets
 
-These prompts are optional production assets for the scrollytelling page. The
-site does not depend on generated images for evidence; evidence comes from the
-committed bundles and public explorer links.
+The primary visuals are real signet transaction screenshots:
 
-## Evidence Board
+- `assets/mempool/parent-funding.png`
+- `assets/mempool/parent-cet.png`
+- `assets/mempool/bridge.png`
+
+These images are explanatory surfaces. They do not replace the evidence bundles,
+raw transactions, explorer links, or formal proof inventory.
+
+## Optional Generated Asset Prompts
+
+Generated assets may be used only as transition or background material. They
+must not be presented as evidence.
+
+### Pixel Transaction Trail
 
 ```text
-Use case: infographic-diagram
-Asset type: website hero background
-Primary request: Bitcoin transaction chain as an illuminated evidence board.
-Scene/backdrop: dark audit room wall with pinned transaction receipts, block
-height tags, and thin copper connector lines.
-Subject: four labeled evidence nodes: parent funding, parent CET, bridge, child
-funding.
-Style: premium editorial fintech, crisp, cinematic, no mascot, no coin pile.
-Text: no readable long text; labels may be abstract blocks.
-Avoid: promises of profit, dollar bills, exchange logos, bank logos, stock
-photos, bokeh blobs.
+Use case: scrollytelling transition
+Asset type: pixel-art web background
+Primary request: a brutalist pixel-art Bitcoin UTXO trail with four labeled
+blocks: parent funding, parent CET, bridge, child funding.
+Style: black background, hard pixels, cyan and magenta explorer colors, sharp
+edges, no rounded cards, no characters, no banks, no dollar bills.
+Text: labels may be abstract or unreadable.
+Avoid: profit imagery, hero mascots, soft gradients, stock-photo fintech style.
 ```
 
-## Oracle Unlock
+### Oracle Secret Pulse
 
 ```text
-Use case: scientific-educational
-Asset type: section illustration
-Primary request: oracle key unlocking a bridge contract.
-Scene/backdrop: minimal Bitcoin script diagram with an oracle point emitting a
-single bright pulse into two transaction boxes.
-Subject: the same signal completes a parent contract and a bridge contract.
-Style: clean educational infographic, high contrast, geometric, precise.
-Text: only short symbolic labels: oracle, parent, bridge.
-Avoid: literal padlock clichés, fantasy keys, human characters, legal or bank
-symbols.
-```
-
-## Product Card
-
-```text
-Use case: ui-mockup
-Asset type: website product-demo panel
-Primary request: testnet dollar exposure educational product card.
-Scene/backdrop: flat UI surface with a clear testnet badge, BTC collateral,
-BTC/USD oracle price, target value, and payout in sats.
-Subject: educational payoff calculator for testnet sats.
-Style: restrained, audit-friendly, polished fintech interface.
-Text: TESTNET ONLY, Educational exposure, no real value.
-Avoid: guaranteed yield, guaranteed dollar, mainnet wording, wallet deposit
-claims, bank imagery.
+Use case: section transition
+Asset type: educational pixel diagram
+Primary request: an oracle outcome revealing a single cryptographic secret that
+splits into two paths: parent CET and bridge witness.
+Style: minimal, black, neon cyan, acid green, magenta, blocky pixel geometry.
+Text: only short symbols: oracle, sx, parent, bridge.
+Avoid: literal keys, locks, superheroes, fantasy imagery, legal documents.
 ```

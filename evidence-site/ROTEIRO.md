@@ -4,28 +4,32 @@
 
 | Cena | Narração | Texto na tela | Visual | Evidência |
 | --- | --- | --- | --- | --- |
-| 1 | "Bitcoin consegue guardar valor. Mas contratos financeiros ainda parecem invisíveis." | O problema: ninguém vê o contrato acontecendo. | Fundo escuro com blocos passando e uma linha de transações apagada. | Nenhuma; abertura conceitual. |
-| 2 | "A NITI transforma o contrato em uma sequência visível de transações preparadas." | Parent, bridge, child. | Três blocos conectados por uma linha animada. | Bundle Lazy signet/testnet. |
-| 3 | "Antes do evento, a bridge está trancada. Ela existe, mas ainda não é uma assinatura Bitcoin válida." | Preparado, mas não ativado. | Cadeado sobre a bridge; assinatura em estado incompleto. | `preResolutionSignatureVerifies = false`. |
-| 4 | "Quando o oracle publica o resultado, ele revela um segredo." | O segredo do oracle é a chave. | Ponto do oracle acende e envia um pulso para parent e bridge. | `activatingAttestationSecretHex`. |
-| 5 | "O mesmo segredo fecha o parent e completa a bridge." | Uma revelação, duas ativações. | Parent CET confirma; bridge assina e confirma. | Parent CET e bridge txids. |
-| 6 | "A bridge cria o funding do child. Agora o próximo contrato já está vivo." | O child nasce na blockchain. | Output do bridge vira entrada do child. | Child funding outpoint. |
-| 7 | "No produto-demo, isso pode representar exposição educativa ao dólar usando sats de testnet." | Testnet Dollar Exposure Demo. | Cartão com alvo em dólar, preço BTC/USD e payout em sats. | Fórmula `min(Q, ceil(D * 100_000_000 / P))`. |
-| 8 | "Se o resultado errado aparece, o caminho errado não abre." | Falha fechada. | Linha vermelha para o outcome errado se apaga. | `wrongOutcomeRejected = true`. |
-| 9 | "Alice, Bob ou uma watchtower podem completar a mesma bridge se tiverem o pacote preparado." | Retainer: qualquer holder autorizado consegue agir. | Três holders apontam para o mesmo bridge txid. | `bilateralLazyActivation.holders`. |
-| 10 | "No final, você pode rodar o teste em signet/testnet e verificar o bundle." | Teste você mesmo. | Terminal com comandos, campo de txid e links para explorer. | Comandos `public:lazy-cdlc-*` e verifier. |
+| 1 | "Começa aqui. Isto não é uma ilustração: é a bridge no mempool.space." | Esta transação é a bridge. | Print real da bridge em signet, grande, com txid visível. | `b71a2b79...22e59c`. |
+| 2 | "Leia como bitcoiner: entrada, saída, taxa, confirmações. A dúvida é: por que ela só ficou válida depois do oracle falar?" | A pergunta: por que agora? | Zoom visual na entrada de 7,000 sats, saída de 6,500 sats e taxa de 500 sats. | Bundle bilateral signet. |
+| 3 | "A NITI transforma contrato em trilha de UTXOs: parent funding, parent CET, bridge, child funding." | O contrato vira trilha. | Quatro blocos pixelados conectados. | `lazyWindow.nodes` e `activationPath`. |
+| 4 | "Primeiro entra o colateral no parent. É Bitcoin normal: funding aparece no explorer." | Cena 1: parent funding. | Print real do parent funding. | `c61fc4bc...3a6e5c6`, 8,000 sats. |
+| 5 | "Depois o oracle não aprova nada; ele revela um número. Esse número é a senha do outcome." | Cena 2: o oracle revela `sₓ`. | Tela brutalista com `BTCUSD_ABOVE_STRIKE` e `sₓ`. | `activatingAttestationSecretHex`. |
+| 6 | "Com essa senha, o parent fecha no CET do outcome certo." | Cena 3: parent CET. | Print real do parent CET. | `a8963ae9...774d769b`, 7,000 sats. |
+| 7 | "A sacada é que a mesma senha completa a bridge. A bridge gasta o CET e cria o funding do child." | Cena 4: bridge ativa child. | Print real da bridge com entrada, saída e taxa. | `b71a2b79...22e59c`, child outpoint `:0`. |
+| 8 | "Sem o segredo, a bridge é só um rascunho criptográfico. Com o segredo, vira witness Bitcoin." | Uma revelação. Dois efeitos. | Equação grande: `adaptor + sₓ = witness`. | `verifiesAdaptor`, completed bridge signature. |
+| 9 | "Se a senha errada aparece, nada abre. O bundle mostra o caminho ruim falhando fechado." | Outcome errado rejeitado. | Pilha vermelha: wrong outcome, missing package, early refund. | `wrongOutcomeRejected`, `missingPackageRejected`, timelock checks. |
+| 10 | "Alice, Bob e watchtower chegam ao mesmo txid porque todos tinham o pacote preparado." | Retainer: mesmo txid. | Três cards apontando para o mesmo bridge txid. | `bilateralLazyActivation.holders`. |
+| 11 | "No produto-demo, troque outcome por preço BTC/USD: testnet sats, alvo didático, payout calculado." | Testnet Dollar Exposure Demo. | Cartão brutalista com colateral, preço, alvo e claim. | Fórmula educativa, sem valor real. |
+| 12 | "A tela explica. A confiança vem do replay: txids públicos, bundles commitados e prova formal." | Rode você mesmo. | Terminal com comandos de replay, funding request e verificação. | `npm run test:evidence-bundle`. |
 
 ## EN Version
 
 | Scene | Voiceover | On-screen copy | Visual | Evidence |
 | --- | --- | --- | --- | --- |
-| 1 | "Bitcoin can store value. Financial contracts still look invisible." | The problem: nobody sees the contract happening. | Dark block stream with a dormant transaction line. | Conceptual opening. |
-| 2 | "NITI turns the contract into a visible sequence of prepared transactions." | Parent, bridge, child. | Three blocks connected by an animated line. | Lazy signet/testnet bundle. |
-| 3 | "Before the event, the bridge is locked. It exists, but it is not yet a valid Bitcoin signature." | Prepared, not activated. | Lock over the bridge; incomplete signature state. | `preResolutionSignatureVerifies = false`. |
-| 4 | "When the oracle publishes the outcome, it reveals a secret." | The oracle secret is the key. | Oracle point lights up and sends a pulse to parent and bridge. | `activatingAttestationSecretHex`. |
-| 5 | "The same secret resolves the parent and completes the bridge." | One revelation, two activations. | Parent CET confirms; bridge signs and confirms. | Parent CET and bridge txids. |
-| 6 | "The bridge creates the child funding output. The next contract is now live." | The child appears on-chain. | Bridge output becomes child input. | Child funding outpoint. |
-| 7 | "In the product demo, this can represent educational dollar exposure with testnet sats." | Testnet Dollar Exposure Demo. | Card with target value, BTC/USD price, and sats payout. | Formula `min(Q, ceil(D * 100_000_000 / P))`. |
-| 8 | "If the wrong outcome appears, the wrong path stays closed." | Fail closed. | Red wrong-outcome line fades out. | `wrongOutcomeRejected = true`. |
-| 9 | "Alice, Bob, or a watchtower can complete the same bridge if they hold the prepared package." | Retainer: any authorized holder can act. | Three holders point to the same bridge txid. | `bilateralLazyActivation.holders`. |
-| 10 | "At the end, run the signet/testnet flow and verify the bundle." | Try it yourself. | Terminal commands, txid field, explorer links. | `public:lazy-cdlc-*` commands and verifier. |
+| 1 | "Start here. This is not an illustration: it is the bridge on mempool.space." | This transaction is the bridge. | Real signet bridge screenshot, large, with txid visible. | `b71a2b79...22e59c`. |
+| 2 | "Read it like a Bitcoiner: input, output, fee, confirmations. The question is: why did it only become valid after the oracle spoke?" | The question: why now? | Visual zoom on 7,000 sat input, 6,500 sat output, 500 sat fee. | Bilateral signet bundle. |
+| 3 | "NITI turns a contract into a UTXO trail: parent funding, parent CET, bridge, child funding." | The contract becomes a trail. | Four connected pixel blocks. | `lazyWindow.nodes` and `activationPath`. |
+| 4 | "First, collateral enters the parent. It is normal Bitcoin: funding appears in the explorer." | Scene 1: parent funding. | Real parent funding screenshot. | `c61fc4bc...3a6e5c6`, 8,000 sats. |
+| 5 | "Then the oracle does not approve anything; it reveals a number. That number is the outcome password." | Scene 2: the oracle reveals `sₓ`. | Brutalist screen with `BTCUSD_ABOVE_STRIKE` and `sₓ`. | `activatingAttestationSecretHex`. |
+| 6 | "With that password, the parent closes through the correct-outcome CET." | Scene 3: parent CET. | Real parent CET screenshot. | `a8963ae9...774d769b`, 7,000 sats. |
+| 7 | "The trick is that the same password completes the bridge. The bridge spends the CET and creates the child funding." | Scene 4: bridge activates child. | Real bridge screenshot with input, output, and fee. | `b71a2b79...22e59c`, child outpoint `:0`. |
+| 8 | "Without the secret, the bridge is a cryptographic draft. With the secret, it becomes a Bitcoin witness." | One revelation. Two effects. | Large equation: `adaptor + sₓ = witness`. | `verifiesAdaptor`, completed bridge signature. |
+| 9 | "If the wrong password appears, nothing opens. The bundle shows the bad path failing closed." | Wrong outcome rejected. | Red stack: wrong outcome, missing package, early refund. | `wrongOutcomeRejected`, `missingPackageRejected`, timelock checks. |
+| 10 | "Alice, Bob, and watchtower reach the same txid because each had the prepared package." | Retainer: same txid. | Three cards pointing to the same bridge txid. | `bilateralLazyActivation.holders`. |
+| 11 | "In the product demo, replace outcome with BTC/USD price: testnet sats, educational target, calculated payout." | Testnet Dollar Exposure Demo. | Brutalist card with collateral, price, target, and claim. | Educational formula, no real value. |
+| 12 | "The screen explains. Trust comes from replay: public txids, committed bundles, and formal proof." | Run it yourself. | Terminal with replay, funding request, and verification commands. | `npm run test:evidence-bundle`. |
